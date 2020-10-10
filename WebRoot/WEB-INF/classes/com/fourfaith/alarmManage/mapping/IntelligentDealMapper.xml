@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.alarmManage.dao.IntelligentDealMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.alarmManage.model.IntelligentDeal">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="IntelligentAnalysisId" property="intelligentAnalysisId" jdbcType="VARCHAR" />
+		<result column="DealType" property="dealType" jdbcType="INTEGER" />
+		<result column="ServiceManId" property="serviceManId" jdbcType="VARCHAR" />
+		<result column="DealResult" property="dealResult" jdbcType="INTEGER" />
+		<result column="DealExceptionRemark" property="dealExceptionRemark" jdbcType="VARCHAR" />
+		<result column="DealRemark" property="dealRemark" jdbcType="VARCHAR" />
+		<result column="FixTime" property="fixTime" jdbcType="TIMESTAMP" />
+		<result column="IsOverTime" property="isOverTime" jdbcType="INTEGER" />
+		<result column="HandleTime" property="handleTime" jdbcType="DOUBLE" />
+		<result column="DealTime" property="dealTime" jdbcType="INTEGER" />
+		<result column="OverTime" property="overTime" jdbcType="DOUBLE" />
+		<result column="OverTimeRemark" property="overTimeRemark" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 获取异常机井处理结果列表 -->
+	<select id="getList" parameterType="map" resultMap="BaseResultMap">
+		select ia.*, itd.DealType as dealType, smi.ServiceMan as serviceMan, smi.Phone as phone, itd.DealResult as dealResult,
+			itd.FixTime as fixTime, itd.DealTime as dealTime, itd.HandleTime as handleTime,
+			itd.DealExceptionRemark as dealExceptionRemark, itd.DealRemark as dealRemark
+		from IntelligentDeal itd
+			right join IntelligentAnalysis ia on ia.Id = itd.IntelligentAnalysisId
+			left join SysServiceManInfo smi on itd.ServiceManId = smi.Id
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ia.DeviceCode
+		where itd.DealResult = 0
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceCode != null">
+			AND ia.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			AND bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	
+		<!-- select ia.DeviceCode as deviceCode,ia.DeviceName as deviceName,ia.intelligentException as intelligentException,itd.*
+		from IntelligentAnalysis ia
+			left join IntelligentDeal itd on ia.Id = itd.IntelligentAnalysisId
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ia.DeviceCode
+			left join SysArea sa on bdi.AreaId = sa.Id
+			left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where 1=1 and itd.DealResult != 0
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+	        AND sa.Id in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND swa.Id in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceCode != null">
+			AND ia.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if> -->
+	</select>
+	
+	<!-- 根据条件统计异常机井处理结果数量 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) 
+		from IntelligentAnalysis ia
+			left join IntelligentDeal itd on ia.Id = itd.IntelligentAnalysisId
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ia.DeviceCode
+			left join SysArea sa on bdi.AreaId = sa.Id
+			left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where 1=1 and itd.DealResult = 0
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+	        AND sa.Id in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND swa.Id in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceCode != null">
+			AND ia.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+	</select>
+	
+	<!-- 添加异常机井处理结果信息 -->
+	<insert id="add" parameterType="com.fourfaith.alarmManage.model.IntelligentDeal">
+		insert into IntelligentDeal
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			IntelligentAnalysisId,
+			<if test="dealType != null">
+				DealType,
+			</if>
+			<if test="serviceManId != null">
+				serviceManId,
+			</if>
+				DealResult,
+			<if test="dealExceptionRemark != null">
+				DealExceptionRemark,
+			</if>
+			<if test="dealRemark != null">
+				DealRemark,
+			</if>
+			<if test="fixTime != null">
+				FixTime,
+			</if>
+			<if test="isOverTime != null">
+				IsOverTime,
+			</if>
+			<if test="handleTime != null">
+				HandleTime,
+			</if>
+			<if test="dealTime != null">
+				DealTime,
+			</if>
+			<if test="overTime != null">
+				OverTime,
+			</if>
+			<if test="overTimeRemark != null">
+				OverTimeRemark,
+			</if>
+			CreateTime,
+			EditTime
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{intelligentAnalysisId,jdbcType=VARCHAR},
+			<if test="dealType != null">
+				#{dealType,jdbcType=INTEGER},
+			</if>
+			<if test="serviceManId != null">
+				#{serviceManId,jdbcType=VARCHAR},
+			</if>
+			#{dealResult,jdbcType=INTEGER},
+			<if test="dealExceptionRemark != null">
+				#{dealExceptionRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="dealRemark != null">
+				#{dealRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="fixTime != null">
+				#{fixTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isOverTime != null">
+				#{isOverTime,jdbcType=INTEGER},
+			</if>
+			<if test="handleTime != null">
+				#{handleTime,jdbcType=DOUBLE},
+			</if>
+			<if test="dealTime != null">
+				#{dealTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="overTime != null">
+				#{overTime,jdbcType=DOUBLE},
+			</if>
+			<if test="overTimeRemark != null">
+				#{overTimeRemark,jdbcType=VARCHAR},
+			</if>
+			now(),
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 根据异常机井ID获取异常机井处理结果 -->
+	<select id="selectByIntelligentAnalysisId" parameterType="java.lang.String" resultType="com.fourfaith.alarmManage.model.IntelligentDeal">
+		select * from IntelligentDeal where IntelligentAnalysisId = #{intelligentAnalysisId} and DealResult in (1,2)
+	</select>
+	
+	<!-- 删除异常机井处理结果 -->
+	<delete id="delete" parameterType="com.fourfaith.alarmManage.model.IntelligentDeal">
+		delete from IntelligentDeal where IntelligentAnalysisId = #{intelligentAnalysisId} and DealResult not int (0,2)
+	</delete>
+	
+	<!-- 根据异常机井ID修改异常机井处理结果 -->
+	<update id="update" parameterType="com.fourfaith.alarmManage.model.IntelligentDeal">
+		update IntelligentDeal
+		<set>
+			<if test="dealType != null">
+				DealType = #{dealType,jdbcType=INTEGER},
+			</if>
+			<if test="serviceManId != null">
+				ServiceManId = #{serviceManId,jdbcType=VARCHAR},
+			</if>
+			<if test="dealResult != null">
+				DealResult = #{dealResult,jdbcType=INTEGER},
+			</if>
+			<if test="dealExceptionRemark != null">
+				DealExceptionRemark = #{dealExceptionRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="dealRemark != null">
+				DealRemark = #{dealRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="fixTime != null">
+				FixTime = #{fixTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isOverTime != null">
+				IsOverTime = #{isOverTime,jdbcType=INTEGER},
+			</if>
+			<if test="handleTime != null">
+				HandleTime = #{handleTime,jdbcType=DOUBLE},
+			</if>
+			<if test="dealTime != null">
+				DealTime = #{dealTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="overTime != null">
+				OverTime = #{overTime,jdbcType=DOUBLE},
+			</if>
+			<if test="overTimeRemark != null">
+				OverTimeRemark = #{overTimeRemark,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set>
+		where IntelligentAnalysisId = #{intelligentAnalysisId,jdbcType=VARCHAR} and DealResult != 0
+	</update>
+	
+</mapper>

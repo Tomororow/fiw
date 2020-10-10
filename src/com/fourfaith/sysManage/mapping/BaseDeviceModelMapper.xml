@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BaseDeviceModelMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.BaseDeviceModel">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="AreaId" property="areaId" jdbcType="CHAR" />
+		<result column="ModelName" property="modelName" jdbcType="CHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select *
+		from BaseDeviceModel
+	</select>
+	
+</mapper>

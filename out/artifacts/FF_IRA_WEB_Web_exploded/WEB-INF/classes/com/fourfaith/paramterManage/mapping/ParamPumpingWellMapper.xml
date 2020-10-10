@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamPumpingWellMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamPumpingWell" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="WaterAreaId" property="waterareaid" jdbcType="VARCHAR" />
+    <result column="DeviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="WellUse" property="welluse" jdbcType="VARCHAR" />
+    <result column="StartTime" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="EndTime" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="OnNetState" property="onnetstate" jdbcType="INTEGER" />
+    <result column="WaterLow" property="waterlow" jdbcType="DECIMAL" />
+    <result column="WarningState" property="warningstate" jdbcType="INTEGER" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="EditTime" property="edittime" jdbcType="TIMESTAMP" />
+    <result column="Remark" property="remark" jdbcType="VARCHAR" />
+    <result column="BackOne" property="backone" jdbcType="VARCHAR" />
+    <result column="BackTwo" property="backtwo" jdbcType="VARCHAR" />
+    <result column="BackThree" property="backthree" jdbcType="VARCHAR" />
+    <result column="BackFour" property="backfour" jdbcType="VARCHAR" />
+    <result column="BackFive" property="backfive" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, WaterAreaId, DeviceCode, WellUse, StartTime, EndTime, OnNetState, WaterLow, WarningState, 
+    CreateTime, EditTime, Remark, BackOne, BackTwo, BackThree, BackFour, 
+    BackFive
+  </sql>
+  <select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select ppw.*,swa.WaterAreaName as waterAreaName,bdei.WellUse as DeviceWellUse from ParamPumpingWell ppw 
+		LEFT JOIN SysWaterArea swa ON ppw.WaterAreaId = swa.Id
+		LEFT JOIN  BaseDeviceInfo bdi ON bdi.DeviceCode = ppw.DeviceCode
+		where 1=1
+		<if test="deviceCode != null and deviceCode!=''">
+			AND ppw.deviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null and deviceName!=''">
+			AND bdi.deviceName = #{deviceName,jdbcType=VARCHAR}
+		</if>
+		<if test="wellUse != null and wellUse!=''">
+			AND ppw.WellUse = #{wellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime!=''">
+			AND ppw.StartTime &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null and endTime!=''">
+			AND ppw.EndTime &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		order by ppw.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*) FROM parampumpingwell pw 
+		LEFT JOIN basedeviceinfo b ON pw.DeviceCode = b.DeviceCode
+		LEFT JOIN syswaterarea sa ON b.WaterAreaId = sa.Id
+		LEFT JOIN basedeviceexpandinfo ex ON b.Id = ex.DeviceId WHERE 1=1
+		<if test="list!=null and list.size()>0">
+		and b.WaterAreaId in
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			and b.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			and b.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+		<if test="deviceWellUse!=null and deviceWellUse!=''">
+			and ex.WellUse = #{deviceWellUse}
+		</if>
+		<if test="endTime!=null and startTime!=null">
+			and pw.StartTime &gt; #{startTime} and pw.EndTime &lt; #{endTime}
+		</if>
+	</select>
+	<!-- 查询所有预警参数 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="map"> 
+		<!-- SELECT * from basedeviceinfo b INNER JOIN parampumpingwell p on b.DeviceCode=p.DeviceCode order by p.CreateTime  desc -->
+		SELECT pw.*,b.deviceName as deviceName,sa.waterAreaName as waterAreaName, ex.WellUse as deviceWellUse  FROM parampumpingwell pw 
+		LEFT JOIN basedeviceinfo b ON pw.DeviceCode = b.DeviceCode
+		LEFT JOIN syswaterarea sa ON b.WaterAreaId = sa.Id
+		LEFT JOIN basedeviceexpandinfo ex ON b.Id = ex.DeviceId WHERE 1=1
+		<if test="list!=null and list.size()>0">
+		and b.WaterAreaId in
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			and b.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			and b.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+		<if test="deviceWellUse!=null and deviceWellUse!=''">
+			and ex.WellUse = #{deviceWellUse}
+		</if>
+		<if test="endTime!=null and startTime!=null">
+			and pw.StartTime &gt; #{startTime} and pw.EndTime &lt; #{endTime}
+		</if>
+		order by pw.CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from parampumpingwell
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+	<select id="getAllList" parameterType="map" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		select * from ParamPumpingWell where 
+		<![CDATA[ StartTime >= #{startTime} and EndTime <= #{endTime} ]]>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+	</select>
+	<!-- 根据当前时间获取异常机井参数 -->
+	<select id="selectParamPumpingWellInfoByNowDate" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		select * from ParamPumpingWell where 1=1 and 
+		<![CDATA[ StartTime <= #{nowDate} and EndTime >= #{nowDate} ]]>
+	</select>
+	<!-- 查询设定时间的最小值 -->
+	<select id="selecTimeMin" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		SELECT StartTime,EndTime FROM parampumpingwell 
+	</select>
+	<!--查询机井预警不在线天数 -->
+	<select id="selectwatertime" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		SELECT  bs.DeviceName,bs.OwnerName,bs.OwnerTelphone,b.LeaveWater as leaveWater,p.DeviceCode,p.OnNetState,p.WaterLow,p.BackOne,b.CommTime as CommTime FROM parampumpingwell p 
+		LEFT JOIN basedevicedynamicinfo b on p.DeviceCode=b.DeviceCode
+		LEFT JOIN basedeviceinfo bs ON p.DeviceCode=bs.DeviceCode
+		where  p.StartTime &lt;= NOW()  and p.EndTime &gt; NOW() AND (TO_DAYS(NOW()) - TO_DAYS(b.CommTime) &gt;= p.OnNetState OR b.CommTime is null)
+		GROUP BY p.DeviceCode
+	</select>
+	<!--查询高峰期用水量异常  -->
+	<select id="selectwaterpeckwater" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		SELECT  bs.DeviceName,bs.OwnerName,bs.OwnerTelphone,b.LeaveWater as leaveWater,p.DeviceCode,p.OnNetState,p.WaterLow,p.BackOne,b.CommTime as CommTime FROM parampumpingwell p 
+		LEFT JOIN basedevicedynamicinfo b on p.DeviceCode=b.DeviceCode
+		LEFT JOIN basedeviceinfo bs ON p.DeviceCode=bs.DeviceCode
+		where  p.StartTime &lt;= NOW()  and p.EndTime &gt;= NOW()
+		GROUP BY p.DeviceCode
+	</select>
+	
+	<select id="findPumpingWellById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		select * from ParamPumpingWell where Id = #{id}
+	</select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from parampumpingwell
+    where Id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <select id="findParamPumpingWellsByDeviceCode" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamPumpingWell">
+		select * from ParamPumpingWell where DeviceCode = #{deviceCode}
+	</select>
+  
+	<delete id="delete" parameterType="java.lang.String">
+		delete from ParamPumpingWell where Id = #{id}
+	</delete>
+  <insert id="insert" parameterType="com.fourfaith.paramterManage.model.ParamPumpingWell" >
+    insert into parampumpingwell (Id, WaterAreaId, DeviceCode, 
+      WellUse, StartTime, EndTime, 
+      OnNetState, WaterLow, WarningState, 
+       CreateTime, EditTime, 
+      Remark, BackOne, BackTwo, 
+      BackThree, BackFour, BackFive
+      )
+    values (#{id,jdbcType=INTEGER}, #{waterareaid,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, 
+      #{welluse,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{onnetstate,jdbcType=INTEGER}, #{waterlow,jdbcType=DECIMAL}, #{warningstate,jdbcType=INTEGER}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{edittime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{backone,jdbcType=VARCHAR}, #{backtwo,jdbcType=VARCHAR}, 
+      #{backthree,jdbcType=VARCHAR}, #{backfour,jdbcType=VARCHAR}, #{backfive,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.paramterManage.model.ParamPumpingWell" >
+    insert into parampumpingwell
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="devicecode != null" >
+        DeviceCode,
+      </if>
+     
+      <if test="startTime != null" >
+        StartTime,
+      </if>
+      <if test="endTime != null" >
+        EndTime,
+      </if>
+      <if test="onnetstate != null" >
+        OnNetState,
+      </if>
+      <if test="waterlow != null" >
+        WaterLow,
+      </if>
+      <if test="warningstate != null" >
+        WarningState,
+      </if>
+   
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+      <if test="edittime != null" >
+        EditTime,
+      </if>
+      <if test="remark != null" >
+        Remark,
+      </if>
+      <if test="backone != null" >
+        BackOne,
+      </if>
+      <if test="backtwo != null" >
+        BackTwo,
+      </if>
+      <if test="backthree != null" >
+        BackThree,
+      </if>
+      <if test="backfour != null" >
+        BackFour,
+      </if>
+      <if test="backfive != null" >
+        BackFive,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+   
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="onnetstate != null" >
+        #{onnetstate,jdbcType=INTEGER},
+      </if>
+      <if test="waterlow != null" >
+        #{waterlow,jdbcType=DECIMAL},
+      </if>
+      <if test="warningstate != null" >
+        #{warningstate,jdbcType=INTEGER},
+      </if>
+    
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edittime != null" >
+        #{edittime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        #{backthree,jdbcType=VARCHAR},
+      </if>
+      <if test="backfour != null" >
+        #{backfour,jdbcType=VARCHAR},
+      </if>
+      <if test="backfive != null" >
+        #{backfive,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.paramterManage.model.ParamPumpingWell" >
+    update parampumpingwell
+    <set >
+      <if test="devicecode != null" >
+        DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime!= null" >
+        StartTime = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        EndTime = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="onnetstate != null" >
+        OnNetState = #{onnetstate,jdbcType=INTEGER},
+      </if>
+      <if test="waterlow != null" >
+        WaterLow = #{waterlow,jdbcType=DECIMAL},
+      </if>
+      <if test="warningstate != null" >
+        WarningState = #{warningstate,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edittime != null" >
+        EditTime = #{edittime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        Remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        BackOne = #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        BackTwo = #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        BackThree = #{backthree,jdbcType=VARCHAR},
+      </if>
+      <if test="backfour != null" >
+        BackFour = #{backfour,jdbcType=VARCHAR},
+      </if>
+      <if test="backfive != null" >
+        BackFive = #{backfive,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.paramterManage.model.ParamPumpingWell" >
+    update parampumpingwell
+    set WaterAreaId = #{waterareaid,jdbcType=VARCHAR},
+      WellUse = #{welluse,jdbcType=VARCHAR},
+      StartTime = #{startTime,jdbcType=TIMESTAMP},
+      EndTime = #{endTime,jdbcType=TIMESTAMP},
+      OnNetState = #{onnetstate,jdbcType=INTEGER},
+      WaterLow = #{waterlow,jdbcType=DECIMAL},
+      WarningState = #{warningstate,jdbcType=INTEGER},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      EditTime = #{edittime,jdbcType=TIMESTAMP},
+      Remark = #{remark,jdbcType=VARCHAR},
+      BackOne = #{backone,jdbcType=VARCHAR},
+      BackTwo = #{backtwo,jdbcType=VARCHAR},
+      BackThree = #{backthree,jdbcType=VARCHAR},
+      BackFour = #{backfour,jdbcType=VARCHAR},
+      BackFive = #{backfive,jdbcType=VARCHAR}
+    where DeviceCode = #{devicecode,jdbcType=VARCHAR}
+  </update>
+</mapper>

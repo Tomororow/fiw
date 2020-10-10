@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.alarmManage.dao.WarningRecordDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.alarmManage.model.WarningRecordDetail" >
+    <id column="Id" property="id" jdbcType="VARCHAR" />
+    <result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+    <result column="CardCode" property="cardCode" jdbcType="VARCHAR" />
+    <result column="WarnCode" property="warnCode" jdbcType="INTEGER" />
+    <result column="WarnType" property="warnType" jdbcType="VARCHAR" />
+    <result column="WarnDetail" property="warnDetail" jdbcType="VARCHAR" />
+    <result column="WarnTime" property="warnTime" jdbcType="TIMESTAMP" />
+    <result column="WarnState" property="warnState" jdbcType="INTEGER" />
+    <result column="WarnHandler" property="warnHandler" jdbcType="VARCHAR" />
+    <result column="WarnHandleTime" property="warnHandleTime" jdbcType="TIMESTAMP" />
+    <result column="BackupOne" property="backupOne" jdbcType="VARCHAR" />
+    <result column="BackupTwo" property="backupTwo" jdbcType="VARCHAR" />
+    <result column="BackupThree" property="backupThree" jdbcType="VARCHAR" />
+    <result column="BackupFour" property="backupFour" jdbcType="VARCHAR" />
+    <result column="BackupFive" property="backupFive" jdbcType="VARCHAR" />
+    <result column="Remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, DeviceCode, CardCode, 
+    WarnType, WarnDetail, WarnTime, WarnState, WarnHandler, WarnHandleTime, BackupOne, 
+    BackupTwo, BackupThree, BackupFour, BackupFive, Remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from warningrecorddetail
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <!--对预警信息表进行查询   跳闸 -->
+   <select id="warnAll"  resultMap="BaseResultMap">
+  	SELECT DeviceCode,WarnTime,WarnCode from warningrecorddetail
+  	 WHERE WarnTime BETWEEN date_sub(now(), interval 1 hour) AND NOW() GROUP BY DeviceCode,WarnCode
+  </select>
+<!--   查询当前预警类型 -->
+  <select id="selectMessTime" resultMap="BaseResultMap" parameterType="java.lang.String" >
+  	select w.*,b.DeviceName as deviceName from warningrecorddetail w LEFT JOIN basedeviceinfo b on w.DeviceCode = b.DeviceCode where w.WarnType = #{warnType} and b.DeviceCode = #{deviceCode} and w.BackupOne = '1' order by w.WarnTime desc limit 0,1
+  </select>
+
+  <select id="selectByWarnCount" resultType="java.lang.Integer" parameterType="java.lang.String" >
+    select count(*) from warningrecorddetail wd LEFT JOIN basedeviceinfo b on wd.DeviceCode = b.DeviceCode
+    where 1=1 and wd.WarnState = #{warnState}
+     <if test="waterAreaIdList!=null and waterAreaIdList.size()>0">
+         AND b.WaterAreaId in
+         <foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+             #{item}
+         </foreach>
+     </if>
+  </select>
+  <!--查询当前的预警信息总数-->
+  <select id="selectWarnCount" parameterType="map" resultType="java.lang.Integer">
+  	 select count(*) from warningrecorddetail w LEFT JOIN basedeviceinfo b on w.DeviceCode = b.DeviceCode
+  	 where 1=1
+	  	<if test="areaList != null and areaList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND b.WaterAreaId in
+			<foreach collection="waterAreaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			AND b.DeviceName like '%${deviceName}%'
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			AND b.DeviceCode like '%${deviceCode}%'
+		</if>
+		<if test="alarmType!=null and alarmType!=''">
+			AND w.WarnCode = #{alarmType}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			AND w.WarnTime &gt;=#{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			AND w.WarnTime &lt;=#{endTime}
+		</if>
+		<if test="handleType!=null and handleType!=''">
+			AND w.WarnState = #{handleType}
+		</if>
+		order by w.WarnTime desc
+  </select>
+  <!--查询当前的预警信息-->
+  <select id="selectWarnList" parameterType="map" resultType="com.fourfaith.alarmManage.model.WarningRecordDetail">
+  	select w.*,DATE_FORMAT(w.warnTime,'%Y/%m/%d %H:%i') as warnTimee,b.DeviceName as deviceName,b.OwnerName as ownerName,b.OwnerTelphone as ownerTelphone,t.AbnormalType AS wabnormaltype,w.WarnTime from warningrecorddetail w
+	LEFT JOIN basedeviceinfo b on w.DeviceCode = b.DeviceCode
+	LEFT JOIN warnerrortype t ON t.AbnormalCode=w.WarnCode
+  	 where 1=1
+	  	<if test="areaList != null and areaList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND b.WaterAreaId in
+			<foreach collection="waterAreaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			AND b.DeviceName like '%${deviceName}%'
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			AND b.DeviceCode like '%${deviceCode}%'
+		</if>
+		<if test="alarmType!=null and alarmType!=''">
+			AND w.WarnCode = #{alarmType}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			AND w.WarnTime &gt;=#{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			AND w.WarnTime &lt;=#{endTime}
+		</if>
+		<if test="handleType!=null and handleType!=''">
+			AND w.WarnState = #{handleType}
+		</if>
+		order by w.WarnTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+  </select>
+     <!-- 查询设备故障总数 -->
+    <select id="EquipmentListCount" parameterType="map" resultType="java.lang.Integer">
+  	 select count(*)
+		from abonmalhistory a
+		LEFT JOIN basedeviceinfo b on a.DeviceCode = b.DeviceCode
+  	 	where 1=1 and a.AbnormalState = 1
+	  	<if test="areaList != null and areaList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND b.WaterAreaId in
+			<foreach collection="waterAreaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			AND b.DeviceName like '%${deviceName}%'
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			AND b.DeviceCode like '%${deviceCode}%'
+		</if>
+		<if test="startTime!=null and startTime!=''">	
+			AND a.UpTime &gt;=#{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			AND a.UpTime &lt;=#{endTime}
+		</if>
+		<if test="alarmType!=null and alarmType!=''">
+			AND a.AbnormalType = #{alarmType}
+		</if>
+		<if test="group==null and group=='' and group=='null'">
+			GROUP BY a.DeviceCode,a.AbnormalType
+		</if>
+		order by a.UpTime desc
+  </select>
+  <!--查询设备故障预警信息  -->
+  <select id="EquipmentList" parameterType="map" resultMap="BaseResultMap">
+  	select a.*,b.DeviceName,b.OwnerName,b.OwnerTelphone
+		from abonmalhistory a
+		LEFT JOIN basedeviceinfo b on a.DeviceCode = b.DeviceCode
+  	 	where 1=1 and a.AbnormalState = 1
+	  	<if test="areaList != null and areaList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND b.WaterAreaId in
+			<foreach collection="waterAreaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			AND b.DeviceName like '%${deviceName}%'
+		</if>
+		<if test="deviceCode!=null and deviceCode!=''">
+			AND b.DeviceCode like '%${deviceCode}%'
+		</if>
+		<if test="startTime!=null and startTime!=''">	
+			AND a.UpTime &gt;=#{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			AND a.UpTime &lt;=#{endTime}
+		</if>
+		<if test="alarmType!=null and alarmType!=''">
+			AND a.AbnormalType = #{alarmType}
+		</if>
+		<if test="group==null and group=='' and group=='null'">
+			GROUP BY a.DeviceCode,a.AbnormalType
+		</if>
+		order by a.UpTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if> 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from warningrecorddetail
+    where Id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.alarmManage.model.WarningRecordDetail" >
+    insert into warningrecorddetail (Id,DeviceCode, CardCode, WarnType, 
+      WarnDetail, WarnTime, WarnState, 
+      WarnHandler, WarnHandleTime, BackupOne, 
+      BackupTwo, BackupThree, BackupFour, 
+      BackupFive, Remark)
+    values (#{id,jdbcType=VARCHAR}, #{deviceCode,jdbcType=VARCHAR}, #{cardCode,jdbcType=VARCHAR}, #{warnType,jdbcType=VARCHAR}, 
+      #{warnDetail,jdbcType=VARCHAR}, #{warnTime,jdbcType=TIMESTAMP}, #{warnState,jdbcType=INTEGER}, 
+      #{warnHandler,jdbcType=VARCHAR}, #{warnHandleTime,jdbcType=TIMESTAMP}, #{backupOne,jdbcType=VARCHAR}, 
+      #{backupTwo,jdbcType=VARCHAR}, #{backupThree,jdbcType=VARCHAR}, #{backupFour,jdbcType=VARCHAR}, 
+      #{backupFive,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.alarmManage.model.WarningRecordDetail" >
+    insert into warningrecorddetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        DeviceCode,
+      </if>
+      <if test="cardCode != null" >
+        CardCode,
+      </if>
+      <if test="warnType != null" >
+        WarnType,
+      </if>
+      <if test="warnDetail != null" >
+        WarnDetail,
+      </if>
+      <if test="warnTime != null" >
+        WarnTime,
+      </if>
+      <if test="warnCode != null" >
+        warnCode,
+      </if>
+      <if test="warnState != null" >
+        WarnState,
+      </if>
+      <if test="warnHandler != null" >
+        WarnHandler,
+      </if>
+      <if test="warnHandleTime != null" >
+        WarnHandleTime,
+      </if>
+      <if test="backupOne != null" >
+        BackupOne,
+      </if>
+      <if test="backupTwo != null" >
+        BackupTwo,
+      </if>
+      <if test="backupThree != null" >
+        BackupThree,
+      </if>
+      <if test="backupFour != null" >
+        BackupFour,
+      </if>
+      <if test="backupFive != null" >
+        BackupFive,
+      </if>
+      <if test="remark != null" >
+        Remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="warnType != null" >
+        #{warnType,jdbcType=VARCHAR},
+      </if>
+      <if test="warnDetail != null" >
+        #{warnDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="warnTime != null" >
+        #{warnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="warnCode != null" >
+        #{warnCode,jdbcType=INTEGER},
+      </if>
+       <if test="warnState != null" >
+        #{warnState,jdbcType=INTEGER},
+      </if>
+      <if test="warnHandler != null" >
+        #{warnHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="warnHandleTime != null" >
+        #{warnHandleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backupOne != null" >
+        #{backupOne,jdbcType=VARCHAR},
+      </if>
+      <if test="backupTwo != null" >
+        #{backupTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backupThree != null" >
+        #{backupThree,jdbcType=VARCHAR},
+      </if>
+      <if test="backupFour != null" >
+        #{backupFour,jdbcType=VARCHAR},
+      </if>
+      <if test="backupFive != null" >
+        #{backupFive,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.alarmManage.model.WarningRecordDetail" >
+    update warningrecorddetail
+    <set >
+      <if test="deviceCode != null" >
+        DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        CardCode = #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="warnType != null" >
+        WarnType = #{warnType,jdbcType=VARCHAR},
+      </if>
+      <if test="warnDetail != null" >
+        WarnDetail = #{warnDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="warnTime != null" >
+        WarnTime = #{warnTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="warnState != null" >
+        WarnState = #{warnState,jdbcType=INTEGER},
+      </if>
+      <if test="warnHandler != null" >
+        WarnHandler = #{warnHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="warnHandleTime != null" >
+        WarnHandleTime = #{warnHandleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="backupOne != null" >
+        BackupOne = #{backupOne,jdbcType=VARCHAR},
+      </if>
+      <if test="backupTwo != null" >
+        BackupTwo = #{backupTwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backupThree != null" >
+        BackupThree = #{backupThree,jdbcType=VARCHAR},
+      </if>
+      <if test="backupFour != null" >
+        BackupFour = #{backupFour,jdbcType=VARCHAR},
+      </if>
+      <if test="backupFive != null" >
+        BackupFive = #{backupFive,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        Remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.alarmManage.model.WarningRecordDetail" >
+    update warningrecorddetail
+    set 
+      DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+      CardCode = #{cardCode,jdbcType=VARCHAR},
+      WarnType = #{warnType,jdbcType=VARCHAR},
+      WarnDetail = #{warnDetail,jdbcType=VARCHAR},
+      WarnTime = #{warnTime,jdbcType=TIMESTAMP},
+      WarnState = #{warnState,jdbcType=INTEGER},
+      WarnHandler = #{warnHandler,jdbcType=VARCHAR},
+      WarnHandleTime = #{warnHandleTime,jdbcType=TIMESTAMP},
+      BackupOne = #{backupOne,jdbcType=VARCHAR},
+      BackupTwo = #{backupTwo,jdbcType=VARCHAR},
+      BackupThree = #{backupThree,jdbcType=VARCHAR},
+      BackupFour = #{backupFour,jdbcType=VARCHAR},
+      BackupFive = #{backupFive,jdbcType=VARCHAR},
+      Remark = #{remark,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

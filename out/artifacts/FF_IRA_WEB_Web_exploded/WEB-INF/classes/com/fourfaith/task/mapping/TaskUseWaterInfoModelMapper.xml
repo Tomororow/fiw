@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.task.dao.TaskUseWaterInfoModelMapper">
+	
+	<resultMap id="BaseResultMap" type="com.fourfaith.task.model.TaskUseWaterInfoModel">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="UseWater" property="useWater" jdbcType="DECIMAL" />
+		<result column="RemainWater" property="remainWater" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 根据DeviceCode获取最新一次用水信息 -->
+	<select id="selectByDeviceCode" parameterType="java.lang.String" resultType="com.fourfaith.task.model.TaskUseWaterInfoModel">
+		select * from TaskUseWaterInfoModel where DeviceCode = #{deviceCode}
+	</select>
+	
+	<!-- 新增最新一次用水信息表用水信息 -->
+	<insert id="add" parameterType="com.fourfaith.task.model.TaskUseWaterInfoModel">
+		insert into TaskUseWaterInfoModel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="deviceCode != null">
+				DeviceCode,
+			</if>
+			<if test="useWater != null">
+				UseWater,
+			</if>
+			<if test="remainWater != null">
+				RemainWater,
+			</if>
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceCode != null">
+				#{deviceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="useWater != null">
+				#{useWater,jdbcType=DECIMAL},
+			</if>
+			<if test="remainWater != null">
+				#{remainWater,jdbcType=DECIMAL},
+			</if>
+			now(),
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 修改最新一次用水信息表用水信息 -->
+	<update id="update" parameterType="com.fourfaith.task.model.TaskUseWaterInfoModel">
+		update TaskUseWaterInfoModel
+		<set>
+			<if test="useWater != null">
+				UseWater = #{useWater,jdbcType=DECIMAL},
+			</if>
+			<if test="remainWater != null">
+				RemainWater = #{remainWater,jdbcType=DECIMAL},
+			</if>
+			EditTime = now(),
+		</set>
+		where DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

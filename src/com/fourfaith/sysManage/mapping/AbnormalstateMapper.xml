@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.AbnormalstateMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.Abnormalstate" >
+    <id column="DeviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="YX_PMMP_ERR" property="yxPmmpErr" jdbcType="BIT" />
+    <result column="YX_WATER_ERR" property="yxWaterErr" jdbcType="BIT" />
+    <result column="YX_ELECT_ERR" property="yxElectErr" jdbcType="BIT" />
+    <result column="YX_TTS_ERR" property="yxTtsErr" jdbcType="BIT" />
+    <result column="YX_VOLAGE_UNBALANCE" property="yxVolageUnbalance" jdbcType="BIT" />
+    <result column="YX_DOOR_OPEN" property="yxDoorOpen" jdbcType="BIT" />
+    <result column="YX_ELECT_UNBALANCE" property="yxElectUnbalance" jdbcType="BIT" />
+    <result column="YX_NFC_ERR" property="yxNfcErr" jdbcType="BIT" />
+    <result column="YX_PHASE_ELEA_ERR" property="yxPhaseEleaErr" jdbcType="BIT" />
+    <result column="YX_PHASE_ELEB_ERR" property="yxPhaseElebErr" jdbcType="BIT" />
+    <result column="YX_PHASE_ELEC_ERR" property="yxPhaseElecErr" jdbcType="BIT" />
+    <result column="YX_PHASE_VOLA_ERR" property="yxPhaseVolaErr" jdbcType="BIT" />
+    <result column="YX_PHASE_VOLB_ERR" property="yxPhaseVolbErr" jdbcType="BIT" />
+    <result column="YX_PHASE_VOLC_ERR" property="yxPhaseVolcErr" jdbcType="BIT" />
+    <result column="YX_POWER_VOL_ERR" property="yxPowerVolErr" jdbcType="BIT" />
+    <result column="YX_TOTALFLOW_ERR" property="yxTotalflowErr" jdbcType="BIT" />
+    <result column="YX_TOTALELECT_ERR" property="yxTotalelectErr" jdbcType="BIT" />
+    <result column="Reserve1" property="reserve1" jdbcType="BIT" />
+    <result column="Reserve2" property="reserve2" jdbcType="BIT" />
+    <result column="Reserve3" property="reserve3" jdbcType="BIT" />
+    <result column="Reserve4" property="reserve4" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    DeviceCode, YX_PMMP_ERR, YX_WATER_ERR, YX_ELECT_ERR, YX_TTS_ERR, YX_VOLAGE_UNBALANCE, 
+    YX_DOOR_OPEN, YX_ELECT_UNBALANCE, YX_NFC_ERR, YX_PHASE_ELEA_ERR, YX_PHASE_ELEB_ERR, 
+    YX_PHASE_ELEC_ERR, YX_PHASE_VOLA_ERR, YX_PHASE_VOLB_ERR, YX_PHASE_VOLC_ERR, YX_POWER_VOL_ERR, 
+    YX_TOTALFLOW_ERR, YX_TOTALELECT_ERR, Reserve1, Reserve2, Reserve3, Reserve4
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from abnormalstate
+    where DeviceCode = #{devicecode,jdbcType=VARCHAR}
+  </select>
+	<!--   查询当前设备的异常动态数据 -->
+  <select id="selectByPrimarytuData" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select ab.*,d.DoorState as doorState,
+			  	d.CardState as cardState,
+			  	d.NotFlow as notFlow,
+			  	d.NotElect as notElect,
+			  	d.ManctrlStatus as manctrlStatus,
+			  	d.BckchnnaState as bckchnnaState,
+			  	d.APhaseCurrent as aPhasePower, 
+			  	d.APhasePower as bPhasePower,
+			  	d.CPhasePower as cPhasePower,
+			  	d.TTPhasePower as tTPhasePower
+  	from abnormalstate ab right join BaseDeviceDynamicInfo d on ab.DeviceCode = d.DeviceCode where 1=1
+	  <if test="deviceCode!=null and deviceCode!=''">
+	  	and ab.DeviceCode = #{deviceCode}
+	  </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from abnormalstate
+    where DeviceCode = #{devicecode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.sysManage.model.Abnormalstate" >
+    insert into abnormalstate (DeviceCode, YX_PMMP_ERR, YX_WATER_ERR, 
+      YX_ELECT_ERR, YX_TTS_ERR, YX_VOLAGE_UNBALANCE, 
+      YX_DOOR_OPEN, YX_ELECT_UNBALANCE, YX_NFC_ERR, 
+      YX_PHASE_ELEA_ERR, YX_PHASE_ELEB_ERR, YX_PHASE_ELEC_ERR, 
+      YX_PHASE_VOLA_ERR, YX_PHASE_VOLB_ERR, YX_PHASE_VOLC_ERR, 
+      YX_POWER_VOL_ERR, YX_TOTALFLOW_ERR, YX_TOTALELECT_ERR, 
+      Reserve1, Reserve2, Reserve3, Reserve4
+      )
+    values (#{devicecode,jdbcType=VARCHAR}, #{yxPmmpErr,jdbcType=BIT}, #{yxWaterErr,jdbcType=BIT}, 
+      #{yxElectErr,jdbcType=BIT}, #{yxTtsErr,jdbcType=BIT}, #{yxVolageUnbalance,jdbcType=BIT}, 
+      #{yxDoorOpen,jdbcType=BIT}, #{yxElectUnbalance,jdbcType=BIT}, #{yxNfcErr,jdbcType=BIT}, 
+      #{yxPhaseEleaErr,jdbcType=BIT}, #{yxPhaseElebErr,jdbcType=BIT}, #{yxPhaseElecErr,jdbcType=BIT}, 
+      #{yxPhaseVolaErr,jdbcType=BIT}, #{yxPhaseVolbErr,jdbcType=BIT}, #{yxPhaseVolcErr,jdbcType=BIT}, 
+      #{yxPowerVolErr,jdbcType=BIT}, #{yxTotalflowErr,jdbcType=BIT}, #{yxTotalelectErr,jdbcType=BIT}, 
+      #{reserve1,jdbcType=BIT}, #{reserve2,jdbcType=BIT}, #{reserve3,jdbcType=BIT}, #{reserve4,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.Abnormalstate" >
+    insert into abnormalstate
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="devicecode != null" >
+        DeviceCode,
+      </if>
+      <if test="yxPmmpErr != null" >
+        YX_PMMP_ERR,
+      </if>
+      <if test="yxWaterErr != null" >
+        YX_WATER_ERR,
+      </if>
+      <if test="yxElectErr != null" >
+        YX_ELECT_ERR,
+      </if>
+      <if test="yxTtsErr != null" >
+        YX_TTS_ERR,
+      </if>
+      <if test="yxVolageUnbalance != null" >
+        YX_VOLAGE_UNBALANCE,
+      </if>
+      <if test="yxDoorOpen != null" >
+        YX_DOOR_OPEN,
+      </if>
+      <if test="yxElectUnbalance != null" >
+        YX_ELECT_UNBALANCE,
+      </if>
+      <if test="yxNfcErr != null" >
+        YX_NFC_ERR,
+      </if>
+      <if test="yxPhaseEleaErr != null" >
+        YX_PHASE_ELEA_ERR,
+      </if>
+      <if test="yxPhaseElebErr != null" >
+        YX_PHASE_ELEB_ERR,
+      </if>
+      <if test="yxPhaseElecErr != null" >
+        YX_PHASE_ELEC_ERR,
+      </if>
+      <if test="yxPhaseVolaErr != null" >
+        YX_PHASE_VOLA_ERR,
+      </if>
+      <if test="yxPhaseVolbErr != null" >
+        YX_PHASE_VOLB_ERR,
+      </if>
+      <if test="yxPhaseVolcErr != null" >
+        YX_PHASE_VOLC_ERR,
+      </if>
+      <if test="yxPowerVolErr != null" >
+        YX_POWER_VOL_ERR,
+      </if>
+      <if test="yxTotalflowErr != null" >
+        YX_TOTALFLOW_ERR,
+      </if>
+      <if test="yxTotalelectErr != null" >
+        YX_TOTALELECT_ERR,
+      </if>
+      <if test="reserve1 != null" >
+        Reserve1,
+      </if>
+      <if test="reserve2 != null" >
+        Reserve2,
+      </if>
+      <if test="reserve3 != null" >
+        Reserve3,
+      </if>
+      <if test="reserve4 != null" >
+        Reserve4,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="yxPmmpErr != null" >
+        #{yxPmmpErr,jdbcType=BIT},
+      </if>
+      <if test="yxWaterErr != null" >
+        #{yxWaterErr,jdbcType=BIT},
+      </if>
+      <if test="yxElectErr != null" >
+        #{yxElectErr,jdbcType=BIT},
+      </if>
+      <if test="yxTtsErr != null" >
+        #{yxTtsErr,jdbcType=BIT},
+      </if>
+      <if test="yxVolageUnbalance != null" >
+        #{yxVolageUnbalance,jdbcType=BIT},
+      </if>
+      <if test="yxDoorOpen != null" >
+        #{yxDoorOpen,jdbcType=BIT},
+      </if>
+      <if test="yxElectUnbalance != null" >
+        #{yxElectUnbalance,jdbcType=BIT},
+      </if>
+      <if test="yxNfcErr != null" >
+        #{yxNfcErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseEleaErr != null" >
+        #{yxPhaseEleaErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseElebErr != null" >
+        #{yxPhaseElebErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseElecErr != null" >
+        #{yxPhaseElecErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolaErr != null" >
+        #{yxPhaseVolaErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolbErr != null" >
+        #{yxPhaseVolbErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolcErr != null" >
+        #{yxPhaseVolcErr,jdbcType=BIT},
+      </if>
+      <if test="yxPowerVolErr != null" >
+        #{yxPowerVolErr,jdbcType=BIT},
+      </if>
+      <if test="yxTotalflowErr != null" >
+        #{yxTotalflowErr,jdbcType=BIT},
+      </if>
+      <if test="yxTotalelectErr != null" >
+        #{yxTotalelectErr,jdbcType=BIT},
+      </if>
+      <if test="reserve1 != null" >
+        #{reserve1,jdbcType=BIT},
+      </if>
+      <if test="reserve2 != null" >
+        #{reserve2,jdbcType=BIT},
+      </if>
+      <if test="reserve3 != null" >
+        #{reserve3,jdbcType=BIT},
+      </if>
+      <if test="reserve4 != null" >
+        #{reserve4,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.Abnormalstate" >
+    update abnormalstate
+    <set >
+      <if test="yxPmmpErr != null" >
+        YX_PMMP_ERR = #{yxPmmpErr,jdbcType=BIT},
+      </if>
+      <if test="yxWaterErr != null" >
+        YX_WATER_ERR = #{yxWaterErr,jdbcType=BIT},
+      </if>
+      <if test="yxElectErr != null" >
+        YX_ELECT_ERR = #{yxElectErr,jdbcType=BIT},
+      </if>
+      <if test="yxTtsErr != null" >
+        YX_TTS_ERR = #{yxTtsErr,jdbcType=BIT},
+      </if>
+      <if test="yxVolageUnbalance != null" >
+        YX_VOLAGE_UNBALANCE = #{yxVolageUnbalance,jdbcType=BIT},
+      </if>
+      <if test="yxDoorOpen != null" >
+        YX_DOOR_OPEN = #{yxDoorOpen,jdbcType=BIT},
+      </if>
+      <if test="yxElectUnbalance != null" >
+        YX_ELECT_UNBALANCE = #{yxElectUnbalance,jdbcType=BIT},
+      </if>
+      <if test="yxNfcErr != null" >
+        YX_NFC_ERR = #{yxNfcErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseEleaErr != null" >
+        YX_PHASE_ELEA_ERR = #{yxPhaseEleaErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseElebErr != null" >
+        YX_PHASE_ELEB_ERR = #{yxPhaseElebErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseElecErr != null" >
+        YX_PHASE_ELEC_ERR = #{yxPhaseElecErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolaErr != null" >
+        YX_PHASE_VOLA_ERR = #{yxPhaseVolaErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolbErr != null" >
+        YX_PHASE_VOLB_ERR = #{yxPhaseVolbErr,jdbcType=BIT},
+      </if>
+      <if test="yxPhaseVolcErr != null" >
+        YX_PHASE_VOLC_ERR = #{yxPhaseVolcErr,jdbcType=BIT},
+      </if>
+      <if test="yxPowerVolErr != null" >
+        YX_POWER_VOL_ERR = #{yxPowerVolErr,jdbcType=BIT},
+      </if>
+      <if test="yxTotalflowErr != null" >
+        YX_TOTALFLOW_ERR = #{yxTotalflowErr,jdbcType=BIT},
+      </if>
+      <if test="yxTotalelectErr != null" >
+        YX_TOTALELECT_ERR = #{yxTotalelectErr,jdbcType=BIT},
+      </if>
+      <if test="reserve1 != null" >
+        Reserve1 = #{reserve1,jdbcType=BIT},
+      </if>
+      <if test="reserve2 != null" >
+        Reserve2 = #{reserve2,jdbcType=BIT},
+      </if>
+      <if test="reserve3 != null" >
+        Reserve3 = #{reserve3,jdbcType=BIT},
+      </if>
+      <if test="reserve4 != null" >
+        Reserve4 = #{reserve4,jdbcType=BIT},
+      </if>
+    </set>
+    where DeviceCode = #{devicecode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.sysManage.model.Abnormalstate" >
+    update abnormalstate
+    set YX_PMMP_ERR = #{yxPmmpErr,jdbcType=BIT},
+      YX_WATER_ERR = #{yxWaterErr,jdbcType=BIT},
+      YX_ELECT_ERR = #{yxElectErr,jdbcType=BIT},
+      YX_TTS_ERR = #{yxTtsErr,jdbcType=BIT},
+      YX_VOLAGE_UNBALANCE = #{yxVolageUnbalance,jdbcType=BIT},
+      YX_DOOR_OPEN = #{yxDoorOpen,jdbcType=BIT},
+      YX_ELECT_UNBALANCE = #{yxElectUnbalance,jdbcType=BIT},
+      YX_NFC_ERR = #{yxNfcErr,jdbcType=BIT},
+      YX_PHASE_ELEA_ERR = #{yxPhaseEleaErr,jdbcType=BIT},
+      YX_PHASE_ELEB_ERR = #{yxPhaseElebErr,jdbcType=BIT},
+      YX_PHASE_ELEC_ERR = #{yxPhaseElecErr,jdbcType=BIT},
+      YX_PHASE_VOLA_ERR = #{yxPhaseVolaErr,jdbcType=BIT},
+      YX_PHASE_VOLB_ERR = #{yxPhaseVolbErr,jdbcType=BIT},
+      YX_PHASE_VOLC_ERR = #{yxPhaseVolcErr,jdbcType=BIT},
+      YX_POWER_VOL_ERR = #{yxPowerVolErr,jdbcType=BIT},
+      YX_TOTALFLOW_ERR = #{yxTotalflowErr,jdbcType=BIT},
+      YX_TOTALELECT_ERR = #{yxTotalelectErr,jdbcType=BIT},
+      Reserve1 = #{reserve1,jdbcType=BIT},
+      Reserve2 = #{reserve2,jdbcType=BIT},
+      Reserve3 = #{reserve3,jdbcType=BIT},
+      Reserve4 = #{reserve4,jdbcType=BIT}
+    where DeviceCode = #{devicecode,jdbcType=VARCHAR}
+  </update>
+</mapper>

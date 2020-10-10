@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.siteManage.dao.SysAreaMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.siteManage.model.SysArea">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="AreaCode" property="areaCode" jdbcType="CHAR" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="CHAR" />
+		<result column="AreaName" property="areaName" jdbcType="CHAR" />
+		<result column="AreaLevel" property="areaLevel" jdbcType="CHAR" />
+		<result column="ParentAreaId" property="parentAreaId" jdbcType="CHAR" />
+		<result column="ParentAreaName" property="parentAreaName" jdbcType="CHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAllArea" resultMap="BaseResultMap" parameterType="map">
+		select a.*, b.AreaName ParentAreaName 
+		from SysArea a, SysArea b
+		where a.ParentAreaId = b.id
+		UNION
+		select *, '无' parentAreaName from SysArea
+		where ParentAreaId = ''
+	</select>
+	
+	<!-- 根据水管区的id查询 -->
+	<select id="selectWaterId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from SysArea where WaterAreaId = #{waterAreaId}
+	</select>
+	
+	<select id="seelectWaterId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from SysArea where WaterAreaId = #{waterAreaId} and AreaLevel &gt; 1
+	</select>
+	
+	<!-- 查询级别最小的数据 -->
+	<select id="selectMin" resultMap="BaseResultMap">
+		select * from SysArea where AreaLevel = '0'
+	</select>
+	
+	<!-- 根据父级id查询 -->
+	<select id="selectParentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from SysArea where ParentAreaId = #{parentAreaId}
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select sa.*,sap.AreaName as parentAreaName
+		from SysArea sa,SysArea sap
+		where sa.Id = #{areaId,jdbcType=CHAR} and sa.ParentAreaId = sap.Id
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysArea
+		where Id = #{areaId,jdbcType=CHAR}
+	</delete>
+	
+	<insert id="insertArea" parameterType="com.fourfaith.siteManage.model.SysArea">
+		insert into SysArea
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			AreaCode,
+			AreaName,
+			WaterAreaId,
+			AreaLevel,
+			ParentAreaId,
+			CreateTime,
+			<if test="remark != null">
+				Remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=CHAR},
+			#{areaCode,jdbcType=CHAR},
+			#{areaName,jdbcType=CHAR},
+			#{waterAreaId,jdbcType=CHAR},
+			#{areaLevel,jdbcType=INTEGER},
+			#{parentAreaId,jdbcType=INTEGER},
+			#{createTime,jdbcType=TIMESTAMP},
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.siteManage.model.SysArea">
+		update SysArea
+		<set>
+			AreaCode = #{areaCode,jdbcType=CHAR},
+			AreaName = #{areaName,jdbcType=CHAR},
+			AreaLevel = #{areaLevel,jdbcType=INTEGER},
+			ParentAreaId = #{parentAreaId,jdbcType=INTEGER},
+			EditTime = #{editTime,jdbcType=TIMESTAMP},
+			<if test="remark != null">
+				Remark = #{remark,jdbcType=CHAR},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<select id="getFirstAreaLevelList" parameterType="com.fourfaith.siteManage.model.SysArea" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where ParentAreaId = ''
+	</select>
+	
+	<select id="getChildDeviceAreaInfo" parameterType="com.fourfaith.siteManage.model.SysArea" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where ParentAreaId = #{id}
+	</select>
+	
+	<select id="getAreaCode" parameterType="com.fourfaith.siteManage.model.SysArea" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where Id = #{id}
+	</select>
+	
+	<!-- 根据用户所在的areaId获取当前区域 -->
+	<select id="getCurrAndChildArea" parameterType="java.lang.String" resultType="com.fourfaith.siteManage.model.SysArea">
+		select id,waterAreaId,areaCode,areaName,areaLevel,parentAreaId,createTime from SysArea where id = #{areaId}
+	</select>
+	
+	<!-- 获取登陆人员所在的区域做级联下拉框操作 -->
+	<select id="getLoginerAreaList" parameterType="com.fourfaith.sysManage.model.SysUser" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where Id = #{areaId}
+	</select>
+	
+	<!-- 分页操作记录查询总条数 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from SysArea sa,SysArea sap 
+			where 1=1 and sa.ParentAreaId = sap.Id
+		<if test="areaId != null">
+			and sa.ParentAreaId = #{areaId}
+		</if>
+	</select>
+	
+	<!-- 分页操作记录查询总条数 -->
+	<select id="getList" parameterType="map" resultType="com.fourfaith.siteManage.model.SysArea">
+		select sa.*,sap.AreaName as parentAreaName from SysArea sa,SysArea sap 
+			where 1=1 and sa.ParentAreaId = sap.Id
+		<if test="areaId != null">
+			and sa.ParentAreaId = #{areaId}
+		</if>
+		order by sa.AreaLevel,sa.AreaCode
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 根据Id查询第一级行政编码信息 -->
+	<select id="findFirstAreaLevelById" parameterType="java.lang.String" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where Id = #{areaId}
+	</select>
+	
+	<!-- 根据用户所属最低一级行政区域查询本区域及同级所有区域 -->
+	<select id="getAreaByIdAndLevel" parameterType="com.fourfaith.siteManage.model.SysArea" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where Id = #{id} and ParentAreaId = #{parentAreaId}
+		union all
+		select * from SysArea where Id != #{id} and AreaLevel = #{areaLevel} and ParentAreaId = #{parentAreaId}
+	</select>
+	
+	<!-- 根据Id查询行政区域信息 -->
+	<select id="getAreaById" parameterType="com.fourfaith.siteManage.model.SysArea" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where Id = #{id}
+	</select>
+	
+	<!-- 检查名称唯一性 -->
+	<select id="uniqueArea" parameterType="map" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where 1 = 1
+		<if test="areaId != null">
+			and Id != #{areaId}
+		</if>
+		<if test="parentAreaId != null">
+			and ParentAreaId = #{parentAreaId}
+		</if>
+			and (areaCode = #{areaCode} or areaName = #{areaName})
+	</select>
+	
+	<select id="seelectWaterOne" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from SysArea where AreaLevel = 1
+	</select>
+	
+	<select id="seelectWater" resultMap="BaseResultMap">
+		select * from SysArea
+	</select>
+	
+	<select id="getChildCodeInfo" parameterType="java.lang.String" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where ParentAreaId = #{id}
+	</select>
+	
+	<select id="getChildCode" parameterType="java.lang.String" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where AreaCode = #{areaCode}
+	</select>
+	
+	<select id="findLevelSyaAreaCodeList" parameterType="java.lang.String" resultType="com.fourfaith.siteManage.model.SysArea">
+		select * from SysArea where AreaLevel &gt; #{level} order by AreaLevel asc
+	</select>
+	
+</mapper>

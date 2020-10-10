@@ -1,0 +1,205 @@
+@font-face{
+  font-family: yjsz;
+  src:url('/content/skin/bigData/fonts/yjsz.ttf');
+}
+body{background:#000636;overflow: hidden;margin: 0}
+#bigData{width:100%;height: 100%;border:solid 1px #fff}
+.header{width: 100%;height: 12%;background: url('/content/skin/bigData/images/header.png') no-repeat;background-size:100%}
+.header ul{list-style: none;margin: 0;padding: 0;height: 65%;}
+.header ul li{float:left;color: #fff;}
+.header ul li:nth-child(1){width:20%;height: 50px;line-height:50px;padding-left: 30px;box-sizing:border-box;color: #65d2ff;font-size:13px;}
+.header ul li:nth-child(3){width:20%;height: 50px;line-height:50px;box-sizing:border-box;color: #65d2ff;font-size:13px;}
+.gradient-text{
+	background-image:-webkit-linear-gradient(bottom,#fff,#d4feff,#00fbff);
+	-webkit-background-clip:text;
+	-webkit-text-fill-color:transparent;  
+	width:60%;height:65px;line-height: 65px;
+	font-weight: 600;font-size:30px;text-align: center
+} 
+#weatherImg{width: 20px;height: 20px;vertical-align: middle;margin-bottom: 5px;}
+.enterSystem{
+	cursor:pointer;
+    width: 150px;
+    height: 40px;
+    position: absolute;
+    right: 30px;border-radius:10px;
+    font-weight:800;line-height:40px;color:#fff;box-sizing:border-box;padding-left:10px;
+    background-image:-webkit-linear-gradient(bottom,#71b1f4,#1659e7,#324adf);
+}
+.enterSystem span{cursor: pointer;}
+.enterSystem:hover{right:31px;margin-top: 2px;color:#59eef5;cursor: pointer;}
+#go{
+    margin-left: 12px;
+    background: #5fadfe;
+    padding: 3px;
+    font-size: 14px;
+    border-radius: 20px;
+	color:#0827a5;
+}
+.content{
+    width: 100%;
+    height: 87.7%;
+}
+
+.clear{clear: both;display: none;}
+.content ul{list-style: none;padding: 0;margin: 0}
+.content ul>div:nth-child(1){display: flex;height:55%;}
+.content ul>div:nth-child(2){display: flex;height:45%;}
+.content ul div li{float:left;margin: 15px;}
+.content ul div li:nth-child(1){width: 30%;}
+.content ul div li:nth-child(2){width: 37%;}
+.content ul div li:nth-child(3){width: 33%;}
+.topSign{background: url('/content/skin/bigData/images/topSign.png') no-repeat;background-size:100% 100%;margin-left:20px;width: 30%;height: 20px;line-height:20px;text-align: center}
+.topSign span{height: 20px;color: #fff;font-size: 13px;font-weight: 600;}
+#elSelect{height: 20px;line-height:20px;background: none;color:#76edf3;border-color: #1a85e7;border-radius:3px!important}
+#elSelect::-webkit-input-placeholder{color:#76edf3;}
+a{cursor: pointer!important;}
+.el-input__icon{height: 20px;line-height: 20px!important;font-weight: 900!important}
+.el-select-dropdown{background-color:#0000!important;border-color: #0074d8!important;}
+.el-select-dropdown__item{color: #9ebfff!important}
+#query{width:auto;padding:2px 2px 1px 3px;height: 16px;border: none;background: #00ffff;margin: 2px 0 0 7px;}
+#query .el-icon-search::before{font-size:5px;font-weight: 900}
+#query:hover{background-color: #5fffda}
+.popper__arrow::after{border-bottom-color:#fff0!important}
+.el-popper[x-placement^=bottom] .popper__arrow{border-bottom-color:#0074d8!important}
+#querCotnet{height: 95%;border:solid 1px #2e47ea8585;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:100% 100%}
+#querCotnet>div:nth-child(1){height: 15%;color:#fff;display:table;margin:0 auto;}
+#querCotnet>div:nth-child(1) span{vertical-align: middle;display: table-cell;font-weight: 900}
+#querCotnet>div:nth-child(2){height:60%;}
+#querCotnet>div:nth-child(2)>table tr:nth-child(1) td:nth-child(1){width:50%;height:80%;text-align: -webkit-center}
+#querCotnet>div:nth-child(2)>table tr:nth-child(1) td:nth-child(2){width:50%;height:80%;text-align: -webkit-center}
+#querCotnet>div:nth-child(2)>table tr:nth-child(2) td:nth-child(1){width:50%;height:15%;text-align: center;color: #fff;font-size:15px}
+#querCotnet>div:nth-child(2)>table tr:nth-child(2) td:nth-child(2){width:50%;height:15%;text-align: center;color: #fff;font-size:15px}
+#querCotnet>div:nth-child(2)>table tr:nth-child(2) td span{color: #2ecddc}
+#querCotnet>div:nth-child(3){height: 25%;}
+#queRump::-webkit-scrollbar{display: none;}
+#queRump table tr td:nth-child(1){width:15%;text-align: right;color: #fff;font-size: 13px;font-style:oblique;padding-right:8px;}
+#queRump table tr td:nth-child(2){width:85%;text-align: right;}
+#queRump table tr td:nth-child(3){width:10%;text-align: center;color: #00ffff;font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#queRump .el-icon-message-solid{color: #9acd32;font-size:14px;padding-right:3px;}
+#queRump table tr td:nth-child(2)/*>div:nth-child(1)*/{color: #2ecddc;background: url('/content/skin/bigData/images/parcess.png') no-repeat center center;background-size:contain;width: 65%;/*max-width:70%;height: 20px;line-height:20px;padding-right: 15px;font-size: 13px;*/}
+#queRump table tr td:nth-child(2)>div:nth-child(2){color: #2ecddc;font-size:14px;margin-left: 15px;}
+#queRump table tr td:nth-child(2) div{float:left;}
+#topCenter{width:100%;height: 100%;}
+#topCenter tr:nth-child(1) td{height: 40%;width: 48%;}
+#topCenter tr:nth-child(1) td:nth-child(1){padding-right: 10px;}
+#topCenter tr:nth-child(1) td:nth-child(2){padding-left: 10px;}
+#topCenter tr:nth-child(2) td{height: 60%;width: 48%;padding-top: 10px;}
+/* 配水计划的css样式 */
+#planContent{overflow-y:auto;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:auto;height: 87%;width:100% }
+#planContent::-webkit-scrollbar{display: none;}
+#planContent ul li{border: none;float:none;height:12px;line-height: 12px;}
+#planCess{display:flex;width: 95%;margin: 12px;}
+#planCess div:nth-child(1){color: #fff;font-size:12px;float:left;width:25%;}
+#planCess div:nth-child(1) span{white-space: nowrap;  /*强制span不换行*/
+      display: inline-block;
+      overflow: hidden;  /*超出宽度部分隐藏*/
+      text-overflow: ellipsis;  /*超出部分以点号代替*/
+     width:95%}
+#planCess div:nth-child(2){float:left;width:72%;background-color: #004dc12e;position: relative;}
+#planCess #processPlan div{background-image:-webkit-linear-gradient(left,#26fd45,#c5ffdd);height: 100%;box-sizing:border-box;padding-right: 5px}
+/* 用水量的css样式 */
+#useContent{border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;background-size:auto;height: 87%;width:100% }
+#useName{text-align: center;color: #fff;margin: 8px;font-weight: 900}
+#useContent::-webkit-scrollbar{display: none;}
+#useContent ul li{border: none;float:none;height:12px;line-height: 12px;}
+#useCess{display:flex;width: 95%;margin: 12px;}
+#useCess div:nth-child(1){color: #fff;font-size:12px;float:left;width:20%;}
+
+#useCess div:nth-child(2){float:left;width:77%;background-color: #004dc12e;border-radius:10px;}
+#useCess #processuse div{border-radius:10px;height: 100%;box-sizing:border-box;padding-right: 5px}
+#useContent ul li:nth-child(1) #processuse div:nth-child(1){background-image:-webkit-linear-gradient(left,#0374f1,#fffbfb);}
+#useContent ul li:nth-child(2) #processuse div:nth-child(1){background-image:-webkit-linear-gradient(left,#ff00f7,#fffbfb);}
+#useContent ul li:nth-child(3) #processuse div:nth-child(1){background-image:-webkit-linear-gradient(left,#ff4602,#fffbfb);}
+#useContent ul li:nth-child(4) #processuse div:nth-child(1){background-image:-webkit-linear-gradient(left,#fffc07,#fffbfb);}
+/* 已配水量和已用水量比对图 */
+#aPlanContent{overflow:hidden;height: 92%;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:cover;width:100% }
+/* 总用水量曲线图 */
+#deviceList{height: 82%;overflow-y:scroll}
+#deviceList::-webkit-scrollbar{display: none;}
+#stackAreaName{height:5%;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;background-size:cover;height: 95%;width:100% }
+#stackAreaName>div:nth-child(1){padding:10px 50px 0 0}
+#stackAreaName div:nth-child(1) span{color: #fff}
+#stackAreaName ul{list-style: none;margin-left:6%;display: flex;height:5%;}
+#stackAreaName ul li{border: none;padding:0;margin: 0;font-weight: 700;font-family: '宋体';width:auto;float:left;}
+#stackAreaName ul li:nth-child(1){color: #63d2d2;}
+#stackAreaName ul li:nth-child(3){color: #146fc7;}
+#stackAreaName #stackContent{height: 87%;}
+#stackContent div{height: 50%}
+
+/*计量设施运行情况*/
+#deviceSign{padding-top:5px;box-sizing:border-box;height:95%;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:cover;width:100% }
+#deviceSign>div table{width: 100%;}
+#deviceSign div table td:nth-child(1){width:25%;white-space: nowrap; /*强制span不换行*/
+    /*display: inline-block;*/
+    overflow: hidden;  /*超出宽度部分隐藏*/
+    text-overflow: ellipsis;}
+#deviceSign div table td:nth-child(2){width:15%}
+#deviceSign div table td:nth-child(3){width:15%}
+#deviceSign div table td:nth-child(4){width:18%}
+#deviceSign div table td:nth-child(5){width:28%}
+#deviceSign>div table thead td {font-size:13px;background-color: #0a3c83;color:#ffff00;text-align:center;padding:2px 3px 2px 3px}
+#deviceSign>div table tbody td {font-size:12px;color:#7bc4e6;text-align:center;padding:2px 3px 2px 3px}
+#deviceSign>div:nth-child(1) table:nth-child(1){width: 40%;font-weight: bold;font-size: 15px}
+#deviceSign div:nth-child(1) table td:nth-child(1){width:auto;background: url('/content/skin/bigData/images/verline.png') no-repeat right center;font-size: 14px;}
+#deviceSign div:nth-child(1) table td:nth-child(2){width:auto;font-size: 14px;}
+#deviceSign div:nth-child(1) table td:hover{cursor: pointer}
+#deviceSign>div:nth-child(3) table,#deviceSign>div:nth-child(5) table{table-layout: fixed}
+#deviceSign>div:nth-child(2) table td,#deviceSign>div:nth-child(4) table td{white-space: nowrap; /*强制span不换行*/
+    /*display: inline-block;*/
+    overflow: hidden;  /*超出宽度部分隐藏*/
+    text-overflow: ellipsis;font-size: 13px;}
+/*预警模块*/
+#warnSign{padding-top:10px;box-sizing:border-box;height:95%;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:cover;width:100% }
+#warnSign>div table{width: 100%;}
+#warnSign div table td:nth-child(1){width:25%}
+#warnSign div table td:nth-child(2){width:15%}
+#warnSign div table td:nth-child(3){width:20%}
+#warnSign div table td:nth-child(4){width:15%}
+#warnSign div table td:nth-child(5){width:28%}
+#warnSign>div table thead td {font-size:13px;background-color: #0a3c83;color:#ffff00;text-align:center;padding:2px 3px 2px 3px}
+#warnSign>div table tbody td {font-size:12px;color:#7bc4e6;text-align:center;padding:2px 3px 2px 3px}
+.topRedSign{background: url('/content/skin/bigData/images/topSignRed.png') no-repeat;background-size:100% 100%;margin-left:20px;width: 30%;height: 20px;line-height:20px;text-align: center}
+.topRedSign span{height: 20px;color: #fff;font-size: 13px;font-weight: 600;}
+.topRedSign img{vertical-align: middle;height: 70%}
+/*地图模块展示*/
+#mapShow{box-sizing:border-box;height:95%;border:solid 1px #2e47ea85;border-radius:10px;background: url('/content/skin/bigData/images/gridding.png') no-repeat;;background-size:cover;width:100% }
+#mapSign{position: absolute;width: auto;right: 15px;top: 20px;}
+#mapSign tr td{color:#fff;width:30px;height:12px;box-sizing:border-box;font-size:12px;border-radius:4px;line-height: 12px;padding:2px;}
+#mapSign tr:nth-child(1) td:nth-child(2) div{background-color: #fff;width:25px;height:13px;border-radius:3px;cursor: pointer;}
+#mapSign tr:nth-child(2) td:nth-child(2) div{background-color: red;width:25px;height:13px;border-radius:3px;cursor: pointer;}
+
+#deviceSign div:nth-child(2)::-webkit-scrollbar{display: none;}
+#warnTable::-webkit-scrollbar{display: none;}
+#warnTable td{white-space: nowrap; /*强制span不换行*/
+    /*display: inline-block;*/
+    overflow: hidden;  /*超出宽度部分隐藏*/
+text-overflow: ellipsis;  /*超出部分以点号代替*/
+}
+/* #deviceSign div:nth-child(2) table tbody tr td:nth-child(1){white-space: nowrap;  强制span不换行
+      display: inline-block;
+      overflow: hidden;  超出宽度部分隐藏
+      text-overflow: ellipsis;  超出部分以点号代替
+     width:50%} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

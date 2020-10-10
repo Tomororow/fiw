@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BaseDeviceExpandInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.BaseDeviceExpandInfo">
+		<id column="DeviceId" property="deviceId" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="DevicePlate" property="devicePlate" jdbcType="VARCHAR" />
+		<result column="PipeDiameter" property="pipeDiameter" jdbcType="DECIMAL" />
+		<result column="WellDiameter" property="wellDiameter" jdbcType="DECIMAL" />
+		<result column="PumpMaterial" property="pumpMaterial" jdbcType="VARCHAR" />
+		<result column="MakeTime" property="makeTime" jdbcType="TIMESTAMP" />
+		<result column="WellDepth" property="wellDepth" jdbcType="DECIMAL" />
+		<result column="GroundWaterDepth" property="groundWaterDepth" jdbcType="DECIMAL" />
+		<result column="UseWaterType" property="useWaterType" jdbcType="VARCHAR" />
+		<result column="WaterPumpNo" property="waterPumpNo" jdbcType="VARCHAR" />
+		<result column="RatedHead" property="ratedHead" jdbcType="DECIMAL" />
+		<result column="RatedFlow" property="ratedFlow" jdbcType="DECIMAL" />
+		<result column="RatedPower" property="ratedPower" jdbcType="DECIMAL" />
+		<result column="ApplyStatus" property="applyStatus" jdbcType="VARCHAR" />
+		<result column="WellUse" property="wellUse" jdbcType="VARCHAR" />
+		<result column="IrrigationMode" property="irrigationMode" jdbcType="VARCHAR" />
+		<result column="KZArea" property="kZArea" jdbcType="DECIMAL" />
+		<result column="SJArea" property="sJArea" jdbcType="DECIMAL" />
+		<result column="SJSupplyWaterPeople" property="sJSupplyWaterPeople" jdbcType="INTEGER" />
+		<result column="IsHandleDocument" property="isHandleDocument" jdbcType="INTEGER" />
+		<result column="WaterIntakeNo" property="waterIntakeNo" jdbcType="VARCHAR" />
+		<result column="YearWaterSum" property="yearWaterSum" jdbcType="DECIMAL" />
+		<result column="IsIndustryProcedure" property="isIndustryProcedure" jdbcType="INTEGER" />
+		<result column="IndustryApprovedWater" property="industryApprovedWater" jdbcType="DECIMAL" />
+		<result column="IndustryProductionCapacity" property="industryProductionCapacity" jdbcType="DECIMAL" />
+		<result column="IndustryArea" property="industryArea" jdbcType="DECIMAL" />
+		<result column="WaterMeterMeasurement" property="waterMeterMeasurement" jdbcType="INTEGER" />
+		<result column="WaterMeterMeasurementType" property="waterMeterMeasurementType" jdbcType="VARCHAR" />
+		<result column="MeterType" property="meterType" jdbcType="VARCHAR" />
+		<result column="MeterCaliber" property="meterCaliber" jdbcType="DECIMAL" />
+		<result column="MeterSerialNo" property="meterSerialNo" jdbcType="VARCHAR" />
+		<result column="MeterGuard" property="meterGuard" jdbcType="INTEGER" />
+		<result column="LandformType" property="landformType" jdbcType="VARCHAR" />
+		<result column="WaterArea" property="waterArea" jdbcType="VARCHAR" />
+		<result column="IrrigationAreaType" property="irrigationAreaType" jdbcType="VARCHAR" />
+		<result column="Note" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 插入机井参数信息 -->
+	<insert id="insertBaseDeviceExpandInfo" parameterType="com.fourfaith.sysManage.model.BaseDeviceExpandInfo">
+		insert into BaseDeviceExpandInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			DeviceId,
+			DeviceCode,
+			<if test="devicePlate != null">
+				DevicePlate,
+			</if> 
+			<if test="pipeDiameter != null">
+				PipeDiameter,
+			</if>
+			<if test="wellDiameter != null">
+				WellDiameter,
+			</if>
+			<if test="pumpMaterial != null"> 
+				PumpMaterial,
+			</if>
+			<if test="makeTime != null">
+				MakeTime,
+			</if>
+			<if test="wellDepth != null">
+				WellDepth,
+			</if>
+			<if test="groundWaterDepth != null">
+				GroundWaterDepth,
+			</if>
+			<if test="useWaterType != null">
+				UseWaterType,
+			</if>
+			<if test="waterPumpNo != null">
+				WaterPumpNo,
+			</if>
+			<if test="ratedHead != null">
+				RatedHead,
+			</if>
+			<if test="ratedFlow != null">
+				RatedFlow,
+			</if>
+			<if test="ratedPower != null">
+				RatedPower,
+			</if>
+			<if test="applyStatus != null">
+				ApplyStatus,
+			</if>
+			<if test="wellUse != null">
+				WellUse,
+			</if>
+			<if test="irrigationMode != null">
+				IrrigationMode,
+			</if>
+			<if test="kZArea != null">
+				KZArea,
+			</if>
+			<if test="sJArea != null">
+				SJArea,
+			</if>
+			<if test="sJSupplyWaterPeople != null">
+				SJSupplyWaterPeople,
+			</if>
+			<if test="isHandleDocument != null">
+				IsHandleDocument,
+			</if>
+			<if test="waterIntakeNo != null">
+				WaterIntakeNo,
+			</if>
+			<if test="yearWaterSum != null">
+				YearWaterSum,
+			</if>
+			<if test="isIndustryProcedure != null">
+				IsIndustryProcedure,
+			</if>
+			<if test="industryApprovedWater != null">
+				IndustryApprovedWater,
+			</if>
+			<if test="industryProductionCapacity != null">
+				IndustryProductionCapacity,
+			</if>
+			<if test="industryArea != null">
+				IndustryArea,
+			</if>
+			<if test="waterMeterMeasurement != null">
+				WaterMeterMeasurement,
+			</if>
+			<if test="waterMeterMeasurementType != null">
+				WaterMeterMeasurementType,
+			</if>
+			<if test="meterType != null">
+				MeterType,
+			</if>
+			<if test="meterCaliber != null">
+				MeterCaliber,
+			</if>
+			<if test="meterSerialNo != null">
+				MeterSerialNo,
+			</if>
+			<if test="meterGuard != null">
+				MeterGuard,
+			</if>
+			<if test="landformType != null">
+				LandformType,
+			</if>
+			<if test="waterArea != null">
+				WaterArea,
+			</if>
+			<if test="irrigationAreaType != null">
+				IrrigationAreaType,
+			</if>
+			<if test="note != null">
+				Note,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{deviceId,jdbcType=VARCHAR},
+			#{deviceCode,jdbcType=VARCHAR},
+			<if test="devicePlate != null">
+				#{devicePlate,jdbcType=VARCHAR},
+			</if> 
+			<if test="pipeDiameter != null">
+				#{pipeDiameter,jdbcType=DECIMAL},
+			</if>
+			<if test="wellDiameter != null">
+				#{wellDiameter,jdbcType=DECIMAL},
+			</if>
+			<if test="pumpMaterial != null"> 
+				#{pumpMaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="makeTime != null">
+				#{makeTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="wellDepth != null">
+				#{wellDepth,jdbcType=DECIMAL},
+			</if>
+			<if test="groundWaterDepth != null">
+				#{groundWaterDepth,jdbcType=DECIMAL},
+			</if>
+			<if test="useWaterType != null">
+				#{useWaterType,jdbcType=VARCHAR},
+			</if>
+			<if test="waterPumpNo != null">
+				#{waterPumpNo,jdbcType=VARCHAR},
+			</if>
+			<if test="ratedHead != null">
+				#{ratedHead,jdbcType=DECIMAL},
+			</if>
+			<if test="ratedFlow != null">
+				#{ratedFlow,jdbcType=DECIMAL},
+			</if>
+			<if test="ratedPower != null">
+				#{ratedPower,jdbcType=DECIMAL},
+			</if>
+			<if test="applyStatus != null">
+				#{applyStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="wellUse != null">
+				#{wellUse,jdbcType=VARCHAR},
+			</if>
+			<if test="irrigationMode != null">
+				#{irrigationMode,jdbcType=VARCHAR},
+			</if>
+			<if test="kZArea != null">
+				#{kZArea,jdbcType=DECIMAL},
+			</if>
+			<if test="sJArea != null">
+				#{sJArea,jdbcType=DECIMAL},
+			</if>
+			<if test="sJSupplyWaterPeople != null">
+				#{sJSupplyWaterPeople,jdbcType=INTEGER},
+			</if>
+			<if test="isHandleDocument != null">
+				#{isHandleDocument,jdbcType=INTEGER},
+			</if>
+			<if test="waterIntakeNo != null">
+				#{waterIntakeNo,jdbcType=VARCHAR},
+			</if>
+			<if test="yearWaterSum != null">
+				#{yearWaterSum,jdbcType=DECIMAL},
+			</if>
+			<if test="isIndustryProcedure != null">
+				#{isIndustryProcedure,jdbcType=INTEGER},
+			</if>
+			<if test="industryApprovedWater != null">
+				#{industryApprovedWater,jdbcType=DECIMAL},
+			</if>
+			<if test="industryProductionCapacity != null">
+				#{industryProductionCapacity,jdbcType=DECIMAL},
+			</if>
+			<if test="industryArea != null">
+				#{industryArea,jdbcType=DECIMAL},
+			</if>
+			<if test="waterMeterMeasurement != null">
+				#{waterMeterMeasurement,jdbcType=INTEGER},
+			</if>
+			<if test="waterMeterMeasurementType != null">
+				#{waterMeterMeasurementType,jdbcType=VARCHAR},
+			</if>
+			<if test="meterType != null">
+				#{meterType,jdbcType=VARCHAR},
+			</if>
+			<if test="meterCaliber != null">
+				#{meterCaliber,jdbcType=VARCHAR},
+			</if>
+			<if test="meterSerialNo != null">
+				#{meterSerialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="meterGuard != null">
+				#{meterGuard,jdbcType=INTEGER},
+			</if>
+			<if test="landformType != null">
+				#{landformType,jdbcType=VARCHAR},
+			</if>
+			<if test="waterArea != null">
+				#{waterArea,jdbcType=VARCHAR},
+			</if>
+			<if test="irrigationAreaType != null">
+				#{irrigationAreaType,jdbcType=VARCHAR},
+			</if>
+			<if test="note != null">
+				#{note,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 根据ID查询机井参数信息 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select *
+		from BaseDeviceExpandInfo
+		where DeviceId = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 修改机井参数信息 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.BaseDeviceExpandInfo">
+		update BaseDeviceExpandInfo
+		<set>
+			<if test="deviceCode != null">
+				DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+			</if> 
+			<if test="devicePlate != null">
+				DevicePlate = #{devicePlate,jdbcType=VARCHAR},
+			</if> 
+			<if test="pipeDiameter != null">
+				PipeDiameter = #{pipeDiameter,jdbcType=DECIMAL},
+			</if>
+			<if test="wellDiameter != null">
+				WellDiameter = #{wellDiameter,jdbcType=DECIMAL},
+			</if>
+			<if test="pumpMaterial != null"> 
+				PumpMaterial = #{pumpMaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="makeTime != null">
+				MakeTime = #{makeTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="wellDepth != null">
+				WellDepth = #{wellDepth,jdbcType=DECIMAL},
+			</if>
+			<if test="groundWaterDepth != null">
+				GroundWaterDepth = #{groundWaterDepth,jdbcType=DECIMAL},
+			</if>
+			<if test="useWaterType != null">
+				UseWaterType = #{useWaterType,jdbcType=VARCHAR},
+			</if>
+			<if test="waterPumpNo != null">
+				WaterPumpNo = #{waterPumpNo,jdbcType=VARCHAR},
+			</if>
+			<if test="ratedHead != null">
+				RatedHead = #{ratedHead,jdbcType=DECIMAL},
+			</if>
+			<if test="ratedFlow != null">
+				RatedFlow = #{ratedFlow,jdbcType=DECIMAL},
+			</if>
+			<if test="ratedPower != null">
+				RatedPower = #{ratedPower,jdbcType=DECIMAL},
+			</if>
+			<if test="applyStatus != null">
+				ApplyStatus = #{applyStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="wellUse != null">
+				WellUse = #{wellUse,jdbcType=VARCHAR},
+			</if>
+			<if test="irrigationMode != null">
+				IrrigationMode = #{irrigationMode,jdbcType=VARCHAR},
+			</if>
+			<if test="kZArea != null">
+				KZArea = #{kZArea,jdbcType=DECIMAL},
+			</if>
+			<if test="sJArea != null">
+				SJArea = #{sJArea,jdbcType=DECIMAL},
+			</if>
+			<if test="sJSupplyWaterPeople != null">
+				SJSupplyWaterPeople = #{sJSupplyWaterPeople,jdbcType=INTEGER},
+			</if>
+			<if test="isHandleDocument != null">
+				IsHandleDocument = #{isHandleDocument,jdbcType=INTEGER},
+			</if>
+			<if test="waterIntakeNo != null">
+				WaterIntakeNo = #{waterIntakeNo,jdbcType=VARCHAR},
+			</if>
+			<if test="yearWaterSum != null">
+				YearWaterSum = #{yearWaterSum,jdbcType=DECIMAL},
+			</if>
+			<if test="isIndustryProcedure != null">
+				IsIndustryProcedure = #{isIndustryProcedure,jdbcType=INTEGER},
+			</if>
+			<if test="industryApprovedWater != null">
+				IndustryApprovedWater = #{industryApprovedWater,jdbcType=DECIMAL},
+			</if>
+			<if test="industryProductionCapacity != null">
+				IndustryProductionCapacity = #{industryProductionCapacity,jdbcType=DECIMAL},
+			</if>
+			<if test="industryArea != null">
+				IndustryArea = #{industryArea,jdbcType=DECIMAL},
+			</if>
+			<if test="waterMeterMeasurement != null">
+				WaterMeterMeasurement = #{waterMeterMeasurement,jdbcType=INTEGER},
+			</if>
+			<if test="waterMeterMeasurementType != null">
+				WaterMeterMeasurementType = #{waterMeterMeasurementType,jdbcType=VARCHAR},
+			</if>
+			<if test="meterType != null">
+				MeterType = #{meterType,jdbcType=VARCHAR},
+			</if>
+			<if test="meterCaliber != null">
+				MeterCaliber = #{meterCaliber,jdbcType=VARCHAR},
+			</if>
+			<if test="meterSerialNo != null">
+				MeterSerialNo = #{meterSerialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="meterGuard != null">
+				MeterGuard = #{meterGuard,jdbcType=INTEGER},
+			</if>
+			<if test="landformType != null">
+				LandformType = #{landformType,jdbcType=VARCHAR},
+			</if>
+			<if test="waterArea != null">
+				WaterArea = #{waterArea,jdbcType=VARCHAR},
+			</if>
+			<if test="irrigationAreaType != null">
+				IrrigationAreaType = #{irrigationAreaType,jdbcType=VARCHAR},
+			</if>
+			<if test="note != null">
+				Note = #{note,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where DeviceId = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除机井参数信息 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseDeviceExpandInfo
+		where DeviceId = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据ID查询机井参数信息（in） -->
+	<select id="findByDeviceIds" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceExpandInfo">
+		select * from BaseDeviceExpandInfo where 
+		DeviceId in
+		<foreach collection="deviceIds" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<!-- 机井号牌 唯一检查 -->
+	<select id="uniquePlateCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceExpandInfo">
+		select * from BaseDeviceExpandInfo where DevicePlate = #{DevicePlate}
+	</select>
+	<!-- 根据机井编号查询机井实际灌溉面积 -->
+	<select id="getSJArea" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT * FROM basedeviceexpandinfo WHERE DeviceCode=#{deviceCode}
+	</select>
+	
+	<!-- 根据年份和水管区Id查询总配水量 -->
+	<select id="findSumWater" parameterType="map" resultMap="BaseResultMap">
+		SELECT bp.DistWater as distWater,bp.CreateTime as makeTime, be.WellUse,(case when be.IndustryProductionCapacity is null then 0 else be.IndustryProductionCapacity end),be.IndustryApprovedWater,sa.WaterAreaName as waterArea,be.SJArea FROM basedistwaterplandevice bd LEFT JOIN basedistwaterplan bp ON bd.BaseDistWaterId = bp.Id LEFT JOIN basedeviceexpandinfo be ON bd.BaseDeviceId = be.DeviceId LEFT JOIN syswaterarea sa ON bp.WaterAreaId = sa.Id
+		WHERE 1=1
+		<if test="year!=null and year!=''">
+			and bp.DistYear = #{year}
+		</if>
+		<if test="waterList!=null and waterList.size()>0">
+			and bp.WaterAreaId in
+			<foreach collection="waterList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		order by bp.CreateTime asc
+	</select>
+</mapper>
+
+
+
+
+

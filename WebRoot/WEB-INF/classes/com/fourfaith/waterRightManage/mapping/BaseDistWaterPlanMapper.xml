@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.waterRightManage.dao.BaseDistWaterPlanMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.waterRightManage.model.BaseDistWaterPlan">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DistType" property="distType" jdbcType="INTEGER" />
+		<result column="DistMode" property="distMode" jdbcType="INTEGER" />
+		<result column="DistYear" property="distYear" jdbcType="INTEGER" />
+		<result column="DistRound" property="distRound" jdbcType="INTEGER" />
+		<result column="DistWater" property="distWater" jdbcType="DECIMAL" />
+		<result column="DistRatio" property="distRatio" jdbcType="INTEGER" />
+		<result column="DistPrice" property="distPrice" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<!-- 配水用户显示 -->
+		<result column="WaterAreaName" property="waterAreaName" jdbcType="VARCHAR" />
+		<result column="UserName" property="userName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, DistType, DistMode, DistYear, DistRound, DistWater, DistRatio, DistPrice, CreateTime, EditTime
+	</sql>
+	
+	<select id="getByDistType" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM BaseDistWaterPlan
+		where 1=1
+		<if test="distType != null">
+			AND DistType = #{distType,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+	<!--	SELECT COUNT(*) FROM BaseDistWaterPlan
+		WHERE 1=1 
+		<if test="distType != null">
+			AND DistType = #{distType}
+		</if>
+		<if test="waterAreaIds != null and waterAreaIds.size() > 0">
+	        AND waterAreaId IN
+	        <foreach collection="waterAreaIds" item="item" index="index" open="(" separator="," close=")">
+	    		#{item.id}
+	        </foreach>
+        </if>-->
+		SELECT count(DISTINCT bdp.Id)
+		FROM BaseDistWaterPlan bdp
+		LEFT JOIN SysWaterArea swa ON bdp.waterAreaId = swa.Id
+		LEFT JOIN BaseDistWaterPlanDevice bwp ON bdp.Id = bwp.BaseDistWaterId
+		LEFT JOIN SysUser su ON bwp.UserId = su.Id
+		WHERE 1=1
+		<if test="distType != null">
+			AND bdp.distType = #{distType}
+		</if>
+		<if test="waterAreaIds != null and waterAreaIds.size() > 0">
+			AND bdp.waterAreaId IN
+			<foreach collection="waterAreaIds" item="item" index="index" open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+		ORDER BY bdp.createTime DESC
+	</select>
+	
+	<!-- 农业、工业、生活、绿化-配水计划列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT DISTINCT bdp.Id, bdp.DistMode, bdp.DistType, bdp.DistYear, bdp.DistRound, bdp.DistWater, bdp.DistRatio, bdp.DistPrice, bdp.CreateTime, 
+		swa.WaterAreaName, su.UserName
+		FROM BaseDistWaterPlan bdp
+		LEFT JOIN SysWaterArea swa ON bdp.waterAreaId = swa.Id
+		LEFT JOIN BaseDistWaterPlanDevice bwp ON bdp.Id = bwp.BaseDistWaterId
+		LEFT JOIN SysUser su ON bwp.UserId = su.Id
+		WHERE 1=1 
+		<if test="distType != null">
+			AND bdp.distType = #{distType}
+		</if>
+		<if test="waterAreaIds != null and waterAreaIds.size() > 0">
+	        AND bdp.waterAreaId IN
+	        <foreach collection="waterAreaIds" item="item" index="index" open="(" separator="," close=")">
+	    		#{item.id}
+	        </foreach>
+        </if>
+		ORDER BY bdp.createTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 根据id集合查询 -->
+	<select id="selectiDList" resultMap="BaseResultMap" parameterType="java.util.List">
+		SELECT * FROM BaseDistWaterPlan where id IN
+		<foreach collection="list" index="index" item="waterAreaId" open="(" separator="," close=")">  
+			#{waterAreaId} 
+		</foreach>
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.waterRightManage.model.BaseDistWaterPlan">
+		insert into BaseDistWaterPlan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="waterAreaId != null">
+				WaterAreaId,
+			</if>
+			<if test="distType != null">
+				DistType,
+			</if>
+			<if test="distMode != null">
+				DistMode,
+			</if>
+			<if test="distYear != null">
+				DistYear,
+			</if>
+			<if test="distRound != null">
+				DistRound,
+			</if>
+			<if test="distWater != null">
+				DistWater,
+			</if>
+			<if test="distRatio != null">
+				DistRatio,
+			</if>
+			<if test="distPrice != null">
+				DistPrice,
+			</if>
+			<if test="isAppendWater != null">
+				IsAppendWater,
+			</if>
+			<if test="wellUse != null">
+				WellUse,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="waterAreaId != null">
+				#{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="distType != null">
+				#{distType,jdbcType=INTEGER},
+			</if>
+			<if test="distMode != null">
+				#{distMode,jdbcType=INTEGER},
+			</if>
+			<if test="distYear != null">
+				#{distYear,jdbcType=INTEGER},
+			</if>
+			<if test="distRound != null">
+				#{distRound,jdbcType=INTEGER},
+			</if>
+			<if test="distWater != null">
+				#{distWater,jdbcType=DECIMAL},
+			</if>
+			<if test="distRatio != null">
+				#{distRatio,jdbcType=INTEGER},
+			</if>
+			<if test="distPrice != null">
+				#{distPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="isAppendWater != null">
+				#{isAppendWater,jdbcType=INTEGER},
+			</if>
+			<if test="wellUse != null">
+				#{wellUse,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from BaseDistWaterPlan
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseDistWaterPlan
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据配水Id，删除对应的机井设备关联表信息 -->
+	<delete id="deleteBaseDistWaterPlanDeviceById" parameterType="java.lang.String">
+		delete from BaseDistWaterPlanDevice where BaseDistWaterId = #{id,jdbcType=VARCHAR}
+	</delete>
+	<!--查询配水计划是否被使用过  -->
+	<select id="selectrptplane" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select b.Id,b.DistMode,b.CreateTime,r.CreateTime as createTime1 from basedistwaterplan b LEFT JOIN rptchargedetail r ON  b.Id=r.DistWaterPlanId WHERE b.Id=#{id,jdbcType=VARCHAR}
+		and r.CreateTime is not null;
+	</select>
+	<!-- 根据配水类型、配水年份，检测是否已经存在 -->
+	<select id="getDistRoundInfo" parameterType="com.fourfaith.waterRightManage.model.BaseDistWaterPlan" resultType="com.fourfaith.waterRightManage.model.BaseDistWaterPlan">
+		select * from BaseDistWaterPlan where 1=1 and DistYear = #{distYear} and DistType = #{distType}
+		<if test="distMode != null and distMode!=''">
+			and DistMode = #{distMode}
+		</if>
+		<if test="waterAreaId != null and waterAreaId!=''">
+			and WaterAreaId = #{waterAreaId}
+		</if>
+		order by DistRound desc
+	</select>
+	
+	<!-- 根据配水年份和配水轮次查询 -->
+	<select id="selectYR" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from BaseDistWaterPlan where DistYear = #{distYear} and DistRound = #{distRound}
+	</select>
+	
+	<!-- 保存配水机井设备信息 -->
+	<insert id="insertBaseDistWaterPlanDevice" parameterType="com.fourfaith.waterRightManage.model.BaseDistWaterPlanDevice">
+		insert into BaseDistWaterPlanDevice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="baseDistWaterId != null">
+				BaseDistWaterId,
+			</if>
+			<if test="baseDeviceId != null">
+				BaseDeviceId,
+			</if>
+			<if test="userId != null">
+				UserId,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="baseDistWaterId != null">
+				#{baseDistWaterId,jdbcType=VARCHAR},
+			</if>
+			<if test="baseDeviceId != null">
+				#{baseDeviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper>

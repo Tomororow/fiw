@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BjextendinfoMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.Bjextendinfo" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="AreaId" property="areaid" jdbcType="VARCHAR" />
+    <result column="DeviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="VillageId" property="villageid" jdbcType="VARCHAR" />
+    <result column="VillageCode" property="villagecode" jdbcType="VARCHAR" />
+    <result column="HouseCode" property="housecode" jdbcType="VARCHAR" />
+    <result column="Xname" property="xname" jdbcType="VARCHAR" />
+    <result column="Phone" property="phone" jdbcType="VARCHAR" />
+    <result column="Address" property="address" jdbcType="VARCHAR" />
+    <result column="CommOne" property="commone" jdbcType="VARCHAR" />
+    <result column="CommTwo" property="commtwo" jdbcType="VARCHAR" />
+    <result column="CommThree" property="commthree" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, AreaId, DeviceCode, VillageId, VillageCode, HouseCode, Xname, Phone, Address, 
+    CommOne, CommTwo, CommThree
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bjextendinfo
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAll"  resultMap="BaseResultMap">
+  	select * from bjextendinfo
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bjextendinfo
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.sysManage.model.Bjextendinfo" >
+    insert into bjextendinfo (id, AreaId, DeviceCode, 
+      VillageId, VillageCode, HouseCode, 
+      Xname, Phone, Address, 
+      CommOne, CommTwo, CommThree
+      )
+    values (#{id,jdbcType=VARCHAR}, #{areaid,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, 
+      #{villageid,jdbcType=VARCHAR}, #{villagecode,jdbcType=VARCHAR}, #{housecode,jdbcType=VARCHAR}, 
+      #{xname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{commone,jdbcType=VARCHAR}, #{commtwo,jdbcType=VARCHAR}, #{commthree,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.Bjextendinfo" >
+    insert into bjextendinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="areaid != null" >
+        AreaId,
+      </if>
+      <if test="devicecode != null" >
+        DeviceCode,
+      </if>
+      <if test="villageid != null" >
+        VillageId,
+      </if>
+      <if test="villagecode != null" >
+        VillageCode,
+      </if>
+      <if test="housecode != null" >
+        HouseCode,
+      </if>
+      <if test="xname != null" >
+        Xname,
+      </if>
+      <if test="phone != null" >
+        Phone,
+      </if>
+      <if test="address != null" >
+        Address,
+      </if>
+      <if test="commone != null" >
+        CommOne,
+      </if>
+      <if test="commtwo != null" >
+        CommTwo,
+      </if>
+      <if test="commthree != null" >
+        CommThree,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="areaid != null" >
+        #{areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="villageid != null" >
+        #{villageid,jdbcType=VARCHAR},
+      </if>
+      <if test="villagecode != null" >
+        #{villagecode,jdbcType=VARCHAR},
+      </if>
+      <if test="housecode != null" >
+        #{housecode,jdbcType=VARCHAR},
+      </if>
+      <if test="xname != null" >
+        #{xname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="commone != null" >
+        #{commone,jdbcType=VARCHAR},
+      </if>
+      <if test="commtwo != null" >
+        #{commtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="commthree != null" >
+        #{commthree,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update bjextendinfo
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areaid != null" >
+        AreaId = #{record.areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.devicecode != null" >
+        DeviceCode = #{record.devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.villageid != null" >
+        VillageId = #{record.villageid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.villagecode != null" >
+        VillageCode = #{record.villagecode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.housecode != null" >
+        HouseCode = #{record.housecode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xname != null" >
+        Xname = #{record.xname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        Phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.address != null" >
+        Address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commone != null" >
+        CommOne = #{record.commone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commtwo != null" >
+        CommTwo = #{record.commtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commthree != null" >
+        CommThree = #{record.commthree,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update bjextendinfo
+    set id = #{record.id,jdbcType=VARCHAR},
+      AreaId = #{record.areaid,jdbcType=VARCHAR},
+      DeviceCode = #{record.devicecode,jdbcType=VARCHAR},
+      VillageId = #{record.villageid,jdbcType=VARCHAR},
+      VillageCode = #{record.villagecode,jdbcType=VARCHAR},
+      HouseCode = #{record.housecode,jdbcType=VARCHAR},
+      Xname = #{record.xname,jdbcType=VARCHAR},
+      Phone = #{record.phone,jdbcType=VARCHAR},
+      Address = #{record.address,jdbcType=VARCHAR},
+      CommOne = #{record.commone,jdbcType=VARCHAR},
+      CommTwo = #{record.commtwo,jdbcType=VARCHAR},
+      CommThree = #{record.commthree,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.Bjextendinfo" >
+    update bjextendinfo
+    <set >
+      <if test="areaid != null" >
+        AreaId = #{areaid,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null" >
+        DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="villageid != null" >
+        VillageId = #{villageid,jdbcType=VARCHAR},
+      </if>
+      <if test="villagecode != null" >
+        VillageCode = #{villagecode,jdbcType=VARCHAR},
+      </if>
+      <if test="housecode != null" >
+        HouseCode = #{housecode,jdbcType=VARCHAR},
+      </if>
+      <if test="xname != null" >
+        Xname = #{xname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        Phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        Address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="commone != null" >
+        CommOne = #{commone,jdbcType=VARCHAR},
+      </if>
+      <if test="commtwo != null" >
+        CommTwo = #{commtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="commthree != null" >
+        CommThree = #{commthree,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.sysManage.model.Bjextendinfo" >
+    update bjextendinfo
+    set AreaId = #{areaid,jdbcType=VARCHAR},
+      DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      VillageId = #{villageid,jdbcType=VARCHAR},
+      VillageCode = #{villagecode,jdbcType=VARCHAR},
+      HouseCode = #{housecode,jdbcType=VARCHAR},
+      Xname = #{xname,jdbcType=VARCHAR},
+      Phone = #{phone,jdbcType=VARCHAR},
+      Address = #{address,jdbcType=VARCHAR},
+      CommOne = #{commone,jdbcType=VARCHAR},
+      CommTwo = #{commtwo,jdbcType=VARCHAR},
+      CommThree = #{commthree,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

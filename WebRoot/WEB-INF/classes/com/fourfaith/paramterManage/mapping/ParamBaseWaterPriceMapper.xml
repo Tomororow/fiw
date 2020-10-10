@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamBaseWaterPriceMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamBaseWaterPrice">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="StandardPrice" property="standardPrice" jdbcType="DECIMAL" />
+		<result column="ExceedPrice" property="exceedPrice" jdbcType="DECIMAL" />
+		<result column="InYear" property="inYear" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 费率信息条数统计 -->
+	<select id="getBaseWaterCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from basewaterprice
+	</select>
+	
+	<!-- 获取基本水费费率列表 -->
+	<select id="getBaseWaterList" resultMap="BaseResultMap" parameterType="map">
+		select * from basewaterprice bwp
+		order by bwp.EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 新增基本水费费率 -->
+	<insert id="insertBaseWater" parameterType="com.fourfaith.paramterManage.model.ParamBaseWaterPrice">
+		insert into basewaterprice 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			StandardPrice,
+			ExceedPrice,
+			InYear,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id, jdbcType=VARCHAR},
+			#{standardPrice, jdbcType=DECIMAL},
+			#{exceedPrice, jdbcType=DECIMAL},
+			#{inYear, jdbcType=INTEGER},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<!-- 删除费率信息 -->
+	<delete id="deleteBaseWater" parameterType="java.lang.String">
+		delete from basewaterprice where Id = #{id}
+	</delete>
+	
+	<!-- 根据id查询信息 -->
+	<select id="getBaseWaterPriceById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamBaseWaterPrice">
+		select * from basewaterprice where Id = #{id}
+	</select>
+	
+	<!-- 根据年份获取基本水费费率信息 -->
+	<select id="getBaseWaterPriceByYear" parameterType="java.lang.Integer" resultType="com.fourfaith.paramterManage.model.ParamBaseWaterPrice">
+		select * from basewaterprice where InYear = #{inYear}
+	</select>
+	
+	<!-- 修改基本水费费率信息 -->
+	<update id="editBaseWaterPrice" parameterType="com.fourfaith.paramterManage.model.ParamBaseWaterPrice">
+		update basewaterprice
+		<set>
+			<if test="standardPrice != null">
+				StandardPrice = #{standardPrice, jdbcType=DECIMAL},
+			</if>
+			<if test="exceedPrice != null">
+				ExceedPrice = #{exceedPrice, jdbcType=DECIMAL},
+			</if>
+			<if test="inYear != null">
+				InYear = #{inYear, jdbcType=INTEGER},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

@@ -1,0 +1,10 @@
+2020-05-07 12:08:18,871 WARN [org.apache.axis.utils.JavaUtils] - Unable to find required classes (javax.activation.DataHandler and javax.mail.internet.MimeMultipart). Attachment support is disabled.
+2020-05-07 12:10:42,241 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:00:34,299 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:01:31,893 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:03:55,904 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:04:15,160 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:07:22,820 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:07:43,365 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:07:58,711 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().
+2020-05-07 14:12:52,958 ERROR [org.apache.axis.client.Call] - No returnType was specified to the Call object!  You must call setReturnType() if you have called addParameter().

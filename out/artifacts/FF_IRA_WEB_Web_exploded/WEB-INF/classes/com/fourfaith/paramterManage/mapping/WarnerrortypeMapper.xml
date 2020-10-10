@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.WarnerrortypeMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.Warnerrortype" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="AbnormalCode" property="abnormalcode" jdbcType="INTEGER" />
+    <result column="AbnormalType" property="abnormaltype" jdbcType="VARCHAR" />
+    <result column="AbnormalDetail" property="abnormaldetail" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="EditTime" property="edittime" jdbcType="TIMESTAMP" />
+     <result column="IsPhone" property="isphone" jdbcType="INTEGER" />
+      <result column="IsMess" property="ismess" jdbcType="INTEGER" />
+    <result column="Remark" property="remark" jdbcType="VARCHAR" />
+    <result column="BackOne" property="backone" jdbcType="VARCHAR" />
+    <result column="BackTwo" property="backtwo" jdbcType="VARCHAR" />
+    <result column="BackThree" property="backthree" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, AbnormalCode, AbnormalType, AbnormalDetail, CreateTime, EditTime, Remark, BackOne, 
+    BackTwo, BackThree,IsPhone,IsMess
+  </sql>
+  <select id="selectByCount" resultType="java.lang.Integer">
+    select count(*) from warnerrortype
+  </select>
+	<!--   根据AbnormalCode查询先关数据 -->
+  <select id="findByPrimaryCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select  <include refid="Base_Column_List" /> from warnerrortype where 1=1
+  	<if test="abnormalcode!=null and abnormalcode!=''">
+  		and AbnormalCode = #{abnormalcode}
+  	</if>
+  </select>
+	<!--   查询相关数据 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from warnerrortype where 1=1
+    <if test="id!=null and id!=''">
+    	and Id = #{id}
+    </if>
+    order by CreateTime DESC
+	<if test="pageStart!= null and pageEnd!= null">
+		limit ${pageStart},${pageEnd}
+	</if>
+  </select>
+  
+   <!-- 异常类型查询 -->
+  <select id="selectAbnormalType" parameterType="map" resultType="com.fourfaith.paramterManage.model.Warnerrortype">
+  SELECT AbnormalCode,AbnormalType from warnerrortype
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from warnerrortype
+    where Id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.paramterManage.model.Warnerrortype" >
+    insert into warnerrortype (Id, AbnormalCode, AbnormalType, 
+      AbnormalDetail, CreateTime, EditTime, 
+      Remark, BackOne, BackTwo, IsPhone,IsMess
+      BackThree)
+    values (#{id,jdbcType=INTEGER}, #{abnormalcode,jdbcType=INTEGER}, #{abnormaltype,jdbcType=VARCHAR}, 
+      #{abnormaldetail,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{edittime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{backone,jdbcType=VARCHAR}, #{backtwo,jdbcType=VARCHAR}, 
+      #{backthree,jdbcType=VARCHAR},#{isphone,jdbcType=INTEGER},#{ismess,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.paramterManage.model.Warnerrortype" >
+    insert into warnerrortype
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="abnormalcode != null" >
+        AbnormalCode,
+      </if>
+      <if test="abnormaltype != null" >
+        AbnormalType,
+      </if>
+      <if test="abnormaldetail != null" >
+        AbnormalDetail,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+       <if test="edittime != null" >
+        EditTime,
+      </if>
+      <if test="remark != null" >
+        Remark,
+      </if>
+      <if test="isphone != null" >
+        IsPhone,
+      </if>
+      <if test="ismess != null" >
+        IsMess,
+      </if>
+      <if test="backone != null" >
+        BackOne,
+      </if>
+      <if test="backtwo != null" >
+        BackTwo,
+      </if>
+      <if test="backthree != null" >
+        BackThree,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="abnormalcode != null" >
+        #{abnormalcode,jdbcType=INTEGER},
+      </if>
+      <if test="abnormaltype != null" >
+        #{abnormaltype,jdbcType=VARCHAR},
+      </if>
+      <if test="abnormaldetail != null" >
+        #{abnormaldetail,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edittime != null" >
+        #{edittime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isphone != null" >
+        #{isphone,jdbcType=INTEGER},
+      </if>
+      <if test="ismess != null" >
+        #{ismess,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        #{backthree,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.paramterManage.model.Warnerrortype" >
+    update warnerrortype
+    <set >
+      <if test="abnormalcode != null" >
+        AbnormalCode = #{abnormalcode,jdbcType=INTEGER},
+      </if>
+      <if test="abnormaltype != null" >
+        AbnormalType = #{abnormaltype,jdbcType=VARCHAR},
+      </if>
+      <if test="abnormaldetail != null" >
+        AbnormalDetail = #{abnormaldetail,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="edittime != null" >
+        EditTime = #{edittime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isphone != null" >
+        IsPhone = #{isphone,jdbcType=INTEGER},
+      </if>
+      <if test="ismess != null" >
+        IsMess = #{ismess,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        Remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        BackOne = #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        BackTwo = #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        BackThree = #{backthree,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.paramterManage.model.Warnerrortype" >
+    update warnerrortype
+    set AbnormalCode = #{abnormalcode,jdbcType=INTEGER},
+      AbnormalType = #{abnormaltype,jdbcType=VARCHAR},
+      AbnormalDetail = #{abnormaldetail,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      EditTime = #{edittime,jdbcType=TIMESTAMP},
+      Remark = #{remark,jdbcType=VARCHAR},
+      BackOne = #{backone,jdbcType=VARCHAR},
+      BackTwo = #{backtwo,jdbcType=VARCHAR},
+      BackThree = #{backthree,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

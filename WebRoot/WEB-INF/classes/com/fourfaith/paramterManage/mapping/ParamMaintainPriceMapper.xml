@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamMaintainPriceMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamMaintainPrice">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="MaintainPrice" property="maintainPrice" jdbcType="DECIMAL" />
+		<result column="InYear" property="inYear" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 费率信息条数统计 -->
+	<select id="getMaintainPriceCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from maintainprice
+	</select>
+	
+	<!-- 末级渠系水费费率列表 -->
+	<select id="getMaintainPriceList" resultMap="BaseResultMap" parameterType="map">
+		select * from maintainprice mp
+		order by mp.EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 新增末级渠系水费费率 -->
+	<insert id="insertMaintainPrice" parameterType="com.fourfaith.paramterManage.model.ParamMaintainPrice">
+		insert into maintainprice 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			MaintainPrice,
+			InYear,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id, jdbcType=VARCHAR},
+			#{maintainPrice, jdbcType=DECIMAL},
+			#{inYear, jdbcType=INTEGER},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<!-- 删除末级渠系水费费率 -->
+	<delete id="delMaintainPrice" parameterType="java.lang.String">
+		delete from maintainprice where Id = #{id}
+	</delete>
+	
+	<!-- 根据id查询末级渠系水费费率 -->
+	<select id="getMaintainPriceById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamMaintainPrice">
+		select * from maintainprice where Id = #{id}
+	</select>
+	
+	<!-- 根据年份获取计量水费费率信息 -->
+	<select id="getMaintainPriceByYear" parameterType="java.lang.Integer" resultType="com.fourfaith.paramterManage.model.ParamMaintainPrice">
+		select * from maintainprice where InYear = #{inYear}
+	</select>
+	
+	<!-- 修改末级渠系水费费率信息 -->
+	<update id="editMaintainPrice" parameterType="com.fourfaith.paramterManage.model.ParamMaintainPrice">
+		update maintainprice
+		<set>
+			<if test="maintainPrice != null">
+				MaintainPrice = #{maintainPrice, jdbcType=DECIMAL},
+			</if>
+			<if test="inYear != null">
+				InYear = #{inYear, jdbcType=INTEGER},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

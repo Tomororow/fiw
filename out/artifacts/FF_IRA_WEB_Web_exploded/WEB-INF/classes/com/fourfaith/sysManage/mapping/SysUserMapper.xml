@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysUserMapper">
+	
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysUser">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="AreaId" property="areaId" jdbcType="VARCHAR" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="UserCode" property="userCode" jdbcType="VARCHAR" />
+		<result column="UserName" property="userName" jdbcType="VARCHAR" />
+		<result column="UserPassword" property="userPassword" jdbcType="VARCHAR" />
+		<result column="FullName" property="fullName" jdbcType="VARCHAR" />
+		<result column="Mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="Email" property="email" jdbcType="VARCHAR" />
+		<result column="Address" property="address" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+		<result column="UserPasswordming" property="userPasswordming" jdbcType="VARCHAR"/>
+		<result column="Authority" property="authority" jdbcType="INTEGER"/>
+		<result column="IsAppUser" property="isAppUser" jdbcType="INTEGER"/>
+		<result column="MobileID" property="mobileID" jdbcType="VARCHAR"/>
+		<result column="AuditFlag" property="auditFlag" jdbcType="INTEGER"/>
+		<result column="AreaWay" property="areaWay" jdbcType="INTEGER"/>
+		<result column="UserTypeJuris" property="userTypeJuris" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, AreaId, WaterAreaId, UserCode, UserName, UserPassword, FullName, Mobile, Email, Address, CreateTime, EditTime, Remark, UserPasswordming, Authority, IsAppUser, MobileID, AuditFlag, AreaWay,UserTypeJuris,Role,IsCardUpdate
+	</sql>
+	
+	<!-- 根据主键ID获取用户信息 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysUser
+		where Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysUser where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 新增分配用户 -->
+	<insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.SysUser">
+		insert into SysUser
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="areaId != null">
+				AreaId,
+			</if>
+			<if test="waterAreaId != null">
+				WaterAreaId,
+			</if>
+			<if test="userCode != null">
+				UserCode,
+			</if>
+			<if test="userName != null">
+				UserName,
+			</if>
+			<if test="userPassword != null">
+				UserPassword,
+			</if>
+			<if test="fullName != null">
+				FullName,
+			</if>
+			<if test="mobile != null">
+				Mobile,
+			</if>
+			<if test="email != null">
+				Email,
+			</if>
+			<if test="address != null">
+				Address,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+			<if test="remark != null">
+				Remark,
+			</if>
+			<if test="userPasswordming != null">
+				UserPasswordming,
+			</if>
+			<if test="areaWay != null">
+				AreaWay,
+			</if>
+			<if test="userTypeJuris != null">
+				UserTypeJuris,
+			</if>
+			<if test="Role != null">
+				Role,
+			</if>
+			<if test="IsCardUpdate != null">
+				IsCardUpdate,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="areaId != null">
+				#{areaId,jdbcType=VARCHAR},
+			</if>
+			<if test="waterAreaId != null">
+				#{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="userCode != null">
+				#{userCode,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userPassword != null">
+				#{userPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="fullName != null">
+				#{fullName,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="userPasswordming != null">
+				#{userPasswordming,jdbcType=VARCHAR},
+			</if>
+			<if test="areaWay != null">
+				#{areaWay,jdbcType=INTEGER},
+			</if>
+			<if test="userTypeJuris != null">
+				#{userTypeJuris,jdbcType=VARCHAR},
+			</if>
+			<if test="Role != null">
+				#{Role,jdbcType=INTEGER},
+			</if>
+			<if test="IsCardUpdate != null">
+				#{IsCardUpdate,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.SysUser"> 
+		update SysUser 
+		<set> 
+			<if test="userPassword != null" > 
+				UserPassword = #{userPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="userPasswordming != null">
+				UserPasswordming = #{userPasswordming,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set> 
+		where 
+		Id = #{id,jdbcType=VARCHAR}
+	</update> 
+	
+	<!-- 根据ID修改用户信息 -->
+	<update id="updateByPrimaryKey" parameterType="com.fourfaith.sysManage.model.SysUser"> 
+		update SysUser set 
+		AreaId = #{areaId,jdbcType=VARCHAR},
+		WaterAreaId = #{waterAreaId,jdbcType=VARCHAR},
+		UserCode = #{userCode,jdbcType=VARCHAR},
+		UserName = #{userName,jdbcType=VARCHAR},
+		FullName = #{fullName,jdbcType=VARCHAR},
+		Mobile = #{mobile,jdbcType=VARCHAR},
+		Email = #{email,jdbcType=VARCHAR},
+		Address = #{address,jdbcType=VARCHAR},
+		EditTime = now(),
+		AreaWay = #{areaWay,jdbcType=INTEGER},
+		Remark = #{remark,jdbcType=VARCHAR},
+		UserTypeJuris = #{userTypeJuris,jdbcType=VARCHAR},
+		Role=#{Role,jdbcType=VARCHAR},
+		IsCardUpdate=#{IsCardUpdate,jdbcType=VARCHAR}
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT su.*,sa.AreaName as areaName,swa.WaterAreaName as waterAreaName,sr.RoleName as roleName FROM SysUser su
+		left join SysArea as sa on sa.Id = su.AreaId
+		left join SysWaterArea as swa on swa.Id = su.WaterAreaId
+		, SysUserRole sur , SysRole sr
+		where 1=1 and sur.roleId = sr.Id and su.Id = sur.userId
+		<if test="userName != null">
+			AND su.UserName like concat(concat('%',#{userName}),'%')
+		</if>
+		<if test="sysAreaList != null and sysAreaList.size()>0">
+			AND sa.Id in
+			<foreach collection="sysAreaList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+		<if test="sysWaterAreaList != null and sysWaterAreaList.size()>0">
+			AND swa.Id in
+			<foreach collection="sysWaterAreaList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+		order by su.EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysUser su
+		left join SysArea as sa on sa.Id = su.AreaId
+		left join SysWaterArea as swa on swa.Id = su.WaterAreaId
+		, SysUserRole sur , SysRole sr
+		where 1=1 and sur.roleId = sr.Id and su.Id = sur.userId
+		<if test="userName != null">
+			AND UserName like concat(concat('%',#{userName}),'%')
+		</if>
+		<if test="sysAreaList != null and sysAreaList.size()>0">
+			AND sa.Id in
+			<foreach collection="sysAreaList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+		<if test="sysWaterAreaList != null and sysWaterAreaList.size()>0">
+			AND swa.Id in
+			<foreach collection="sysWaterAreaList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM SysUser
+		where UserName = #{userName,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 根据ID获取用户 -->
+	<select id="getUserCodeByID" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT UserCode FROM SysUser WHERE Id = #{Id}
+	</select>
+	
+	<!-- 售水权限分配后 修改SysUser表中Authority字段 -->
+	<update id="updateUserAuthority" parameterType="com.fourfaith.sysManage.model.SysUser">
+		UPDATE SysUser
+		<set>
+			<if test="authority != null">
+				Authority = #{authority,jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE UserCode = #{userCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 用户编码  唯一校验 -->
+	<select id="uniqueUserCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysUser">
+		SELECT * FROM SysUser WHERE UserCode = #{userCode,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- app用户注册审核 同时添加水管区域Id和行政区域Id-->
+	<update id="appAudit" parameterType="com.fourfaith.sysManage.model.SysUser">
+		UPDATE SysUser
+		<set>		
+			<if test="areaId != null">
+				AreaId = #{areaId,jdbcType=VARCHAR},
+			</if>
+			<if test="waterAreaId != null">
+				WaterAreaId = #{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="isAppUser != null">
+				IsAppUser = #{isAppUser,jdbcType=INTEGER},
+			</if>
+			<if test="auditFlag != null">
+				AuditFlag = #{auditFlag,jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE Id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 获取app用户数量 -->
+	<select id="getAppUserCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from SysUser su where su.IsAppUser = 1
+	</select>
+	
+	<!-- 获取app用户列表 -->
+	<select id="getAppUserList" resultType="com.fourfaith.sysManage.model.SysUser" parameterType="map">
+		SELECT su.*, sa.AreaName, swa.WaterAreaName
+		FROM SysUser su
+		LEFT JOIN SysArea sa ON su.AreaId = sa.Id
+		LEFT JOIN SysWaterArea swa ON su.WaterAreaId = swa.Id
+		WHERE su.IsAppUser = 1
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+</mapper>

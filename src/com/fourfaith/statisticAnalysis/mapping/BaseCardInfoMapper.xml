@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.BaseCardInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DeviceId" property="deviceId" jdbcType="VARCHAR" />
+		<result column="CardSerialNo" property="cardSerialNo" jdbcType="VARCHAR" />
+		<result column="CardType" property="cardType" jdbcType="INTEGER" />
+		<result column="CardCode" property="cardCode" jdbcType="VARCHAR" />
+		<result column="OwnerName" property="ownerName" jdbcType="VARCHAR" />
+		<result column="OwnerTelphone" property="ownerTelphone" jdbcType="VARCHAR" />
+		<result column="UseWater" property="useWater" jdbcType="DECIMAL" />
+		<result column="TotalWater" property="totalWater" jdbcType="DECIMAL" />
+		<result column="UsePower" property="usePower" jdbcType="DECIMAL" />
+		<result column="TotalPower" property="totalPower" jdbcType="DECIMAL" />
+		<result column="UseMoney" property="useMoney" jdbcType="DECIMAL" />
+		<result column="TotalMoney" property="totalMoney" jdbcType="DECIMAL" />
+		<result column="RemainWater" property="remainWater" jdbcType="DECIMAL" />
+		<result column="RemainMoney" property="remainMoney" jdbcType="DECIMAL" />
+		<result column="ExecutePrice" property="executePrice" jdbcType="DECIMAL" />
+		<result column="OpenPumpTime" property="openPumpTime" jdbcType="TIMESTAMP" />
+		<result column="CollectTime" property="collectTime" jdbcType="TIMESTAMP" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 水卡列表分页查询 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select bdi.DeviceName, bci.* from BaseCardInfo bci
+		left join BaseDeviceInfo bdi on bci.DeviceId = bdi.Id
+		where 1 = 1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="ownerName != null">
+			and bci.OwnerName like concat('%', concat(#{ownerName}), '%')
+		</if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		order by bci.CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 根据机井编码查询开卡信息 -->
+	<select id="getDeviceCodeByDatil" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from basecardinfo where DeviceId =#{deviceId}
+	</select>
+	
+	  <select id="selectCardCode" parameterType="java.lang.String" resultType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		select Id,TotalWater,OwnerName,OwnerTelphone,CardCode from BaseCardInfo where CardCode = #{cardCode}
+	</select>
+	
+	<!-- 获取分页条数 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from BaseCardInfo bci
+		left join BaseDeviceInfo bdi on bci.DeviceId = bdi.Id
+		where 1 = 1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="ownerName != null">
+			and bci.OwnerName like concat('%', concat(#{ownerName}), '%')
+		</if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		
+	</select>
+	
+	<!-- 根据机井ID获取水卡信息 -->
+	<select id="selectByDeviceId" parameterType="java.lang.String" resultType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		select * from BaseCardInfo where DeviceId = #{deviceId}
+	</select>
+	
+	<!-- 根据机井ID获取水卡信息(集合) -->
+	<select id="selectByDeviceIds" parameterType="java.lang.String" resultType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		select * from BaseCardInfo where DeviceId = #{deviceId}
+	</select>
+	
+	<!-- 查询全部水卡信息 -->
+	<select id="selectAllCardInfo" resultType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		select * from BaseCardInfo 
+			where (DeviceId is null or DeviceId = '') and CardType = 1
+	</select>
+	
+	<!-- 修改信息 -->
+	<update id="update" parameterType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		update BaseCardInfo
+		<set>
+			<if test="deviceId != null">
+				DeviceId = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 修改卡关联的相关信息 -->
+	<update id="updateCredWater" parameterType="com.fourfaith.statisticAnalysis.model.BaseCardInfo">
+		update BaseCardInfo
+		<set>
+			<if test="totalWater != null">
+				TotalWater = #{totalWater,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id,jdbcType=VARCHAR} and CardCode = #{cardCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 水卡信息导出查询 -->
+	<select id="getListExcel" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.BaseCardInfoVO">
+		select bdi.DeviceName, bci.CardCode, bci.OwnerName, bci.OwnerTelphone, bci.TotalWater, bci.RemainWater,
+			   bci.RemainMoney, bci.ExecutePrice, bci.CreateTime
+		from BaseCardInfo bci left join BaseDeviceInfo bdi on bci.DeviceId = bdi.Id
+		where 1 = 1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        and bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        and bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="ownerName != null">
+			and bci.OwnerName like concat('%', concat(#{ownerName}), '%')
+		</if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		order by bci.CreateTime desc
+	</select>
+	
+	<!-- 水卡信息删除 -->
+	<delete id="delCardInfo" parameterType="java.lang.String">
+		delete from BaseCardInfo where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 管理卡信息统计 -->
+	<select id="getManageCardCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from BaseCardInfo bci
+		where bci.CardType = 2
+		<if test="ownerName != null">
+			and bci.OwnerName like concat('%', concat(#{ownerName}), '%')
+		</if>
+	</select>
+	
+	<!-- 管理卡信息分页查询 -->
+	<select id="getManageCardList" resultMap="BaseResultMap" parameterType="map">
+		select * from BaseCardInfo bci
+		where bci.CardType = 2
+		<if test="ownerName != null">
+			and bci.OwnerName like concat('%', concat(#{ownerName}), '%')
+		</if>
+		order by bci.CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+</mapper>

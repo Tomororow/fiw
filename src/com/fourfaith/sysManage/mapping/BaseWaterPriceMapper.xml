@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BaseWaterPriceMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.BaseWaterPrice">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="StandardPrice" property="standardPrice" jdbcType="CHAR" />
+		<result column="ExceedPrice" property="exceedPrice" jdbcType="CHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, StandardPrice, ExceedPrice, CreateTime, EditTime
+	</sql>
+	
+	<insert id="insertPrice" parameterType="com.fourfaith.sysManage.model.BaseWaterPrice">
+		insert into BaseWaterPrice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="standardPrice != null">
+				StandardPrice,
+			</if>
+			<if test="exceedPrice != null">
+				ExceedPrice,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=CHAR},
+			</if>
+			<if test="standardPrice != null">
+				#{standardPrice,jdbcType=CHAR},
+			</if>
+			<if test="exceedPrice != null">
+				#{exceedPrice,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from BaseWaterPrice
+	</select>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.BaseWaterPrice">
+		update BaseWaterPrice
+		<set>
+			<if test="standardPrice != null">
+				StandardPrice = #{standardPrice,jdbcType=CHAR},
+			</if>
+			<if test="exceedPrice != null">
+				ExceedPrice = #{exceedPrice,jdbcType=CHAR},
+			</if>
+			<if test="createTime != null">
+				CreateTime = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				EditTime = #{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+</mapper>

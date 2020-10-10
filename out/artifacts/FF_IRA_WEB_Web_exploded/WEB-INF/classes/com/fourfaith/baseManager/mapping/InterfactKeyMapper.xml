@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.baseManager.dao.InterfactKeyMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.baseManager.model.InterfactKey">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="md5_key" property="md5Key" jdbcType="VARCHAR" />
+		<result column="md5_value" property="md5Value" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, md5_key, md5_value
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from interfact_key
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from interfact_key
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insert" parameterType="com.fourfaith.baseManager.model.InterfactKey">
+		insert into interfact_key (id, md5_key, md5_value
+		)
+		values (#{id,jdbcType=VARCHAR}, #{md5Key,jdbcType=VARCHAR},
+		#{md5Value,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.baseManager.model.InterfactKey">
+		insert into interfact_key
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="md5Key != null">
+				md5_key,
+			</if>
+			<if test="md5Value != null">
+				md5_value,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="md5Key != null">
+				#{md5Key,jdbcType=VARCHAR},
+			</if>
+			<if test="md5Value != null">
+				#{md5Value,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.baseManager.model.InterfactKey">
+		update interfact_key
+		<set>
+			<if test="md5Key != null">
+				md5_key = #{md5Key,jdbcType=VARCHAR},
+			</if>
+			<if test="md5Value != null">
+				md5_value = #{md5Value,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.fourfaith.baseManager.model.InterfactKey">
+		update interfact_key
+		set md5_key = #{md5Key,jdbcType=VARCHAR},
+		md5_value = #{md5Value,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectAllRan" resultType="java.lang.String">
+		select
+		md5_value
+		from interfact_key where 1=1 order by RAND() LIMIT 1
+	</select>
+	
+</mapper>

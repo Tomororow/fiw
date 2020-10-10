@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.AbonmalhistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.Abonmalhistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="DeviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="AbnormalType" property="abnormaltype" jdbcType="INTEGER" />
+    <result column="AbnormalState" property="abnormalstate" jdbcType="INTEGER" />
+    <result column="UpTime" property="uptime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, DeviceCode, AbnormalType, AbnormalState, UpTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from abonmalhistory
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!--   查询设备异常历史记录 -->
+  <select id="findUnableHistory"  parameterType="map" resultType="com.fourfaith.sysManage.model.Abonmalhistory">
+  	select ab.*,dbi.deviceName as devicename from abonmalhistory ab left join BaseDeviceInfo dbi on ab.DeviceCode = dbi.DeviceCode  where 1=1
+  	<if test="deviceCode!=null and deviceCode!=''">
+  		and ab.DeviceCode = #{deviceCode}
+  	</if>
+  	<if test="abnormalType!=null and abnormalType !=''">
+  		and ab.AbnormalType = #{abnormalType}
+  	</if>
+  	<if test="abnormalState!=null and abnormalState!=''">
+  		and ab.AbnormalState = #{abnormalState}
+  	</if>
+  	<if test="beginTime != null and endTime != null">
+  		and ab.UpTime between #{beginTime} and #{endTime}
+  	</if>
+  	order by ab.UpTime desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from abonmalhistory
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.sysManage.model.Abonmalhistory" >
+    insert into abonmalhistory (id, DeviceCode, AbnormalType, 
+      AbnormalState, UpTime)
+    values (#{id,jdbcType=INTEGER}, #{devicecode,jdbcType=VARCHAR}, #{abnormaltype,jdbcType=INTEGER}, 
+      #{abnormalstate,jdbcType=INTEGER}, #{uptime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.Abonmalhistory" >
+    insert into abonmalhistory
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="devicecode != null" >
+        DeviceCode,
+      </if>
+      <if test="abnormaltype != null" >
+        AbnormalType,
+      </if>
+      <if test="abnormalstate != null" >
+        AbnormalState,
+      </if>
+      <if test="uptime != null" >
+        UpTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="abnormaltype != null" >
+        #{abnormaltype,jdbcType=INTEGER},
+      </if>
+      <if test="abnormalstate != null" >
+        #{abnormalstate,jdbcType=INTEGER},
+      </if>
+      <if test="uptime != null" >
+        #{uptime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.Abonmalhistory" >
+    update abonmalhistory
+    <set >
+      <if test="devicecode != null" >
+        DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="abnormaltype != null" >
+        AbnormalType = #{abnormaltype,jdbcType=INTEGER},
+      </if>
+      <if test="abnormalstate != null" >
+        AbnormalState = #{abnormalstate,jdbcType=INTEGER},
+      </if>
+      <if test="uptime != null" >
+        UpTime = #{uptime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.sysManage.model.Abonmalhistory" >
+    update abonmalhistory
+    set DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      AbnormalType = #{abnormaltype,jdbcType=INTEGER},
+      AbnormalState = #{abnormalstate,jdbcType=INTEGER},
+      UpTime = #{uptime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

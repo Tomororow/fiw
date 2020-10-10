@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.chargeManage.dao.BaseWaterChargeMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.chargeManage.model.BaseWaterCharge">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="BaseDeviceId" property="baseDeviceId" jdbcType="VARCHAR" />
+		<result column="ChargeAmount" property="chargeAmount" jdbcType="DECIMAL" />
+		<result column="ChargeMode" property="chargeMode" jdbcType="INTEGER" />
+		<result column="IsCharge" property="isCharge" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 基本水费收缴信息列表 -->
+	<select id="getList" parameterType="map" resultMap="BaseResultMap">
+		SELECT DISTINCT bdi.deviceCode, bdi.deviceName, bdei.sjArea, bwc.Id,
+		bwc.BaseDeviceId, bwc.ChargeAmount, bwc.IsCharge, bwc.ChargeMode, bwc.editTime
+		FROM BaseWaterCharge bwc, BaseDeviceInfo bdi, BaseDeviceExpandInfo bdei
+		WHERE bwc.baseDeviceId = bdi.Id 
+		AND bdi.Id = bdei.DeviceId
+		<if test="waterAreaIdList != null and waterAreaIdList.size()>0">
+	  		AND bdi.WaterAreaId IN
+	 		<foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bdi.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bdi.deviceName LIKE CONCAT('%', CONCAT(#{deviceName}), '%')
+        </if>
+        ORDER BY bwc.EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 统计数据量 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) 
+		from BaseWaterCharge bwc, BaseDeviceInfo bdi, BaseDeviceExpandInfo bdei
+		where bwc.baseDeviceId = bdi.Id and bdi.Id = bdei.DeviceId
+		<if test="waterAreaIdList != null and waterAreaIdList.size()>0">
+	  		AND bdi.WaterAreaId in 
+	 		<foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bdi.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bdi.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+	</select>
+	
+	<!-- 基本水费收缴新增 -->
+	<insert id="add" parameterType="com.fourfaith.chargeManage.model.BaseWaterCharge">
+		insert into BaseWaterCharge
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			BaseDeviceId,
+			ChargeAmount,
+			<if test="chargeMode != null">
+				ChargeMode,
+			</if>
+			<if test="isCharge != null">
+				IsCharge,
+			</if>
+			CreateTime
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{baseDeviceId,jdbcType=VARCHAR},
+			#{chargeAmount,jdbcType=DECIMAL},
+			<if test="chargeMode != null">
+				#{chargeMode,jdbcType=INTEGER},
+			</if>
+			<if test="isCharge != null">
+				#{isCharge,jdbcType=INTEGER},
+			</if>
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 修改信息 -->
+	<update id="update" parameterType="com.fourfaith.chargeManage.model.BaseWaterCharge">
+		update BaseWaterCharge
+		<set>
+			<if test="chargeMode != null">
+				ChargeMode = #{chargeMode,jdbcType=INTEGER},
+			</if>
+			<if test="isCharge != null">
+				IsCharge = #{isCharge,jdbcType=INTEGER},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<!-- 根据主键查询 -->
+	<select id="findById" parameterType="java.lang.String" resultType="com.fourfaith.chargeManage.model.BaseWaterCharge">
+		select * from BaseWaterCharge where Id = #{id}
+	</select>
+	
+	<!-- 根据主键删除 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseWaterCharge where Id = #{id}
+	</delete>
+	
+	<!-- 根据distType查询所有已缴费信息 -->
+	<select id="selectWaterChargeList" parameterType="map" resultType="com.fourfaith.chargeManage.model.BaseWaterCharge">
+		select bwc.*,bdi.DeviceName as deviceName from BaseWaterCharge bwc
+		left join BaseDeviceInfo bdi on bdi.Id = bwc.BaseDeviceId
+		left join BaseDeviceExpandInfo bdei on bdi.Id = bdei.DeviceId
+		where 1=1
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+			AND bdi.areaId in 
+	 		<foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+		</if>
+		<if test="distType==1">
+			AND bdei.WellUse = '灌溉'
+		</if>
+		<if test="distType==2">
+			AND bdei.WellUse = '工业'
+		</if>
+		<if test="distType==3">
+			AND bdei.WellUse = '生活'
+		</if>
+		and bwc.IsCharge = 1
+		and bwc.EditTime &gt;= #{startTime}
+		and bwc.EditTime &lt;= #{endTime}
+	</select>
+	
+
+	<!-- 按条件获取基本水费总和 -->
+	<select id="getBaseWaterPriceSum" parameterType="map" resultType="java.math.BigDecimal">
+		select SUM(bwc.ChargeAmount)
+		from BaseWaterCharge bwc, BaseDeviceInfo bdi
+		where bwc.baseDeviceId = bdi.Id
+		<if test="waterAreaIdList != null and waterAreaIdList.size()>0">
+	  		AND bdi.waterAreaId in 
+	 		<foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bdi.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bdi.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+	</select>
+	
+	<!-- 基本水费信息报表导出 -->
+	<select id="getBaseWaterExcelList" parameterType="map" resultType="com.fourfaith.chargeManage.model.BaseWaterChargeVO">
+		SELECT DISTINCT bdi.deviceCode, bdi.deviceName, bdei.sjArea, bwc.Id,
+		bwc.BaseDeviceId, bwc.ChargeAmount, bwc.IsCharge, bwc.ChargeMode, bwc.editTime
+		FROM BaseWaterCharge bwc, BaseDeviceInfo bdi, BaseDeviceExpandInfo bdei
+		WHERE bwc.baseDeviceId = bdi.Id 
+		AND bdi.Id = bdei.DeviceId
+		<if test="waterAreaIdList != null and waterAreaIdList.size()>0">
+	  		AND bdi.WaterAreaId in 
+	 		<foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bdi.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bdi.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+        ORDER BY bwc.EditTime DESC
+	</select>
+	
+	<!-- 根据机井编号查询：村号、村名、户号、户名、充值次数、总购金额、用户剩余金额 -->
+	  <select id="getDeviceCodeByMessage" parameterType="java.lang.String" resultType="com.fourfaith.chargeManage.model.BaseWaterCharge">
+	  	 SELECT 
+			  bj.VillageCode,
+			  bj.HouseCode,
+			  bj.Xname,
+			  createTotalMoney,
+			  createChargeTimes,
+			  balanc,
+			  voltameter,
+			  waterYield,
+			  serialNumber,
+			  sa.AreaName AS AreaName,
+			  bd.NetState as NetState
+			FROM
+			  shuoguan_rptcharge_returndetail rr 
+			  LEFT JOIN bjextendinfo bj 
+			    ON rr.userCode = bj.DeviceCode 
+			  LEFT JOIN sysarea sa ON sa.Id = bj.AreaId
+			  LEFT JOIN basedevicedynamicinfo bd ON bd.DeviceCode=rr.userCode
+		  WHERE rr.userCode=#{DeviceCode} ORDER BY rr.id DESC LIMIT 1 
+	  </select>
+
+</mapper>

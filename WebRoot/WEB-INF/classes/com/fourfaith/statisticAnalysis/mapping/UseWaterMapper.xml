@@ -1,0 +1,1423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.UseWaterMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="CardCode" property="cardCode" jdbcType="VARCHAR" />
+		<result column="UseWater" property="useWater" jdbcType="DECIMAL" />
+		<result column="UsePower" property="usePower" jdbcType="DECIMAL" />
+		<result column="UseMoney" property="useMoney" jdbcType="DECIMAL" />
+		<result column="RemainWater" property="remainWater" jdbcType="DECIMAL" />
+		<result column="RemainMoney" property="remainMoney" jdbcType="DECIMAL" />
+		<result column="OpenPumpTime" property="openPumpTime" jdbcType="TIMESTAMP" />
+		<result column="StopPumpTime" property="stopPumpTime" jdbcType="TIMESTAMP" />
+		<result column="InYear" property="inYear" jdbcType="INTEGER" />
+		<result column="InMonth" property="inMonth" jdbcType="INTEGER" />
+		<result column="InDay" property="inDay" jdbcType="INTEGER" />
+		<result column="InHour" property="inHour" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UseWaterResult" property="useWaterResult" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<!-- 综合用水表基础列 -->
+	<sql id="Base_Column_List">
+		Id, DeviceCode, CardCode, UseWater, UsePower, UseMoney,
+		RemainWater, RemainMoney,
+		OpenPumpTime, StopPumpTime, InYear, InMonth, InDay, InHour, CreateTime
+	</sql>
+	<!-- 查询flag为0（没有经过计算的水量数据） -->
+	<select id="findDataFlagZero" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail" parameterType="java.lang.String">
+		select id,DeviceCode,CardCode,UseWater,InYear,InMonth,InDay,InHour,UpTime,Flag from RptUseWaterDetail where Flag = 0
+		
+	</select>
+	<!--删除InYear为2010数据-->
+	<delete id="delDirty" parameterType="java.lang.String">
+		delete from RptUseWaterDetail
+		where InYear = "2010"
+	</delete>
+	<!--   修改已计算的水量信息 -->
+  	<update id="updateChilter" parameterType="java.lang.String">
+  		update RptUseWaterDetail set Flag = 1 where id = #{id}
+  	</update>
+	<!-- 查询日用水量统计表的数据 -->
+	<select id="findDataOfDay" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay" parameterType="java.lang.String">
+		select Id,DeviceCode,CardCode,UseWaterOfDay,InYear,InMonth,InDay from usewaterdataofday where 1=1
+		<if test="deviceCode!=null and deviceCode!=''">
+			and DeviceCode = #{deviceCode}
+		</if>
+		<if test="cardCode!=null and cardCode!=''">
+			and CardCode = #{cardCode}
+		</if>
+		<if test="year!=null and year!=''">
+			and InYear = #{year}
+		</if>
+		<if test="month!=null and month!=''">
+			and InMonth = #{month}
+		</if>
+		<if test="day!=null and day!=''">
+			and InDay = #{day}
+		</if>
+	</select>
+	<!-- 查询月用水量统计表的数据 -->
+	<select id="findDataOfMonth" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfMonth" parameterType="java.lang.String">
+		select Id,DeviceCode,CardCode,UseWaterOfMonth,InYear,InMonth from usewaterdataofmonth where 1=1
+		<if test="deviceCode!=null and deviceCode!=''">
+			and DeviceCode = #{deviceCode}
+		</if>
+		<if test="cardCode!=null and cardCode!=''">
+			and CardCode = #{cardCode}
+		</if>
+		<if test="year!=null and year!=''">
+			and InYear = #{year}
+		</if>
+		<if test="month!=null and month!=''">
+			and InMonth = #{month}
+		</if>
+	</select>
+	<!-- 查询年用水量统计表的数据 -->
+	<select id="findDataOfYear" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfYear" parameterType="java.lang.String">
+		select Id,DeviceCode,CardCode,UseWaterOfYear,InYear from usewaterdataofyear where 1=1
+		<if test="deviceCode!=null and deviceCode!=''">
+			and DeviceCode = #{deviceCode}
+		</if>
+		<if test="cardCode!=null and cardCode!=''">
+			and CardCode = #{cardCode}
+		</if>
+		<if test="year!=null and year!=''">
+			and InYear = #{year}
+		</if>
+	</select>
+	<!-- 按小时求和用水量（日累计柱状图） -->
+	<select id="selectdayHour" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail" parameterType="map">
+		SELECT SUM(r.UseWater) as sumusewater,r.InHour from rptusewaterdetail r
+		LEFT JOIN basedeviceinfo b ON r.DeviceCode=b.DeviceCode left join BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="queryTime!=null and queryTime!=''">
+			and  r.UpTime BETWEEN DATE_FORMAT(#{queryTime},'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{queryTime},'%Y-%m-%d 23:59:59')
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="dCode_query != null">
+			AND r.DeviceCode = #{dCode_query}
+		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+		  GROUP BY r.InHour
+	</select>
+	<!-- 按天求和用水量（月累计柱状图） -->
+	<select id="selectmonthday" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail" parameterType="map">
+		SELECT SUM(r.UseWaterOfDay) as sumusewater,r.InDay from usewaterdataofday r
+		LEFT JOIN basedeviceinfo b ON r.DeviceCode=b.DeviceCode left join BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="queryTime!=null and queryTime!=''">
+			and r.AssTime BETWEEN concat(date_format(LAST_DAY(#{queryTime}),'%Y-%m-'),'01') AND LAST_DAY(#{queryTime})
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="dCode_query != null">
+			AND r.DeviceCode = #{dCode_query}
+		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+		GROUP BY r.InDay
+	</select>
+	<!-- 按月求和用水量（年累计柱状图） -->
+	<select id="selectyearmonth" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail" parameterType="map">
+		SELECT SUM(r.UseWaterOfMonth) as sumusewater,r.InMonth,r.InYear from usewaterdataofmonth r
+		LEFT JOIN basedeviceinfo b ON r.DeviceCode=b.DeviceCode left join BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="queryTime!=null and queryTime!=''">
+			and r.InYear=DATE_FORMAT(#{queryTime}, '%Y')
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="dCode_query != null">
+			AND r.DeviceCode = #{dCode_query}
+		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+		    GROUP BY r.InMonth
+	</select>
+	<!--高峰期用水检测  -->
+	<select id="selectpeakwater" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay" parameterType="java.lang.String">
+		SELECT DeviceCode,CardCode,UseWaterOfDay,AssTime,InDay from usewaterdataofday 
+		WHERE AssTime BETWEEN  DATE_SUB(CURDATE(),INTERVAL #{cycle} DAY) AND NOW() and DeviceCode=#{deviceCode}
+	</select>
+
+		<!-- 增加每天用水记录 -->
+	<insert id="addWaterDataOfDay" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay">
+		insert into UseWaterDataOfDay
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deviceCode != null">
+				DeviceCode,
+			</if>
+			<if test="cardCode != null">
+				CardCode,
+			</if>
+			<if test="useWaterOfDay != null">
+				UseWaterOfDay,
+			</if>
+			<if test="inYear != null">
+				InYear,
+			</if>
+			<if test="inMonth != null">
+				InMonth,
+			</if>
+			<if test="inDay != null">
+				InDay,
+			</if>
+			<if test="assTime != null" >
+        		AssTime,
+      		</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deviceCode != null">
+				#{deviceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cardCode != null">
+				#{cardCode,jdbcType=VARCHAR},
+			</if>
+			<if test="useWaterOfDay != null">
+				#{useWaterOfDay,jdbcType=DECIMAL},
+			</if>
+			<if test="inYear != null">
+				#{inYear,jdbcType=INTEGER},
+			</if>
+			<if test="inMonth != null">
+				#{inMonth,jdbcType=INTEGER},
+			</if>
+			<if test="inDay != null">
+				#{inDay,jdbcType=INTEGER},
+			</if>
+			 <if test="assTime != null">
+				#{assTime,jdbcType=TIMESTAMP},
+	  		</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<!-- 新增月用水量统计数据 -->
+	  <insert id="addWaterDataOfMonth" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfMonth" >
+    insert into usewaterdataofmonth
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        DeviceCode,
+      </if>
+      <if test="cardCode != null" >
+        CardCode,
+      </if>
+      <if test="useWaterOfMonth != null" >
+        UseWaterOfMonth,
+      </if>
+      <if test="openPumpTime != null" >
+        OpenPumpTime,
+      </if>
+      <if test="stopPumpTime != null" >
+        StopPumpTime,
+      </if>
+      <if test="inYear != null" >
+        InYear,
+      </if>
+      <if test="inMonth != null" >
+        InMonth,
+      </if>
+      <if test="assTime != null" >
+        AssTime,
+      </if>
+      <if test="createTime != null" >
+        CreateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="useWaterOfMonth != null" >
+        #{useWaterOfMonth,jdbcType=DECIMAL},
+      </if>
+      <if test="openPumpTime != null" >
+        #{openPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopPumpTime != null" >
+        #{stopPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inYear != null" >
+        #{inYear,jdbcType=INTEGER},
+      </if>
+      <if test="inMonth != null" >
+        #{inMonth,jdbcType=INTEGER},
+      </if>
+       <if test="assTime != null">
+		#{assTime,jdbcType=TIMESTAMP},
+	  </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+<!--   新增年用用水量统计 -->
+  <insert id="addWaterDataOfYear" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfYear" >
+    insert into usewaterdataofyear
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        DeviceCode,
+      </if>
+      <if test="cardCode != null" >
+        CardCode,
+      </if>
+      <if test="useWaterOfYear != null" >
+        UseWaterOfYear,
+      </if>
+      <if test="openPumpTime != null" >
+        OpenPumpTime,
+      </if>
+      <if test="stopPumpTime != null" >
+        StopPumpTime,
+      </if>
+      <if test="inYear != null" >
+        InYear,
+      </if>
+      <if test="assTime != null" >
+        AssTime,
+      </if>
+      <if test="createTime != null" >
+        CreateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="deviceCode != null" >
+        #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="useWaterOfYear != null" >
+        #{useWaterOfYear,jdbcType=DECIMAL},
+      </if>
+      <if test="openPumpTime != null" >
+        #{openPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopPumpTime != null" >
+        #{stopPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inYear != null" >
+        #{inYear,jdbcType=INTEGER},
+      </if>
+      <if test="assTime != null">
+		#{assTime,jdbcType=TIMESTAMP},
+	  </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <!-- 修改日用水记录 -->
+  <update id="updateWaterDataOfDay" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay" >
+    update usewaterdataofday
+    <set >
+      <if test="deviceCode != null" >
+        DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        CardCode = #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="useWaterOfDay != null" >
+        UseWaterOfDay = #{useWaterOfDay,jdbcType=DECIMAL},
+      </if>
+      <if test="openPumpTime != null" >
+        OpenPumpTime = #{openPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopPumpTime != null" >
+        StopPumpTime = #{stopPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inYear != null" >
+        InYear = #{inYear,jdbcType=INTEGER},
+      </if>
+      <if test="inMonth != null" >
+        InMonth = #{inMonth,jdbcType=INTEGER},
+      </if>
+      <if test="inDay != null" >
+        InDay = #{inDay,jdbcType=INTEGER},
+      </if>
+      <if test="assTime != null" >
+        AssTime= #{assTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        CreateTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+    <!-- 修改月用水记录 -->
+  <update id="updateWaterDataOfMonth" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfMonth" >
+    update usewaterdataofmonth
+    <set >
+      <if test="deviceCode != null" >
+        DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        CardCode = #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="useWaterOfMonth != null" >
+        UseWaterOfMonth = #{useWaterOfMonth,jdbcType=DECIMAL},
+      </if>
+      <if test="openPumpTime != null" >
+        OpenPumpTime = #{openPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopPumpTime != null" >
+        StopPumpTime = #{stopPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inYear != null" >
+        InYear = #{inYear,jdbcType=INTEGER},
+      </if>
+      <if test="inMonth != null" >
+        InMonth = #{inMonth,jdbcType=INTEGER},
+      </if>
+       <if test="assTime != null" >
+        AssTime= #{assTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        CreateTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+      <!-- 修改年用水记录 -->
+  <update id="updateWaterDataOfYear" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfYear" >
+    update usewaterdataofyear
+    <set >
+      <if test="deviceCode != null" >
+        DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        CardCode = #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="useWaterOfYear != null" >
+        UseWaterOfYear = #{useWaterOfYear,jdbcType=DECIMAL},
+      </if>
+      <if test="openPumpTime != null" >
+        OpenPumpTime = #{openPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopPumpTime != null" >
+        StopPumpTime = #{stopPumpTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inYear != null" >
+        InYear = #{inYear,jdbcType=INTEGER},
+      </if>
+       <if test="assTime != null" >
+        AssTime= #{assTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        CreateTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  
+	<!--   查询该机井的总用水量 -->
+  <select id="findSumWaterOfYear" parameterType="java.lang.String" resultType="java.math.BigDecimal">
+  		select sum(UseWaterOfYear) as sumWater from usewaterdataofyear where DeviceCode = #{deviceCode,jdbcType=VARCHAR} and InYear = DATE_FORMAT(NOW(),'%Y')
+  </select>
+
+	<!-- 统计日用水数据数量 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map" >
+		SELECT count(*) FROM ${tableName} a
+		LEFT JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		right join BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId IN	
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND a.InMonth = #{month}
+  		</if>
+  		<if test="day != null and day != null">
+  			AND a.InDay = #{day}
+  		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+	</select>
+
+	<!-- 统计分析  机井用水信息查询 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT a.DeviceCode, a.CardCode, a.UseWater, a.RemainWater, a.OpenPumpTime, a.StopPumpTime, b.DeviceName as deviceName,b.OwnerName as ownerName, b.OwnerTelphone as ownerTelphone 
+		FROM RptUseWaterDetail a
+		LEFT JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		WHERE 1=1 AND a.CardCode != '0000000000000000' AND a.UseWater != 0
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="startTime != null">
+			AND a.OpenPumpTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND a.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY a.DeviceCode, a.StopPumpTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 用水信息报表导出查询 -->
+	<select id="getListExcel" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetailVO">
+		SELECT a.DeviceCode, a.CardCode, b.DeviceName, b.OwnerName,
+		b.OwnerTelphone, a.UseWater, a.RemainWater, a.OpenPumpTime, a.StopPumpTime
+		FROM BaseDeviceInfo b
+		left join RptUseWaterDetail a on a.DeviceCode = b.DeviceCode
+		where 1=1 and a.CardCode != '0000000000000000' and a.UseWater != 0
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName like concat('%', concat(#{dName_query}), '%')
+		</if>
+		<if test="startTime != null">
+			AND a.OpenPumpTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND a.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY a.DeviceCode, a.StopPumpTime DESC
+	</select>
+	
+	<!-- 用水统计查询 然后计算 -->
+	<select id="getTotalWaterList" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		SELECT a.DeviceCode, a.CardCode, a.UseWater, a.RemainWater, a.OpenPumpTime, a.StopPumpTime, a.InMonth, b.AreaId as areaId
+		FROM BaseDeviceInfo b
+		left join
+		RptUseWaterDetail a on a.DeviceCode = b.DeviceCode
+		where 1=1 and a.CardCode != '0000000000000000' and a.UseWater != 0
+		<if test="areaIdList != null and areaIdList.size() > 0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName like concat('%', concat(#{dName_query}), '%')
+		</if>
+		<if test="startTime != null">
+			AND a.OpenPumpTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND a.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY a.DeviceCode, a.StopPumpTime DESC
+	</select>
+	
+	<select id="getSum" resultType="java.lang.Integer" parameterType="map">
+		SELECT sum(UseWater) as sum
+		FROM BaseDeviceInfo b
+		left join
+		RptUseWaterDetail a on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName like concat('%', concat(#{dName_query}),'%')
+		</if>
+		<if test="startTime != null">
+			AND a.CreateTime &gt;= '${startTime}'
+		</if>
+		<if test="endTime != null">
+			AND a.CreateTime &lt;= '${endTime}'
+		</if>
+	</select>
+	
+	<!-- 查询出每口井的用水总量（每个月） -->
+	<select id="getSumList" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		SELECT a.DeviceCode,a.UseWater,a.CreateTime,b.DeviceName as deviceName
+		FROM BaseDeviceInfo b
+		left join RptUseWaterDetail a on a.DeviceCode = b.DeviceCode
+		where 1=1 and a.UseWater != 0
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName like concat('%', concat(#{dName_query}),'%')
+		</if>
+		<if test="startTime != null">
+			AND a.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND a.CreateTime &lt;= #{endTime}
+		</if>
+		group by b.DeviceName, a.CreateTime
+		order by CreateTime
+	</select>
+	
+	<select id="selectUseWaterList" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		select distinct ruwd.*,bdi.DeviceName as deviceName
+		from BaseDeviceInfo bdi
+		left join RptUseWaterDetail ruwd on ruwd.DeviceCode = bdi.DeviceCode
+		where 1=1
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bdi.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+			AND bdi.areaId in
+			<foreach collection="areaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="startTime != null">
+			AND ruwd.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND ruwd.CreateTime &lt;= #{endTime}
+		</if>
+		order by ruwd.CardCode,ruwd.StopPumpTime desc
+	</select>
+	<!-- 个人用水记录查询 -->
+	<select id="selectUseWaterInfoList" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		select distinct ruwd.*,bdi.DeviceName as deviceName,bdi.DeviceCode as deviceCode,bdei.SJArea as SJArea,bdei.WellUse as WellUse
+		from BaseDeviceInfo bdi left join BaseDeviceExpandInfo bdei on bdi.Id = bdei.DeviceId
+		left join RptUseWaterDetail ruwd on ruwd.DeviceCode = bdi.DeviceCode
+		where 1=1
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bdi.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+			AND bdi.areaId in
+			<foreach collection="areaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceCode != null and deviceCode!=''">
+			AND bdi.deviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null and deviceName!=''">
+			AND bdi.deviceName = #{deviceName,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			AND bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime!=''">
+			AND ruwd.CreateTime &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null and endTime!=''">
+			AND ruwd.CreateTime &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		order by ruwd.CardCode,ruwd.CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	<!-- 个人用水记录查询总数 -->
+	<select id="selectUseWaterInfoCount" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		select distinct ruwd.*,bdi.DeviceName as deviceName,bdi.DeviceCode as deviceCode,bdei.SJArea as SJArea,bdei.WellUse as WellUse from BaseDeviceInfo bdi left join BaseDeviceExpandInfo bdei on bdi.Id = bdei.DeviceId
+		left join RptUseWaterDetail ruwd on ruwd.DeviceCode = bdi.DeviceCode
+		where 1=1
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bdi.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+			AND bdi.areaId in
+			<foreach collection="areaIdsList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="deviceCode != null and deviceCode!=''">
+			AND bdi.deviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null and deviceName!=''">
+			AND bdi.deviceName = #{deviceName,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			AND bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime!=''">
+			AND ruwd.CreateTime &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null and endTime!=''">
+			AND ruwd.CreateTime &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		order by ruwd.CardCode,ruwd.CreateTime desc
+	</select>
+	
+	<select id="selectNewUseWaterInfo" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		(SELECT ruwd.DeviceCode, ruwd.UseWater, ruwd.RemainWater
+		FROM RptUseWaterDetail ruwd,
+			(SELECT DeviceCode, MAX(CreateTime) max_day FROM RptUseWaterDetail GROUP BY DeviceCode) b
+		WHERE ruwd.DeviceCode = b.DeviceCode AND ruwd.CreateTime = b.max_day)
+		ORDER BY DeviceCode
+	</select>
+	
+	<select id="selectAll" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		select Id, DeviceCode, UseWater, OpenPumpTime, StopPumpTime from RptUseWaterDetail
+		where CardCode != '0000000000000000' and OpenPumpTime between #{startTime} and #{endTime}
+		order by DeviceCode, OpenPumpTime, StopPumpTime asc
+	</select>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from RptUseWaterDetail
+		where Id = #{id}
+	</delete>
+	
+	<select id="getUseWaterInfo" parameterType="java.lang.String" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		select * from RptUseWaterDetail where DeviceCode = #{wellId}
+	</select>
+
+	<insert id="add" parameterType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		insert into RptUseWaterDetail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			<if test="deviceCode != null">
+				DeviceCode,
+			</if>
+			<if test="cardCode != null">
+				CardCode,
+			</if>
+			<if test="useWater != null">
+				UseWater,
+			</if>
+			<if test="usePower != null">
+				UsePower,
+			</if>
+			<if test="useMoney != null">
+				UseMoney,
+			</if>
+			<if test="remainWater != null">
+				RemainWater,
+			</if>
+			<if test="remainMoney != null">
+				RemainMoney,
+			</if>
+			<if test="openPumpTime != null">
+				OpenPumpTime,
+			</if>
+			<if test="stopPumpTime != null">
+				StopPumpTime,
+			</if>
+			<if test="inYear != null">
+				InYear,
+			</if>
+			<if test="inMonth != null">
+				InMonth,
+			</if>
+			<if test="inDay != null">
+				InDay,
+			</if>
+			<if test="inHour != null">
+				InHour,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			<if test="deviceCode != null">
+				#{deviceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cardCode != null">
+				#{cardCode,jdbcType=VARCHAR},
+			</if>
+			<if test="useWater != null">
+				#{useWater,jdbcType=DECIMAL},
+			</if>
+			<if test="usePower != null">
+				#{usePower,jdbcType=DECIMAL},
+			</if>
+			<if test="useMoney != null">
+				#{useMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="remainWater != null">
+				#{remainWater,jdbcType=DECIMAL},
+			</if>
+			<if test="remainMoney != null">
+				#{remainMoney,jdbcType=DECIMAL},
+			</if>
+			<if test="openPumpTime != null">
+				#{openPumpTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="stopPumpTime != null">
+				#{stopPumpTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="inYear != null">
+				#{inYear,jdbcType=INTEGER},
+			</if>
+			<if test="inMonth != null">
+				#{inMonth,jdbcType=INTEGER},
+			</if>
+			<if test="inDay != null">
+				#{inDay,jdbcType=INTEGER},
+			</if>
+			<if test="inHour != null">
+				#{inHour,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="edit" parameterType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		update RptUseWaterDetail
+		<set>
+			<if test="useWater != null">
+				UseWater = #{useWater,jdbcType=DECIMAL},
+			</if>
+			<if test="usePower != null">
+				UsePower = #{usePower,jdbcType=DECIMAL},
+			</if>
+			<if test="remainWater != null">
+				RemainWater = #{remainWater,jdbcType=DECIMAL},
+			</if>
+			<if test="openPumpTime != null">
+				OpenPumpTime = #{openPumpTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="stopPumpTime != null">
+				StopPumpTime = #{stopPumpTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据恒泽WellID获取设备编码DeviceCode -->
+	<select id="getDeviceCodeByWellID" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT bdi.DeviceCode FROM BaseDeviceInfo bdi INNER JOIN WellRtData wrd ON bdi.Id = wrd.WellID
+		WHERE wrd.WellID = #{wellID}
+	</select>
+	
+	<!-- 获取计算用水量列表 -->
+	<select id="getUseWaterAmountList" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.RptUseWaterDetail">
+		SELECT deviceCode, cardCode, useWater, openPumpTime, stopPumpTime, inYear, inMonth, inDay, createTime 
+		FROM RptUseWaterDetail 
+		WHERE 1=1
+		<if test="createTime != null">
+			<![CDATA[AND createTime >= #{createTime,jdbcType=TIMESTAMP}]]>
+		</if>
+		ORDER BY deviceCode, stopPumpTime DESC
+	</select>
+	
+	<!-- 定时增加用水记录至临时表 -->
+	<insert id="addUseWaterRecord" parameterType="com.fourfaith.statisticAnalysis.model.UseWaterResultTemp">
+		insert into UseWaterResultTemp
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deviceCode != null">
+				DeviceCode,
+			</if>
+			<if test="cardCode != null">
+				CardCode,
+			</if>
+			<if test="useWaterAmount != null">
+				UseWaterAmount,
+			</if>
+			<if test="openPumpTime != null">
+				OpenPumpTime,
+			</if>
+			<if test="stopPumpTime != null">
+				StopPumpTime,
+			</if>
+			<if test="inYear != null">
+				InYear,
+			</if>
+			<if test="inMonth != null">
+				InMonth,
+			</if>
+			<if test="inDay != null">
+				InDay,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deviceCode != null">
+				#{deviceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cardCode != null">
+				#{cardCode,jdbcType=VARCHAR},
+			</if>
+			<if test="useWaterAmount != null">
+				#{useWaterAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="openPumpTime != null">
+				#{openPumpTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="stopPumpTime != null">
+				#{stopPumpTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="inYear != null">
+				#{inYear,jdbcType=INTEGER},
+			</if>
+			<if test="inMonth != null">
+				#{inMonth,jdbcType=INTEGER},
+			</if>
+			<if test="inDay != null">
+				#{inDay,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+
+	
+	<!-- 日用水统计 -->	
+	<select id="getUseWaterStatistics" resultType="java.math.BigDecimal" parameterType="map">
+		SELECT SUM(ua.UseWaterOfDay) 
+		FROM BaseDeviceInfo bd LEFT JOIN basedeviceexpandinfo ex ON bd.Id = ex.DeviceId
+		LEFT JOIN UseWaterDataOfDay ua ON bd.DeviceCode = ua.DeviceCode
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND ex.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bd.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND ua.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND bd.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="startTime!=null and endTime!=null">
+			AND ua.CreateTime between #{startTime} and #{endTime}
+		</if>
+		<if test="year != null and year != null">
+  			AND ua.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND ua.InMonth = #{month}
+  		</if>
+  		<if test="day != null and day != null">
+  			AND ua.InDay = #{day}
+  		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND bd.DeviceType = #{deviceType}
+		</if>
+	</select>
+	
+	<!-- 当日用水列表 -->
+	<select id="getWaterDataInfo" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay">
+		SELECT a.AssTime,a.InDay, a.DeviceCode, a.CardCode, a.UseWaterOfDay, b.DeviceName as deviceName, b.OwnerName as ownerName, 
+			   b.OwnerTelphone as ownerTelphone, a.CreateTime
+		FROM UseWaterDataOfDay a
+		JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null and dCode_query!=''">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null and dName_query!=''">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != ''">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month!= null and month != ''">
+  			AND a.InMonth = #{month}
+  		</if>
+  		<if test="day != null and day != ''">
+  			AND a.InDay = #{day}
+  		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+  		ORDER BY a.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 日用水信息报表导出 -->
+	<select id="getListOfDayByExcel" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.useWaterOfDayByExcelVO">
+		SELECT a.DeviceCode, b.DeviceName, a.CardCode, b.OwnerName,
+		b.OwnerTelphone, a.UseWaterOfDay, a.CreateTime
+		FROM BaseDeviceInfo b LEFT JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		LEFT JOIN UseWaterDataOfDay a on a.DeviceCode = b.DeviceCode
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND a.InMonth = #{month}
+  		</if>
+  		<if test="day != null and day != null">
+  			AND a.InDay = #{day}
+  		</if>
+  		ORDER BY a.CreateTime DESC
+	</select>
+	
+	<!-- 月用水统计 -->
+	<select id="getUseWaterStatisticsOfMonth" resultType="java.math.BigDecimal" parameterType="map">
+		SELECT SUM(ua.UseWaterOfMonth) 
+		FROM BaseDeviceInfo bd LEFT JOIN BaseDeviceExpandInfo bdei on bd.Id = bdei.DeviceId
+		LEFT JOIN UseWaterDataOfMonth ua ON bd.DeviceCode = ua.DeviceCode
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bd.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND ua.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND bd.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND ua.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND ua.InMonth = #{month}
+  		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND bd.DeviceType = #{deviceType}
+		</if>
+	</select>
+	
+	<!-- 月用水列表 -->
+	<select id="getWaterDataOfMonthInfo" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfMonth">
+		SELECT DISTINCT a.InMonth, a.DeviceCode, a.CardCode, a.UseWaterOfMonth, b.DeviceName as deviceName, b.OwnerName as ownerName, 
+			   b.OwnerTelphone as ownerTelphone, a.CreateTime
+		FROM UseWaterDataOfMonth a
+		JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND a.InMonth = #{month}
+  		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+  		ORDER BY a.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+		
+	</select>
+	
+	<!-- 月用水信息报表导出 -->
+	<select id="getListOfMonthByExcel" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.useWaterOfMonthByExcelVO">
+		SELECT a.DeviceCode, b.DeviceName, a.CardCode, b.OwnerName,
+		b.OwnerTelphone, a.UseWaterOfMonth, a.CreateTime
+		FROM BaseDeviceInfo b LEFT JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		LEFT JOIN UseWaterDataOfMonth a on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND a.InMonth = #{month}
+  		</if>
+  		ORDER BY a.CreateTime DESC
+	</select>
+	
+	<!-- 年用水量统计 -->
+	<select id="getUseWaterStatisticsOfYear" resultType="java.math.BigDecimal" parameterType="map">
+		SELECT SUM(ua.UseWaterOfYear) 
+		FROM BaseDeviceInfo bd LEFT JOIN BaseDeviceExpandInfo bdei on bd.Id = bdei.DeviceId
+		LEFT JOIN UseWaterDataOfYear ua ON bd.DeviceCode = ua.DeviceCode
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId IN
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND bd.waterAreaId IN
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND ua.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND bd.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null">
+			AND ua.InYear = #{year}
+		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND bd.DeviceType = #{deviceType}
+		</if>
+	</select>
+	
+	<!-- 年用水列表 -->
+	<select id="getWaterDataOfYearInfo" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfYear">
+		SELECT a.DeviceCode, a.CardCode, a.UseWaterOfYear, b.DeviceName as deviceName, b.OwnerName as ownerName, 
+			   b.OwnerTelphone as ownerTelphone, a.CreateTime
+		FROM UseWaterDataOfYear a
+		JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		WHERE 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null">
+			AND a.InYear = #{year}
+		</if>
+		<if test="deviceType != null and deviceType!=''">
+			AND b.DeviceType = #{deviceType}
+		</if>
+		ORDER BY a.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 年用水信息报表导出 -->
+	<select id="getListOfYearByExcel" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.useWaterOfYearByExcelVO">
+		SELECT a.DeviceCode, b.DeviceName, a.CardCode, b.OwnerName,
+		b.OwnerTelphone, a.UseWaterOfYear, a.CreateTime
+		FROM BaseDeviceInfo b LEFT JOIN BaseDeviceExpandInfo bdei on b.Id = bdei.DeviceId
+		LEFT JOIN UseWaterDataOfYear a on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="wellUse != null and wellUse!=''">
+			AND bdei.WellUse = #{wellUse}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND b.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode = #{dCode_query}
+		</if>
+		<if test="dName_query != null">
+			AND b.DeviceName LIKE CONCAT('%', CONCAT(#{dName_query}), '%')
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		ORDER BY a.CreateTime DESC
+	</select>
+	
+	<!-- 查询大数据页面的用水总量 -->
+	<select id="findWaterSumDMYList" resultMap="BaseResultMap" parameterType="map">
+		select SUM(case when UseWaterOfYear is null then 0 else UseWaterOfYear end  ) as useWater from ${waterData} where 1=1
+		<if test="deviceCodeList != null and deviceCodeList.size()>0">
+			AND DeviceCode in
+			<foreach collection="deviceCodeList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<!-- <if test="year!=null and year!=''">
+			and InYear = #{year}
+		</if> -->
+	</select>
+	
+	<!--大数据页面的月份查询-->
+	<select id="getListOfMonthBigData" parameterType="map" resultMap="BaseResultMap">
+		SELECT SUM(a.UseWaterOfMonth) as useWater,a.InMonth
+		FROM BaseDeviceInfo b
+		LEFT JOIN UseWaterDataOfMonth a on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		group by a.InMonth
+  		order by a.InMonth ASC
+  		
+	</select>
+	
+	<!-- 当日用水列表 -->
+	<select id="getWaterDayBigData" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.UseWaterDataOfDay">
+		SELECT SUM(a.UseWaterOfDay) as useWater,a.InDay
+		FROM UseWaterDataOfDay a
+		JOIN BaseDeviceInfo b ON a.DeviceCode = b.DeviceCode
+		WHERE 1=1
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			AND b.waterAreaId in
+			<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="year != null and year != null">
+  			AND a.InYear = #{year}
+  		</if>
+  		<if test="month != null and month != null">
+  			AND a.InMonth = #{month}
+  		</if>
+  		group by a.InDay
+  		order by a.InDay ASC
+	</select>
+	
+	
+</mapper>

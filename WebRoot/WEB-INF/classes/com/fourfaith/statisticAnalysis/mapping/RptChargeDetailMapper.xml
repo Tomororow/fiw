@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.RptChargeDetailMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.RptChargeDetail">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="CardCode" property="cardCode" jdbcType="VARCHAR" />
+		<result column="DistWaterPlanId" property="distWaterPlanId" jdbcType="VARCHAR" />
+		<result column="DistYear" property="distYear" jdbcType="INTEGER" />
+		<result column="DistRound" property="distRound" jdbcType="INTEGER" />
+		<result column="ChargeAmount" property="chargeAmount" jdbcType="DECIMAL" />
+		<result column="WaterAmount" property="waterAmount" jdbcType="DECIMAL" />
+		<result column="UnitPrice" property="unitPrice" jdbcType="DECIMAL" />
+		<result column="Operator" property="operator" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 水卡充值记录分页查询 -->
+	<select id="getChargeList" resultMap="BaseResultMap" parameterType="map">
+		SELECT rcd.DeviceCode, rcd.CardCode, rcd.WaterAmount, rcd.ChargeAmount, rcd.UnitPrice, 
+		rcd.CreateTime, rcd.Operator,rcd.ChargeType,rcd.IpToken, bdi.DeviceName, sa.AreaName, swa.WaterAreaName 
+		FROM RptChargeDetail rcd
+		JOIN BaseDeviceInfo bdi ON rcd.DeviceCode = bdi.DeviceCode 
+		LEFT JOIN SysArea sa ON bdi.AreaId = sa.Id
+		LEFT JOIN SysWaterArea swa ON bdi.WaterAreaId = swa.Id
+		WHERE 1=1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId IN
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId IN
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaId != null">
+			AND bdi.WaterAreaId = #{waterAreaId}
+		</if>
+		<if test="deviceName != null">
+			AND bdi.DeviceName LIKE CONCAT('%', CONCAT(#{deviceName}), '%')
+		</if>
+		<if test="cardCode != null">
+			AND rcd.CardCode like concat('%', concat(#{cardCode}), '%')
+		</if>
+		<if test="startTime != null">
+			AND rcd.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rcd.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY rcd.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			LIMIT ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 水卡充值记录条数统计 -->
+	<select id="getChargeCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from RptChargeDetail rcd
+		join BaseDeviceInfo bdi on rcd.DeviceCode = bdi.DeviceCode 
+		left join SysArea sa on bdi.AreaId = sa.Id
+		left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where 1=1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        and bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        and bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaId != null">
+			and bdi.WaterAreaId = #{waterAreaId}
+		</if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="cardCode != null">
+			and rcd.CardCode like concat('%', concat(#{cardCode}), '%')
+		</if>
+		<if test="startTime != null">
+			and rcd.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			and rcd.CreateTime &lt;= #{endTime}
+		</if>
+	</select>
+	
+	<!-- 充值记录报表导出信息查询 -->
+	<select id="getExcelList" resultType="com.fourfaith.statisticAnalysis.model.RptChargeDetailVO" parameterType="map">
+		SELECT rcd.DeviceCode, rcd.CardCode, rcd.WaterAmount, rcd.ChargeAmount, rcd.UnitPrice, 
+		rcd.CreateTime, rcd.Operator, bdi.DeviceName, sa.AreaName, swa.WaterAreaName 
+		FROM RptChargeDetail rcd
+		JOIN BaseDeviceInfo bdi ON rcd.DeviceCode = bdi.DeviceCode 
+		LEFT JOIN SysArea sa ON bdi.AreaId = sa.Id
+		LEFT JOIN SysWaterArea swa ON bdi.WaterAreaId = swa.Id
+		WHERE 1=1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId IN
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId IN
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="selWaterAreaId != null">
+			AND bdi.WaterAreaId = #{selWaterAreaId}
+		</if>
+		<if test="deviceName != null">
+			AND bdi.DeviceName LIKE CONCAT('%', CONCAT(#{deviceName}), '%')
+		</if>
+		<if test="cardCode != null">
+			AND rcd.CardCode LIKE CONCAT('%', CONCAT(#{cardCode}), '%')
+		</if>
+		<if test="startTime != null">
+			AND rcd.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rcd.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY rcd.CreateTime DESC
+	</select>
+	
+	<!-- 添加售水记录 -->
+	<insert id="insertSelective" parameterType="com.fourfaith.statisticAnalysis.model.RptChargeDetail" >
+    insert into rptchargedetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="deviceCode != null" >
+        DeviceCode,
+      </if>
+      <if test="cardCode != null" >
+        CardCode,
+      </if>
+      <if test="distWaterPlanId != null" >
+        DistWaterPlanId,
+      </if>
+      <if test="distYear != null" >
+        DistYear,
+      </if>
+      <if test="distRound != null" >
+        DistRound,
+      </if>
+      <if test="chargeAmount != null" >
+        ChargeAmount,
+      </if>
+      <if test="waterAmount != null" >
+        WaterAmount,
+      </if>
+     <!--  <if test="username != null" >
+        UserName,
+      </if>
+      <if test="usertelphone != null" >
+        UserTelphone,
+      </if> -->
+      <if test="unitPrice != null" >
+        UnitPrice,
+      </if>
+      <if test="operator != null" >
+        Operator,
+      </if>
+        <if test="chargeType != null" >
+        ChargeType,
+      </if>
+        <if test="ipToken != null" >
+        IpToken,
+      </if>
+      <if test="createTime != null" >
+        CreateTime,
+      </if>
+      <if test="remark != null" >
+        Remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceCode != null" >
+        #{deviceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardCode != null" >
+        #{cardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="distWaterPlanId != null" >
+        #{distWaterPlanId,jdbcType=VARCHAR},
+      </if>
+      <if test="distYear != null" >
+        #{distYear,jdbcType=INTEGER},
+      </if>
+      <if test="distRound != null" >
+        #{distRound,jdbcType=INTEGER},
+      </if>
+      <if test="chargeAmount != null" >
+        #{chargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="waterAmount != null" >
+        #{waterAmount,jdbcType=DECIMAL},
+      </if>
+      <!-- <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="usertelphone != null" >
+        #{usertelphone,jdbcType=VARCHAR},
+      </if> -->
+      <if test="unitPrice != null" >
+        #{unitPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+       <if test="chargeType != null" >
+        #{chargeType,jdbcType=INTEGER},
+      </if>
+       <if test="ipToken != null" >
+        #{ipToken,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+       <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+	<select id="getCommonWater" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  SUM(WaterAmount)
+		FROM
+		  rptchargedetail 
+	    WHERE 1=1
+		<if test="deviceCode">
+			 and  DeviceCode = #{deviceCode} 
+	  	</if>
+	  	<if test="chargeXl">
+			 AND DistYear = #{chargeXl} 
+	  	</if>
+		<if test="chargeSl">
+			 AND DistRound = #{chargeSl}
+	  	</if>
+	</select>
+  
+	<!-- 获取充值水量和总金额 -->
+	<select id="getChargeAndWaterAmount" resultType="com.fourfaith.statisticAnalysis.model.RptChargeDetail" parameterType="map">
+		select SUM(rcd.chargeAmount) as chargeAmount, SUM(rcd.waterAmount) as waterAmount
+		from RptChargeDetail rcd
+		left join BaseDeviceInfo bdi on rcd.DeviceCode = bdi.DeviceCode
+		where 1=1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        and bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        and bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaId != null">
+			and bdi.WaterAreaId = #{waterAreaId}
+		</if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="cardCode != null">
+			and rcd.CardCode like concat('%', concat(#{cardCode}), '%')
+		</if>
+		<if test="startTime != null">
+			and rcd.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			and rcd.CreateTime &lt;= #{endTime}
+		</if>
+	</select>
+
+	<!-- 根据月份获取充值水量和总金额 -->
+	<select id="getChargeAndWaterSumByMonth" resultType="com.fourfaith.statisticAnalysis.model.RptChargeDetail" parameterType="map">
+		SELECT SUM(rcd.ChargeAmount) AS chargeAmount, SUM(rcd.WaterAmount) AS waterAmount
+		FROM rptchargedetail rcd
+		LEFT JOIN BaseDeviceInfo bdi on rcd.DeviceCode = bdi.DeviceCode
+		WHERE 1=1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaId != null">
+			AND bdi.WaterAreaId = #{waterAreaId}
+		</if>
+		
+		<if test="startDate != null">
+			AND rcd.CreateTime &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND rcd.CreateTime &lt;= #{endDate}
+		</if>
+	</select>
+	
+</mapper>

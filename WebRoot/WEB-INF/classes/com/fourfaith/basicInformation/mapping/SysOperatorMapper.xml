@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.basicInformation.dao.SysOperatorMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.basicInformation.model.SysOperator">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="Operator" property="operator" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, Operator, CreateTime, EditTime
+	</sql>
+	
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysOperator
+		where 1=1
+	</select>
+
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysOperator
+		where 1=1
+		order by EditTime desc,CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.basicInformation.model.SysOperator">
+		insert into SysOperator
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="operator != null">
+				Operator,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="operator != null">
+				#{operator,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysOperator
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysOperator
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.basicInformation.model.SysOperator">
+		update SysOperator
+		<set>
+			Operator = #{operator,jdbcType=VARCHAR},
+			<if test="editTime != null">
+			editTime = #{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<!-- 运营商名新增唯一性校验 -->
+	<select id="uniqueAddSelective" parameterType="com.fourfaith.basicInformation.model.SysOperator" resultType="com.fourfaith.basicInformation.model.SysOperator">
+		select * from SysOperator where Operator = #{operator}
+	</select>
+	
+	<!-- 运营商名修改唯一性校验 -->
+	<select id="uniqueUpdateSelective" parameterType="com.fourfaith.basicInformation.model.SysOperator" resultType="com.fourfaith.basicInformation.model.SysOperator">
+		select * from SysOperator where Operator = #{operator} and Id != #{id}
+	</select>
+	
+</mapper>

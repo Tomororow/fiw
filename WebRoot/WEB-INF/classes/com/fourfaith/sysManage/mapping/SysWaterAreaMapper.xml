@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysWaterAreaMapper">
+	
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysWaterArea">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="WaterAreaCode" property="waterAreaCode" jdbcType="CHAR" />
+		<result column="WaterAreaName" property="waterAreaName" jdbcType="CHAR" />
+		<result column="WaterAreaLevel" property="waterAreaLevel" jdbcType="INTEGER" />
+		<result column="ParentWaterAreaId" property="parentWaterAreaId" jdbcType="CHAR" />
+		<result column="ParentWaterAreaName" property="parentWaterAreaName" jdbcType="CHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 获取所有的所属水管区域信息 -->
+	<select id="getAllWaterArea" resultMap="BaseResultMap" parameterType="map">
+		select a.*, b.WaterAreaName ParentWaterAreaName 
+		from SysWaterArea a, SysWaterArea b
+		where a.ParentWaterAreaId = b.id
+		UNION
+		select *, '无' ParentWaterAreaName from SysWaterArea
+		where ParentWaterAreaId = ''
+	</select>
+	
+	<select id="getLists" resultMap="BaseResultMap" parameterType="map">
+		select a.*, b.WaterAreaName ParentWaterAreaName from SysWaterArea a
+		left join SysWaterArea b on a.ParentWaterAreaId = b.Id
+		where 1=1
+		<if test="idList != null and idList.size()>0">
+	        and a.Id in 
+	        <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="searchWaterAreaCode != null">
+			and a.WaterAreaCode like '%${searchWaterAreaCode}%'
+		</if>
+		<if test="id != null">
+			and a.Id = #{id,jdbcType=CHAR}
+		</if>
+        order by a.WaterAreaLevel, a.WaterAreaCode desc
+        <if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select distinct swa.*,swap.WaterAreaName as parentWaterAreaName
+		from SysWaterArea swa,SysWaterArea swap
+		where swa.Id = #{id,jdbcType=CHAR} and swa.ParentWaterAreaId = swap.Id
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysWaterArea
+		where Id = #{id,jdbcType=CHAR}
+	</delete>
+	
+	<insert id="insertArea" parameterType="com.fourfaith.sysManage.model.SysWaterArea">
+		insert into SysWaterArea
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			WaterAreaCode,
+			WaterAreaName,
+			WaterAreaLevel,
+			ParentWaterAreaId,
+			CreateTime,
+			<if test="remark != null">
+				Remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=CHAR},
+			#{waterAreaCode,jdbcType=CHAR},
+			#{waterAreaName,jdbcType=CHAR},
+			#{waterAreaLevel,jdbcType=INTEGER},
+			#{parentWaterAreaId,jdbcType=INTEGER},
+			#{createTime,jdbcType=TIMESTAMP},
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.SysWaterArea">
+		update SysWaterArea
+		<set>
+			WaterAreaCode = #{waterAreaCode,jdbcType=CHAR},
+			WaterAreaName = #{waterAreaName,jdbcType=CHAR},
+			WaterAreaLevel = #{waterAreaLevel,jdbcType=INTEGER},
+			ParentWaterAreaId = #{parentWaterAreaId,jdbcType=INTEGER},
+			EditTime = #{editTime,jdbcType=TIMESTAMP},
+			<if test="remark != null">
+				Remark = #{remark,jdbcType=CHAR},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<select id="getFirstLevelList" parameterType="com.fourfaith.sysManage.model.SysWaterArea" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where ParentWaterAreaId = ''
+	</select>
+	
+	<select id="getChildAreaInfo" parameterType="com.fourfaith.sysManage.model.SysWaterArea" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where ParentWaterAreaId = #{id}
+	</select>
+	
+	<select id="selectChildArea" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where ParentWaterAreaId = #{id}
+	</select>
+	<select id="getWaterAreaCode" parameterType="com.fourfaith.sysManage.model.SysWaterArea" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{id}
+	</select>
+	
+	<!-- 获取登陆人员所在的区域做级联下拉框操作 -->
+	<select id="getLoginerWaterAreaList" parameterType="com.fourfaith.sysManage.model.SysUser" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{waterAreaId}
+	</select>
+	
+	<!-- 查询所有水管区域 -->
+	<select id="getAllWaterAreaList" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select distinct * from SysWaterArea
+	</select>
+	
+	<!-- 根据登陆用户所在的水管区域ID，获取到当前所属水管区域集合 -->
+	<select id="getCurrWaterAreaList" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{waterAreaId}
+	</select>
+	
+	<!-- 分页操作记录查询总条数 -->
+	<select id="getList" parameterType="map" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select swa.*,swap.WaterAreaName as parentWaterAreaName from SysWaterArea swa,SysWaterArea swap 
+			where 1=1 and swa.ParentWaterAreaId = swap.Id
+		<if test="waterAreaId != null">
+			and swa.ParentWaterAreaId = #{waterAreaId}
+		</if>
+		order by swa.WaterAreaLevel,swa.WaterAreaCode
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 分页查询水管区域总条数 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from SysWaterArea swa,SysWaterArea swap 
+			where 1=1 and swa.ParentWaterAreaId = swap.Id
+		<if test="waterAreaId != null">
+			and swa.ParentWaterAreaId = #{waterAreaId}
+		</if>
+	</select>
+	
+	<!-- 根据Id查询第一级行政编码信息 -->
+	<select id="findFirstWaterAreaLevelById" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{id}
+	</select>
+	
+	<!-- 根据登陆人员所属区域Id，获取到当前所属区域信息 -->
+	<select id="getCurrAndChildWaterArea" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{waterAreaId}
+	</select>
+	
+	<!-- 根据用户所属最低一级水管区域查询本区域及同级所有区域 -->
+	<select id="getWaterAreaByIdAndLevel" parameterType="com.fourfaith.sysManage.model.SysWaterArea" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{id} and ParentWaterAreaId = #{parentWaterAreaId}
+		union all 
+		select * from SysWaterArea where Id != #{id} and ParentWaterAreaId = #{parentWaterAreaId} and WaterAreaLevel = #{waterAreaLevel}
+	</select>
+	
+	<!-- 根据Id查询水管区域信息 -->
+	<select id="getWaterAreaById" parameterType="com.fourfaith.sysManage.model.SysWaterArea" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where Id = #{id}
+	</select>
+	<!-- 根据code查询水管区域信息 -->
+	<select id="selectCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+	select * from SysWaterArea where WaterAreaCode = #{waterAreaCode}
+	</select>
+	<!-- 检验编码、名称唯一性 -->
+	<select id="uniqueWaterArea" parameterType="map" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		select * from SysWaterArea where 1 = 1
+		<if test="waterAreaId != null">
+			and Id != #{waterAreaId}
+		</if>
+		<if test="parentWaterAreaId != null">
+			and ParentWaterAreaId = #{parentWaterAreaId}
+		</if>
+			and (WaterAreaCode = #{waterAreaCode} or WaterAreaName = #{waterAreaName})
+	</select>
+	<!--查询水管区编码  -->
+	<select id="getWaterAreaCodes" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysWaterArea">
+		SELECT 
+		  swa.WaterAreaCode
+		FROM
+		  basedeviceinfo ba LEFT JOIN  
+		  syswaterarea swa ON ba.WaterAreaId=swa.Id
+		WHERE DeviceCode = #{deviceCode}
+	</select>
+	
+	<select id="selectWaterLevel" resultMap="BaseResultMap" parameterType="java.lang.String">
+	 	select WaterAreaLevel from SysWaterArea where id = #{waterId}
+	</select>
+	<!-- 对接大数据页面的需求 -->
+	<select id="selectWaterAreaList" resultMap="BaseResultMap" parameterType="map">
+		select sa.*,w.sumWater as sumWater,w.waterFarming as waterFarming,w.waterVirest as waterVirest,w.waterLife as waterLife,w.waterIndustry as waterIndustry from SysWaterArea sa LEFT JOIN waterindicators w ON sa.Id = w.WaterAreaId where 1=1
+		<if test="waterLevel!=null and waterLevel!=''">
+			and sa.WaterAreaLevel &lt;= 1
+		</if>
+		<if test="waterName!=null and waterName!=''">
+			and sa.WaterAreaName = #{waterName}
+		</if>
+		order by sa.WaterAreaLevel asc
+	</select>
+</mapper>

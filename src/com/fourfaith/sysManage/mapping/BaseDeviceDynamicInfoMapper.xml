@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BaseDeviceDynamicInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		<id column="DeviceId" property="deviceId" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="NetState" property="netState" jdbcType="INTEGER" />
+		<result column="NetType" property="netType" jdbcType="INTEGER" />
+		<result column="AlarmState" property="alarmState" jdbcType="INTEGER" />
+		<result column="AlarmType" property="alarmType" jdbcType="INTEGER" />
+		<result column="UseWater" property="useWater" jdbcType="DECIMAL" />
+		<result column="UsePower" property="usePower" jdbcType="DECIMAL" />
+		<result column="TotalWater" property="totalWater" jdbcType="DECIMAL" />
+		<result column="TotalPower" property="totalPower" jdbcType="DECIMAL" />
+		<result column="InstantFlow" property="instantFlow" jdbcType="DECIMAL" />
+		<result column="TotalFlow" property="totalFlow" jdbcType="DECIMAL" />
+		<result column="InstantSpeed" property="instantSpeed" jdbcType="DECIMAL" />
+		<result column="APhaseCurrent" property="aPhaseCurrent" jdbcType="DECIMAL" />
+		<result column="BPhaseCurrent" property="bPhaseCurrent" jdbcType="DECIMAL" />
+		<result column="CPhaseCurrent" property="cPhaseCurrent" jdbcType="DECIMAL" />
+		<result column="APhaseVoltage" property="aPhaseVoltage" jdbcType="DECIMAL" />
+		<result column="BPhaseVoltage" property="bPhaseVoltage" jdbcType="DECIMAL" />
+		<result column="CPhaseVoltage" property="cPhaseVoltage" jdbcType="DECIMAL" />
+		<result column="APhasePower" property="aPhasePower" jdbcType="DECIMAL" />
+		<result column="BPhasePower" property="bPhasePower" jdbcType="DECIMAL" />
+		<result column="CPhasePower" property="cPhasePower" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<!-- 增加机井实时用水信息(部分数据) -->
+	<insert id="insertBaseDeviceDynamicInfo" parameterType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		insert into BaseDeviceDynamicInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			DeviceId,
+			DeviceCode,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{deviceId,jdbcType=VARCHAR},
+			#{deviceCode,jdbcType=VARCHAR},
+		</trim>
+	</insert>
+	
+	<!-- 修改动态用水信息(仅DeviceCode) -->
+	<update id="updateDynamicInfo" parameterType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		update BaseDeviceDynamicInfo
+		<set>
+			<if test="deviceCode != null">
+				DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+			</if> 
+		</set>
+		where DeviceId = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除实时用水信息 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseDeviceDynamicInfo
+		where DeviceId = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据ID查询实时用水信息 -->
+	<select id="findById" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		select * from BaseDeviceDynamicInfo where DeviceId = #{id}
+	</select>
+	
+	<!-- 查询 -->
+	<select id="selectBaseDeviceDynamicInfo" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		select bddi.*, bdi.DeviceName as deviceName from BaseDeviceDynamicInfo bddi 
+		LEFT JOIN BaseDeviceInfo bdi on bddi.DeviceId = bdi.Id
+		LEFT JOIN SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		WHERE 1=1 
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND swa.Id IN
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        AND ((<![CDATA[ bddi.CollectTime >= #{startTime} and bddi.CollectTime <= #{endTime} ]]>) or (bddi.CollectTime is null))
+	</select>
+	
+	<!-- 根据机井编码查询机井实时数据 -->
+	<select id="getRealTimeByDeviceCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo">
+		SELECT 
+		  bd.*,
+		  bs.DeviceName
+		FROM
+		  basedevicedynamicinfo bd
+		  LEFT JOIN basedeviceinfo bs 
+		ON bd.DeviceCode = bs.DeviceCode
+		WHERE bd.DeviceCode = #{deviceCode}
+	</select>
+	
+	<select id="findDynamicInfo" resultType="com.fourfaith.sysManage.model.BaseDeviceDynamicInfo" parameterType="java.lang.String">
+		select * from basedevicedynamicinfo where DeviceCode = #{deviceCode} limit 0,1
+	</select>
+	
+	<!-- 修改年度用水量 -->
+	<update id="updateDynamicWater" parameterType="java.lang.String">
+		update BaseDeviceDynamicInfo
+		<set>
+			<if test="yearUseWater != null">
+				YearUseWater = #{yearUseWater,jdbcType=DECIMAL}
+			</if> 
+		</set>
+		where DeviceId = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateDeviceType">
+		update basedevicedynamicinfo set NetState = 0,DoorState=0,PumpState=0,CardState=0,NotFlow=0,NotElect=0,ManctrlStatus=0,BckchnnaState=0
+	</update>
+	
+</mapper>

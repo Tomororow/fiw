@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.CardhistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.Cardhistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="DeviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="CardCode" property="cardcode" jdbcType="VARCHAR" />
+    <result column="CURWater" property="curwater" jdbcType="INTEGER" />
+    <result column="CURELE" property="curele" jdbcType="DECIMAL" />
+    <result column="CurSec" property="cursec" jdbcType="INTEGER" />
+    <result column="CurPrice" property="curprice" jdbcType="DECIMAL" />
+    <result column="LeaveWater" property="leavewater" jdbcType="INTEGER" />
+    <result column="LeaveMoney" property="leavemoney" jdbcType="DECIMAL" />
+    <result column="BackupflowTotal" property="backupflowtotal" jdbcType="INTEGER" />
+    <result column="BackuptimeTotal" property="backuptimetotal" jdbcType="INTEGER" />
+    <result column="Backupflow" property="backupflow" jdbcType="INTEGER" />
+    <result column="Backuptime" property="backuptime" jdbcType="INTEGER" />
+    <result column="BgnTime" property="bgntime" jdbcType="TIMESTAMP" />
+    <result column="EndTime" property="endtime" jdbcType="TIMESTAMP" />
+    <result column="RE1" property="re1" jdbcType="INTEGER" />
+    <result column="Re2" property="re2" jdbcType="INTEGER" />
+    <result column="Re3" property="re3" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, DeviceCode, CardCode, CURWater, CURELE, CurSec, CurPrice, LeaveWater, LeaveMoney, 
+    BackupflowTotal, BackuptimeTotal, Backupflow, Backuptime, BgnTime , EndTime , RE1, 
+    Re2, Re3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cardhistory
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <!--   上下卡历史记录查询（数据库非遥测） -->
+  <select id="requestHistoryQuery" parameterType="map" resultType="com.fourfaith.statisticAnalysis.model.Cardhistory">
+  	select DeviceCode, CardCode, CURWater  as useWt, CURELE  as usePw, CurSec, CurPrice, LeaveWater as leftWt, LeaveMoney as leftMn, 
+    BackupflowTotal, BackuptimeTotal, Backupflow, Backuptime, BgnTime as openPumpTime, EndTime as stopPumpTime from cardhistory where 1=1
+  	<if test="deviceCode!=null and deviceCode!=''">
+  		and DeviceCode = #{deviceCode}
+  	</if>
+  	<if test="beginTime != null and endTime != null">
+  		and BgnTime &gt; #{beginTime} and EndTime &lt;= #{endTime}
+  	</if>
+  	<if test="cardCode!=null and cardCode!=''">
+  		and CardCode = #{cardCode}
+  	</if>
+  	order by BgnTime desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cardhistory
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.statisticAnalysis.model.Cardhistory" >
+    insert into cardhistory (id, DeviceCode, CardCode, 
+      CURWater, CURELE, CurSec, 
+      CurPrice, LeaveWater, LeaveMoney, 
+      BackupflowTotal, BackuptimeTotal, Backupflow, 
+      Backuptime, BgnTime, EndTime, 
+      RE1, Re2, Re3)
+    values (#{id,jdbcType=INTEGER}, #{devicecode,jdbcType=VARCHAR}, #{cardcode,jdbcType=VARCHAR}, 
+      #{curwater,jdbcType=INTEGER}, #{curele,jdbcType=DECIMAL}, #{cursec,jdbcType=INTEGER}, 
+      #{curprice,jdbcType=DECIMAL}, #{leavewater,jdbcType=INTEGER}, #{leavemoney,jdbcType=DECIMAL}, 
+      #{backupflowtotal,jdbcType=INTEGER}, #{backuptimetotal,jdbcType=INTEGER}, #{backupflow,jdbcType=INTEGER}, 
+      #{backuptime,jdbcType=INTEGER}, #{bgntime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, 
+      #{re1,jdbcType=INTEGER}, #{re2,jdbcType=INTEGER}, #{re3,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.statisticAnalysis.model.Cardhistory" >
+    insert into cardhistory
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="devicecode != null" >
+        DeviceCode,
+      </if>
+      <if test="cardcode != null" >
+        CardCode,
+      </if>
+      <if test="curwater != null" >
+        CURWater,
+      </if>
+      <if test="curele != null" >
+        CURELE,
+      </if>
+      <if test="cursec != null" >
+        CurSec,
+      </if>
+      <if test="curprice != null" >
+        CurPrice,
+      </if>
+      <if test="leavewater != null" >
+        LeaveWater,
+      </if>
+      <if test="leavemoney != null" >
+        LeaveMoney,
+      </if>
+      <if test="backupflowtotal != null" >
+        BackupflowTotal,
+      </if>
+      <if test="backuptimetotal != null" >
+        BackuptimeTotal,
+      </if>
+      <if test="backupflow != null" >
+        Backupflow,
+      </if>
+      <if test="backuptime != null" >
+        Backuptime,
+      </if>
+      <if test="bgntime != null" >
+        BgnTime,
+      </if>
+      <if test="endtime != null" >
+        EndTime,
+      </if>
+      <if test="re1 != null" >
+        RE1,
+      </if>
+      <if test="re2 != null" >
+        Re2,
+      </if>
+      <if test="re3 != null" >
+        Re3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcode != null" >
+        #{cardcode,jdbcType=VARCHAR},
+      </if>
+      <if test="curwater != null" >
+        #{curwater,jdbcType=INTEGER},
+      </if>
+      <if test="curele != null" >
+        #{curele,jdbcType=DECIMAL},
+      </if>
+      <if test="cursec != null" >
+        #{cursec,jdbcType=INTEGER},
+      </if>
+      <if test="curprice != null" >
+        #{curprice,jdbcType=DECIMAL},
+      </if>
+      <if test="leavewater != null" >
+        #{leavewater,jdbcType=INTEGER},
+      </if>
+      <if test="leavemoney != null" >
+        #{leavemoney,jdbcType=DECIMAL},
+      </if>
+      <if test="backupflowtotal != null" >
+        #{backupflowtotal,jdbcType=INTEGER},
+      </if>
+      <if test="backuptimetotal != null" >
+        #{backuptimetotal,jdbcType=INTEGER},
+      </if>
+      <if test="backupflow != null" >
+        #{backupflow,jdbcType=INTEGER},
+      </if>
+      <if test="backuptime != null" >
+        #{backuptime,jdbcType=INTEGER},
+      </if>
+      <if test="bgntime != null" >
+        #{bgntime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="re1 != null" >
+        #{re1,jdbcType=INTEGER},
+      </if>
+      <if test="re2 != null" >
+        #{re2,jdbcType=INTEGER},
+      </if>
+      <if test="re3 != null" >
+        #{re3,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.statisticAnalysis.model.Cardhistory" >
+    update cardhistory
+    <set >
+      <if test="devicecode != null" >
+        DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcode != null" >
+        CardCode = #{cardcode,jdbcType=VARCHAR},
+      </if>
+      <if test="curwater != null" >
+        CURWater = #{curwater,jdbcType=INTEGER},
+      </if>
+      <if test="curele != null" >
+        CURELE = #{curele,jdbcType=DECIMAL},
+      </if>
+      <if test="cursec != null" >
+        CurSec = #{cursec,jdbcType=INTEGER},
+      </if>
+      <if test="curprice != null" >
+        CurPrice = #{curprice,jdbcType=DECIMAL},
+      </if>
+      <if test="leavewater != null" >
+        LeaveWater = #{leavewater,jdbcType=INTEGER},
+      </if>
+      <if test="leavemoney != null" >
+        LeaveMoney = #{leavemoney,jdbcType=DECIMAL},
+      </if>
+      <if test="backupflowtotal != null" >
+        BackupflowTotal = #{backupflowtotal,jdbcType=INTEGER},
+      </if>
+      <if test="backuptimetotal != null" >
+        BackuptimeTotal = #{backuptimetotal,jdbcType=INTEGER},
+      </if>
+      <if test="backupflow != null" >
+        Backupflow = #{backupflow,jdbcType=INTEGER},
+      </if>
+      <if test="backuptime != null" >
+        Backuptime = #{backuptime,jdbcType=INTEGER},
+      </if>
+      <if test="bgntime != null" >
+        BgnTime = #{bgntime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        EndTime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="re1 != null" >
+        RE1 = #{re1,jdbcType=INTEGER},
+      </if>
+      <if test="re2 != null" >
+        Re2 = #{re2,jdbcType=INTEGER},
+      </if>
+      <if test="re3 != null" >
+        Re3 = #{re3,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.statisticAnalysis.model.Cardhistory" >
+    update cardhistory
+    set DeviceCode = #{devicecode,jdbcType=VARCHAR},
+      CardCode = #{cardcode,jdbcType=VARCHAR},
+      CURWater = #{curwater,jdbcType=INTEGER},
+      CURELE = #{curele,jdbcType=DECIMAL},
+      CurSec = #{cursec,jdbcType=INTEGER},
+      CurPrice = #{curprice,jdbcType=DECIMAL},
+      LeaveWater = #{leavewater,jdbcType=INTEGER},
+      LeaveMoney = #{leavemoney,jdbcType=DECIMAL},
+      BackupflowTotal = #{backupflowtotal,jdbcType=INTEGER},
+      BackuptimeTotal = #{backuptimetotal,jdbcType=INTEGER},
+      Backupflow = #{backupflow,jdbcType=INTEGER},
+      Backuptime = #{backuptime,jdbcType=INTEGER},
+      BgnTime = #{bgntime,jdbcType=TIMESTAMP},
+      EndTime = #{endtime,jdbcType=TIMESTAMP},
+      RE1 = #{re1,jdbcType=INTEGER},
+      Re2 = #{re2,jdbcType=INTEGER},
+      Re3 = #{re3,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
+
+  

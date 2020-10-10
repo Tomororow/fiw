@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.DeviceInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.RptBaseDeviceDetail">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="AreaId" property="areaId" jdbcType="VARCHAR" />
+		<result column="AaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="DeviceAreaCode" property="deviceAreaCode" jdbcType="VARCHAR" />
+		<result column="DeviceWaterAreaCode" property="deviceWaterAreaCode" jdbcType="VARCHAR" />
+		<result column="DeviceNo" property="deviceNo" jdbcType="VARCHAR" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+		<result column="DeviceModel" property="deviceModel" jdbcType="VARCHAR" />
+		<result column="SimCard" property="simCard" jdbcType="VARCHAR" />
+		<result column="SimOperator" property="simOperator" jdbcType="VARCHAR" />
+		<result column="InstallAddress" property="installAddress" jdbcType="VARCHAR" />
+		<result column="InstallTime" property="installTime" jdbcType="TIMESTAMP" />
+		<result column="MonitorArea" property="monitorArea" jdbcType="VARCHAR" />
+		<result column="Longitude" property="longitude" jdbcType="CHAR" />
+		<result column="Latitude" property="latitude" jdbcType="CHAR" />
+		<result column="IpPort" property="ipPort" jdbcType="CHAR" />
+		<result column="Imei" property="imei" jdbcType="CHAR" />
+		<result column="ChargeCard" property="chargeCard" jdbcType="CHAR" />
+		<result column="AllowWater" property="allowWater" jdbcType="DECIMAL" />
+		<result column="OwnerName" property="ownerName" jdbcType="VARCHAR" />
+		<result column="OwnerTelphone" property="ownerTelphone" jdbcType="VARCHAR" />
+		<result column="DtuNo" property="dtuNo" jdbcType="VARCHAR" />
+		<result column="PhotoBefore" property="photoBefore" jdbcType="VARCHAR" />
+		<result column="PhotoAfter" property="photoAfter" jdbcType="VARCHAR" />
+		<result column="InstantSpeed" property="instantSpeed" jdbcType="DECIMAL" />
+		<result column="AreaName" property="areaName" jdbcType="VARCHAR" />
+		<result column="WaterAreaName" property="waterAreaName" jdbcType="VARCHAR" />
+		<result column="DeviceId" property="deviceId" jdbcType="VARCHAR" />
+		<result column="DevicePlate" property="devicePlate" jdbcType="VARCHAR" />
+		<result column="PipeDiameter" property="pipeDiameter" jdbcType="DECIMAL" />
+		<result column="WellDiameter" property="wellDiameter" jdbcType="DECIMAL" />
+		<result column="PumpMaterial" property="pumpMaterial" jdbcType="VARCHAR" />
+		<result column="MakeTime" property="makeTime" jdbcType="TIMESTAMP" />
+		<result column="WellDepth" property="wellDepth" jdbcType="DECIMAL" />
+		<result column="GroundWaterDepth" property="groundWaterDepth" jdbcType="DECIMAL" />
+		<result column="UseWaterType" property="useWaterType" jdbcType="VARCHAR" />
+		<result column="WaterPumpNo" property="waterPumpNo" jdbcType="VARCHAR" />
+		<result column="RatedHead" property="ratedHead" jdbcType="DECIMAL" />
+		<result column="RatedFlow" property="ratedFlow" jdbcType="DECIMAL" />
+		<result column="RatedPower" property="ratedPower" jdbcType="DECIMAL" />
+		<result column="ApplyStatus" property="applyStatus" jdbcType="VARCHAR" />
+		<result column="WellUse" property="wellUse" jdbcType="VARCHAR" />
+		<result column="IrrigationMode" property="irrigationMode" jdbcType="VARCHAR" />
+		<result column="KZArea" property="kZArea" jdbcType="DECIMAL" />
+		<result column="SJArea" property="sJArea" jdbcType="DECIMAL" />
+		<result column="SJSupplyWaterPeople" property="sJSupplyWaterPeople" jdbcType="INTEGER" />
+		<result column="IsHandleDocument" property="isHandleDocument" jdbcType="VARCHAR" />
+		<result column="WaterIntakeNo" property="waterIntakeNo" jdbcType="VARCHAR" />
+		<result column="YearWaterSum" property="yearWaterSum" jdbcType="DECIMAL" />
+		<result column="IsIndustryProcedure" property="isIndustryProcedure" jdbcType="VARCHAR" />
+		<result column="IndustryApprovedWater" property="industryApprovedWater" jdbcType="DECIMAL" />
+		<result column="IndustryProductionCapacity" property="industryProductionCapacity" jdbcType="DECIMAL" />
+		<result column="IndustryArea" property="industryArea" jdbcType="DECIMAL" />
+		<result column="WaterMeterMeasurement" property="waterMeterMeasurement" jdbcType="INTEGER" />
+		<result column="WaterMeterMeasurementType" property="waterMeterMeasurementType" jdbcType="VARCHAR" />
+		<result column="MeterType" property="meterType" jdbcType="VARCHAR" />
+		<result column="MeterCaliber" property="meterCaliber" jdbcType="DECIMAL" />
+		<result column="MeterSerialNo" property="meterSerialNo" jdbcType="VARCHAR" />
+		<result column="MeterGuard" property="meterGuard" jdbcType="INTEGER" />
+		<result column="LandformType" property="landformType" jdbcType="VARCHAR" />
+		<result column="WaterArea" property="waterArea" jdbcType="VARCHAR" />
+		<result column="IrrigationAreaType" property="irrigationAreaType" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 根据条件获取机井信息列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select bdi.*, bdei.*, sa.AreaName as areaName,swa.WaterAreaName as waterAreaName from BaseDeviceInfo bdi
+		left join BaseDeviceExpandInfo bdei on bdi.Id = bdei.DeviceId
+		left join SysArea sa on bdi.AreaId = sa.Id
+		left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where 1 = 1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="deviceCode != null">
+			and bdi.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 根据条件统计机井信息数量 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from BaseDeviceInfo bdi
+		left join BaseDeviceExpandInfo bdei on bdi.Id = bdei.DeviceId
+		left join SysArea sa on bdi.AreaId = sa.Id
+		left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where 1 = 1
+		<if test="areaIdsList != null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="deviceName != null">
+			and bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="deviceCode != null">
+			and bdi.DeviceCode like concat('%', concat(#{deviceCode}), '%')
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!-- 根据机井编码查询机井id -->
+	<select id="selectDeviceCodeByDetail"  parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from BaseDeviceInfo where DeviceCode=#{deviceCode}
+	</select>
+</mapper>

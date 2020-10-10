@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.factorManage.dao.IraFAllDetailsMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.factorManage.model.IraFAllDetails">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="STCD" property="stcd" jdbcType="CHAR" />
+		<result column="STNM" property="stnm" jdbcType="CHAR" />
+		<result column="Water" property="water" jdbcType="DECIMAL" />
+		<result column="FlowratePerS" property="flowratepers" jdbcType="DECIMAL" />
+		<result column="FlowratePerH" property="flowrateperh" jdbcType="DECIMAL" />
+		<result column="FlowrateAdd" property="flowrateadd" jdbcType="DECIMAL" />
+		<result column="Voltage" property="voltage" jdbcType="DECIMAL" />
+		<result column="SignalInten" property="signalinten" jdbcType="DECIMAL" />
+		<result column="FlowMeterStatus" property="flowmeterstatus" jdbcType="INTEGER" />
+		<result column="Tm" property="tm" jdbcType="TIMESTAMP" />
+		<result column="wateravg" property="wateravg" jdbcType="DECIMAL" />
+		<result column="watermin" property="watermin" jdbcType="DECIMAL" />
+		<result column="watermax" property="watermax" jdbcType="DECIMAL" />
+		<result column="flowratepersavg" property="flowratepersavg" jdbcType="DECIMAL" />
+		<result column="flowratepersmin" property="flowratepersmin" jdbcType="DECIMAL" />
+		<result column="flowratepersmax" property="flowratepersmax" jdbcType="DECIMAL" />
+		<result column="flowrateperhavg" property="flowrateperhavg" jdbcType="DECIMAL" />
+		<result column="flowrateperhmin" property="flowrateperhmin" jdbcType="DECIMAL" />
+		<result column="flowrateperhmax" property="flowrateperhmax" jdbcType="DECIMAL" />
+		<result column="flowrateaddavg" property="flowrateaddavg" jdbcType="DECIMAL" />
+		<result column="flowrateaddmin" property="flowrateaddmin" jdbcType="DECIMAL" />
+		<result column="flowrateaddmax" property="flowrateaddmax" jdbcType="DECIMAL" />
+		<result column="voltageavg" property="voltageavg" jdbcType="DECIMAL" />
+		<result column="voltagemin" property="voltagemin" jdbcType="DECIMAL" />
+		<result column="voltagemax" property="voltagemax" jdbcType="DECIMAL" />
+		<result column="signalintenavg" property="signalintenavg" jdbcType="DECIMAL" />
+		<result column="signalintenmin" property="signalintenmin" jdbcType="DECIMAL" />
+		<result column="signalintenmax" property="signalintenmax" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, STCD, Water, FlowratePerS, FlowratePerH, FlowrateAdd, Voltage,
+		SignalInten, FlowMeterStatus,Tm
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from IRA_F_AllDetails
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from IRA_F_AllDetails
+		where Id = #{id,jdbcType=CHAR}
+	</delete>
+	
+	<insert id="insert" parameterType="com.fourfaith.factorManage.model.IraFAllDetails">
+		insert into IRA_F_AllDetails (Id, STCD, Water, FlowratePerS,
+		FlowratePerH, FlowrateAdd, Voltage,
+		SignalInten, Tm)
+		values (#{id,jdbcType=CHAR}, #{stcd,jdbcType=CHAR},
+		#{water,jdbcType=DECIMAL}, #{flowratepers,jdbcType=DECIMAL},
+		#{flowrateperh,jdbcType=DECIMAL}, #{flowrateadd,jdbcType=DECIMAL},
+		#{voltage,jdbcType=DECIMAL},
+		#{signalinten,jdbcType=DECIMAL}, #{flowmeterstatus,jdbcType=INTEGER}#{tm,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.factorManage.model.IraFAllDetails">
+		insert into IRA_F_AllDetails
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="stcd != null">
+				STCD,
+			</if>
+			<if test="water != null">
+				Water,
+			</if>
+			<if test="flowratepers != null">
+				FlowratePerS,
+			</if>
+			<if test="flowrateperh != null">
+				FlowratePerH,
+			</if>
+			<if test="flowrateadd != null">
+				FlowrateAdd,
+			</if>
+			<if test="voltage != null">
+				Voltage,
+			</if>
+			<if test="signalinten != null">
+				SignalInten,
+			</if>
+			<if test="flowmeterstatus != null">
+				FlowMeterStatus,
+			</if>
+			<if test="tm != null">
+				Tm,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=CHAR},
+			</if>
+			<if test="stcd != null">
+				#{stcd,jdbcType=CHAR},
+			</if>
+			<if test="water != null">
+				#{water,jdbcType=DECIMAL},
+			</if>
+			<if test="flowratepers != null">
+				#{flowratepers,jdbcType=DECIMAL},
+			</if>
+			<if test="flowrateperh != null">
+				#{flowrateperh,jdbcType=DECIMAL},
+			</if>
+			<if test="flowrateadd != null">
+				#{flowrateadd,jdbcType=DECIMAL},
+			</if>
+			<if test="voltage != null">
+				#{voltage,jdbcType=DECIMAL},
+			</if>
+			<if test="signalinten != null">
+				#{signalinten,jdbcType=DECIMAL},
+			</if>
+			<if test="flowmeterstatus != null">
+				#{flowmeterstatus,jdbcType=INTEGER},
+			</if>
+			<if test="tm != null">
+				#{tm,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.factorManage.model.IraFAllDetails">
+		update IRA_F_AllDetails
+		<set>
+			<if test="stcd != null">
+				STCD = #{stcd,jdbcType=CHAR},
+			</if>
+			<if test="water != null">
+				Water = #{water,jdbcType=DECIMAL},
+			</if>
+			<if test="flowratepers != null">
+				FlowratePerS = #{flowratepers,jdbcType=DECIMAL},
+			</if>
+			<if test="flowrateperh != null">
+				FlowratePerH = #{flowrateperh,jdbcType=DECIMAL},
+			</if>
+			<if test="flowrateadd != null">
+				FlowrateAdd = #{flowrateadd,jdbcType=DECIMAL},
+			</if>
+			<if test="voltage != null">
+				Voltage = #{voltage,jdbcType=DECIMAL},
+			</if>
+			<if test="signalinten != null">
+				SignalInten = #{signalinten,jdbcType=DECIMAL},
+			</if>
+			<if test="flowmeterstatus != null">
+				FlowMeterStatus = #{flowmeterstatus,jdbcType=INTEGER},
+			</if>
+			<if test="tm != null">
+				Tm = #{tm,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.fourfaith.factorManage.model.IraFAllDetails">
+		update IRA_F_AllDetails
+		set STCD = #{stcd,jdbcType=CHAR},
+		Water = #{water,jdbcType=DECIMAL},
+		FlowratePerS = #{flowratepers,jdbcType=DECIMAL},
+		FlowratePerH = #{flowrateperh,jdbcType=DECIMAL},
+		FlowrateAdd = #{flowrateadd,jdbcType=DECIMAL},
+		Voltage = #{voltage,jdbcType=DECIMAL},
+		SignalInten = #{signalinten,jdbcType=DECIMAL},
+		FlowMeterStatus = #{flowmeterstatus,jdbcType=INTEGER},
+		Tm = #{tm,jdbcType=TIMESTAMP}
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+			sb.stnm,
+			ias.*,
+			ad.addvnm
+		FROM IRA_F_AllDetails ias,ST_STBPRP_B sb,ST_ADDVCD_D ad
+		where ias.stcd=sb.stcd
+		and sb.addvcd = ad.id
+		<if test="stcd != null">
+			AND ias.STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="stcd_query != null">
+			 AND ias.stcd like '%${stcd_query}%'
+		</if>
+		<if test="stcdList != null and stcdList">
+			AND ias.STCD in
+			<foreach collection="stcdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="beginTime != null">
+			and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="specialCon != null">
+			and ${specialCon}
+		</if>
+		<choose>
+		    <when test="orderCon != null">order by ${orderCon}</when>
+		    <otherwise>order by Tm Desc</otherwise>
+		</choose>
+		<if test="start!= null and limit!= null">
+			limit ${start},${limit}
+		</if>
+	</select>
+  
+    <select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) 
+		FROM IRA_F_AllDetails
+		where 1=1
+		<if test="stcd != null">
+			AND STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="stcd_query != null">
+			 AND stcd like '%${stcd_query}%'
+		</if>
+		<if test="stcdList != null and stcdList">
+			AND STCD in
+			<foreach collection="stcdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	
+		<if test="beginTime != null">
+			and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="specialCon != null">
+			and ${specialCon}
+		</if>
+	</select>
+	
+    <select id="getStatisList" resultMap="BaseResultMap" parameterType="map">
+		SELECT 
+			sb.Stcd,
+			sb.Stnm,
+			
+			ROUND(min(water),3) as watermin,
+			ROUND(max(water),3) as watermax,
+			ROUND(avg(water),3) as wateravg,
+			
+			ROUND(min(flowratepers),3) as flowratepersmin,
+			ROUND(max(flowratepers),3) as flowratepersmax,
+			ROUND(avg(flowratepers),3) as flowratepersavg,
+			
+			ROUND(min(flowrateperh),3) as flowrateperhmin,
+			ROUND(max(flowrateperh),3) as flowrateperhmax,
+			ROUND(avg(flowrateperh),3) as flowrateperhavg,
+			
+			ROUND(min(flowrateadd),3) as flowrateaddmin,
+			ROUND(max(flowrateadd),3) as flowrateaddmax,
+			ROUND(avg(flowrateadd),3) as flowrateaddavg,
+			
+			ROUND(min(voltage),2) as voltagemin,
+			ROUND(max(voltage),2) as voltagemax,
+			ROUND(avg(voltage),2) as voltageavg,
+			
+			ROUND(min(signalinten),0) as signalintenmin,
+			ROUND(max(signalinten),0) as signalintenmax,
+			ROUND(avg(signalinten),0) as signalintenavg
+		
+		FROM IRA_F_AllDetails ias
+		RIGHT JOIN ST_STBPRP_B sb
+		ON sb.Stcd=ias.Stcd
+		where 1=1
+		<if test="stcdList != null and stcdList">
+			AND sb.STCD in
+			<foreach collection="stcdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="beginTime != null and endTime != null">
+			and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+			and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		
+		<!-- OR TM IS NULL -->
+		<if test="specialCon != null">
+			and ${specialCon}
+		</if>
+		group by sb.Stcd
+		order by Tm Desc
+		<if test="start!= null and limit!= null">
+			limit ${start},${limit}
+		</if>
+	</select>
+	
+    <select id="getStatisCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) 
+		FROM 
+		(
+			SELECT ias.STCD
+			FROM
+			IRA_F_AllDetails ias
+			RIGHT JOIN ST_STBPRP_B sb
+			ON sb.Stcd=ias.Stcd
+			where 1=1
+			<if test="stcdList != null and stcdList">
+				AND sb.STCD in
+				<foreach collection="stcdList" item="item" index="index" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="beginTime != null and endTime != null">
+				and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+				and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+			</if>
+			
+			<!-- OR TM IS NULL -->
+			<if test="specialCon != null">
+				and ${specialCon}
+			</if>
+			GROUP BY ias.STCD
+		) tmp
+	</select>
+    
+    <select id="getAvgList" resultMap="BaseResultMap" parameterType="map">
+		SELECT STCD,
+		ROUND(avg(water),3) as wateravg,
+		ROUND(avg(flowratepers),3) as flowratepersavg,
+		ROUND(avg(flowrateperh),3) as flowrateperhavg,
+		ROUND(avg(flowrateadd),3) as flowrateaddavg,
+		ROUND(avg(voltage),2) as voltageavg,
+		ROUND(avg(signalinten),0) as signalintenavg,
+		TM
+		FROM IRA_F_AllDetails
+		where 1=1
+		<if test="stcd != null">
+			AND STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="specialCon != null">
+			AND ${specialCon}
+		</if>
+		<if test="beginTime != null">
+			AND TM &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="groupByCon != null">
+			group by ${groupByCon}
+		</if>
+		<if test="orderByCon != null">
+			order by ${orderByCon}
+		</if>
+	</select>
+	
+    <select id="getMinAddList" resultMap="BaseResultMap" parameterType="map">
+        SELECT 
+        	MIN(FlowrateAdd) as flowrateaddmin,
+        	TM FROM
+		IRA_F_AllDetails
+		where 1=1
+		<if test="stcd != null">
+			AND STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="specialCon != null">
+			AND ${specialCon}
+		</if>
+		<if test="beginTime != null">
+			AND TM &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="groupByCon != null">
+			group by ${groupByCon}
+		</if>
+		<if test="orderByCon != null">
+			order by ${orderByCon}
+		</if>
+	</select>
+   
+    <select id="getLastest" resultMap="BaseResultMap" parameterType="map">
+        select
+		<include refid="Base_Column_List" />
+		FROM
+		IRA_F_AllDetails
+		where 1=1
+		<if test="stcd != null">
+			AND STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="specialCon != null">
+			AND ${specialCon}
+		</if>
+		<if test="beginTime != null">
+			AND TM &gt;= #{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			AND TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="groupByCon != null">
+			group by ${groupByCon}
+		</if>
+		<if test="orderByCon != null">
+			order by ${orderByCon}
+		</if>
+		limit 1
+	</select>
+    
+</mapper>

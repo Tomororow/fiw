@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.alarmManage.dao.IntelligentAnalysisMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.alarmManage.model.IntelligentAnalysis">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+		<result column="IntelligentException" property="intelligentException" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 获取机井预警信息列表 -->
+	<select id="getList" parameterType="map" resultType="com.fourfaith.alarmManage.model.IntelligentDeal">
+		select ia.*, itd.DealType as dealType, smi.ServiceMan as serviceMan, smi.Phone as phone, itd.DealResult as dealResult,
+			itd.FixTime as fixTime, itd.DealTime as dealTime, itd.HandleTime as handleTime,
+			itd.DealExceptionRemark as dealExceptionRemark, itd.DealRemark as dealRemark
+		from IntelligentDeal itd
+			right join IntelligentAnalysis ia on ia.Id = itd.IntelligentAnalysisId
+			left join SysServiceManInfo smi on itd.ServiceManId = smi.Id
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ia.DeviceCode
+		where itd.DealResult != 0
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceCode != null">
+			AND ia.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			AND bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 按条件统计机井预警信息数量 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) 
+		from IntelligentAnalysis ia
+			left join IntelligentDeal itd on ia.Id = itd.IntelligentAnalysisId
+			left join SysServiceManInfo smi on itd.ServiceManId = smi.Id
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ia.DeviceCode
+		where 1=1 and itd.DealResult != 0
+		<if test="areaIdsList!=null and areaIdsList.size()>0">
+	        AND bdi.AreaId in 
+	        <foreach collection="areaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="waterAreaIdsList!=null and waterAreaIdsList.size()>0">
+	        AND bdi.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="deviceCode != null">
+			AND ia.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			AND bdi.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+	</select>
+	
+	<!-- 添加异常机井信息 -->
+	<insert id="add" parameterType="com.fourfaith.alarmManage.model.IntelligentAnalysis">
+		insert into IntelligentAnalysis
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			DeviceCode,
+			DeviceName,
+			IntelligentException,
+			CreateTime
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{deviceCode,jdbcType=VARCHAR},
+			#{deviceName,jdbcType=VARCHAR},
+			#{intelligentException,jdbcType=VARCHAR},
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 根据编码删除信息 -->
+	<delete id="delete" parameterType="com.fourfaith.alarmManage.model.IntelligentAnalysis">
+		delete from IntelligentAnalysis where DeviceCode = #{deviceCode}
+	</delete>
+	
+	<!-- 统计异常机井数量 -->
+	<select id="getSum" resultType="java.lang.Integer">
+		select count(*) from IntelligentAnalysis
+	</select>
+	
+	<!-- 根据ID查询信息 -->
+	<select id="selectById" parameterType="java.lang.String" resultType="com.fourfaith.alarmManage.model.IntelligentAnalysis">
+		select ias.*, itd.DealType as dealType, smi.ServiceMan as serviceMan, smi.Phone as phone, itd.DealResult as dealResult,
+			itd.FixTime as fixTime, itd.DealTime as dealTime, itd.HandleTime as handleTime,
+			itd.DealExceptionRemark as dealExceptionRemark, itd.DealRemark as dealRemark
+		from IntelligentAnalysis ias
+			left join IntelligentDeal itd on ias.Id = itd.IntelligentAnalysisId
+			left join SysServiceManInfo smi on itd.ServiceManId = smi.Id
+			left join BaseDeviceInfo bdi on bdi.DeviceCode = ias.DeviceCode
+			left join SysArea sa on bdi.AreaId = sa.Id
+			left join SysWaterArea swa on bdi.WaterAreaId = swa.Id
+		where itd.DealResult != 0 and ias.Id = #{id}
+	</select>
+	
+</mapper>

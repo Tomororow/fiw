@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysRoleMapper">
+	
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysRole">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="RoleCode" property="roleCode" jdbcType="VARCHAR" />
+		<result column="RoleName" property="roleName" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, RoleCode, RoleName, CreateTime, EditTime, Remark
+	</sql>
+	
+	<select id="getByRoleId" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM SysRole
+		where 1=1
+		<if test="roleCode != null">
+			AND RoleCode = #{roleCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysRole
+		where 1=1
+		<if test="id != null">
+			AND Id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="roleCode != null">
+			AND RoleCode = #{roleCode,jdbcType=VARCHAR}
+		</if>
+		<if test="roleName != null">
+			AND RoleName = #{roleName,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysRole
+		where 1=1
+		<if test="id != null">
+			AND Id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="roleCode != null">
+			AND RoleCode = #{roleCode,jdbcType=VARCHAR}
+		</if>
+		<if test="roleName != null">
+			AND RoleName = #{roleName,jdbcType=VARCHAR}
+		</if>
+		<if test="searchRoleName != null">
+			AND RoleName like '%${searchRoleName}%'
+		</if>
+		order by EditTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.SysRole">
+		insert into SysRole
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="roleCode != null">
+				RoleCode,
+			</if>
+			<if test="roleName != null">
+				RoleName,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+			<if test="remark != null">
+				Remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="roleCode != null">
+				#{roleCode,jdbcType=VARCHAR},
+			</if>
+			<if test="roleName != null">
+				#{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysRole
+		where Id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.SysRole">
+		update SysRole
+		<set>
+			<if test="roleCode != null">
+				RoleCode = #{roleCode,jdbcType=VARCHAR},
+			</if>
+			<if test="roleName != null">
+				RoleName = #{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="editTime != null">
+				EditTime = #{editTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="remark != null">
+				Remark = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysRole
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 获取所有角色信息 -->
+	<select id="getAllRoleInfo" resultType="com.fourfaith.sysManage.model.SysRole">
+		select distinct * from SysRole where Id != 'd19f652acb4f4812b13b9b7c9a899d52'
+	</select>
+	
+	<!-- 角色编码 唯一检验 -->
+	<select id="checkRoleCodeExist" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysRole">
+		select * from SysRole where RoleCode = #{roleCode,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

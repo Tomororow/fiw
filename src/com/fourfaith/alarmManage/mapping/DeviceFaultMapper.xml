@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.alarmManage.dao.DeviceFaultMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.alarmManage.model.AlarmDeviceFault">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+		<result column="AlarmType" property="alarmType" jdbcType="INTEGER" />
+		<result column="AlarmDetail" property="alarmDetail" jdbcType="VARCHAR" />
+		<result column="AlarmTime" property="alarmTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 基础列 -->
+	<sql id="Base_Column_List">
+		Id, DeviceCode, AlarmType, AlarmDetail, AlarmTime
+	</sql>
+	
+	<!-- 根据条件统计信息 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) 
+		FROM AlarmDeviceFault a
+		left join BaseDeviceInfo b on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="id != null">
+			AND a.Id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceList != null and deviceList.size()>0">
+			AND b.AreaId in
+			<foreach collection="deviceList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND b.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="alarmType != null">
+			AND a.AlarmType = #{alarmType,jdbcType=INTEGER}
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode like '%${dCode_query}%'
+		</if>
+		<if test="startTime != null">
+			AND a.AlarmTime &gt;='${startTime}'
+		</if>
+		<if test="endTime != null">
+			AND a.AlarmTime &lt;= '${endTime}'
+		</if>
+	</select>
+
+	<!-- 获取信息列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM AlarmDeviceFault a
+		left join BaseDeviceInfo b on a.DeviceCode = b.DeviceCode
+		where 1=1
+		<if test="id != null">
+			AND a.Id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceList != null and deviceList.size()>0">
+			AND b.AreaId in
+			<foreach collection="deviceList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND b.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="alarmType != null">
+			AND a.AlarmType = #{alarmType,jdbcType=INTEGER}
+		</if>
+		<if test="deviceCode != null">
+			AND a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="dCode_query != null">
+			AND a.DeviceCode like '%${dCode_query}%'
+		</if>
+		<if test="startTime != null">
+			AND a.AlarmTime &gt;= '${startTime}'
+		</if>
+		<if test="endTime != null">
+			AND a.AlarmTime &lt;= '${endTime}'
+		</if>
+		order by a.AlarmTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 获取电压告警信息条数 -->
+	<select id="getVoltageAlarmCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT COUNT(*) FROM BaseDeviceInfo bd
+		LEFT JOIN BaseDeviceDynamicInfo bdei ON bd.DeviceCode = bdei.DeviceCode
+		WHERE 1=1 
+		<if test="alarmType == 0">
+			AND ((bdei.APhaseVoltage &gt; 0 and bdei.APhaseVoltage &lt;= #{aPhaseVoltageDown}) OR
+			(bdei.BPhaseVoltage &gt; 0 and bdei.BPhaseVoltage &lt;= #{bPhaseVoltageDown}) OR
+		    (bdei.CPhaseVoltage &gt; 0 and bdei.CPhaseVoltage &lt;= #{cPhaseVoltageDown}))
+		</if>
+		<if test="alarmType == 1">
+			AND (bdei.APhaseVoltage &gt; #{aPhaseVoltageUp} OR bdei.BPhaseVoltage &gt; #{bPhaseVoltageUp} OR bdei.CPhaseVoltage &gt; #{cPhaseVoltageUp})
+		</if>
+		<if test="areaList != null and areaList.size()>0">
+			AND bd.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bd.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="deviceName != null">
+			AND bd.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="startTime != null">
+			AND bdei.CollectTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND bdei.CollectTime &lt;= #{endTime}
+		</if>
+	</select>
+	
+	<!-- 获取电压告警信息列表 -->
+	<select id="getThreeVoltageAlarmList" resultType="com.fourfaith.alarmManage.model.ThreeVoltageAlarmVO" parameterType="map">
+		SELECT bd.deviceCode, bd.deviceName, bdei.aPhaseVoltage, bdei.bPhaseVoltage, bdei.cPhaseVoltage, bdei.collectTime
+		FROM BaseDeviceInfo bd
+		LEFT JOIN BaseDeviceDynamicInfo bdei ON bd.DeviceCode = bdei.DeviceCode
+		WHERE 1=1 
+		<if test="alarmType == 0">
+			AND ((bdei.APhaseVoltage &gt; 0 and bdei.APhaseVoltage &lt;= #{aPhaseVoltageDown}) OR
+			(bdei.BPhaseVoltage &gt; 0 and bdei.BPhaseVoltage &lt;= #{bPhaseVoltageDown}) OR
+		    (bdei.CPhaseVoltage &gt; 0 and bdei.CPhaseVoltage &lt;= #{cPhaseVoltageDown}))
+		</if>
+		<if test="alarmType == 1">
+			AND (bdei.APhaseVoltage &gt; #{aPhaseVoltageUp} OR bdei.BPhaseVoltage &gt; #{bPhaseVoltageUp} OR bdei.CPhaseVoltage &gt; #{cPhaseVoltageUp})
+		</if>
+		<if test="areaList != null and areaList.size()>0">
+			AND bd.AreaId in
+			<foreach collection="areaList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+	        AND bd.WaterAreaId in 
+	        <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="deviceName != null">
+			AND bd.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="startTime != null">
+			AND bdei.CollectTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND bdei.CollectTime &lt;= #{endTime}
+		</if>
+		ORDER BY bdei.CollectTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 三相电压告警导出信息 -->
+	<select id="getThreeVoltageAlarmExportList" resultType="com.fourfaith.alarmManage.model.ThreeVoltageAlarmExportVO" parameterType="map">
+		SELECT bd.deviceCode, bd.deviceName, bdei.collectTime, bdei.aPhaseVoltage, bdei.bPhaseVoltage, bdei.cPhaseVoltage
+		FROM BaseDeviceInfo bd
+		LEFT JOIN BaseDeviceDynamicInfo bdei ON bd.DeviceCode = bdei.DeviceCode
+		WHERE 1=1 
+		<if test="alarmType == 0">
+			AND ((bdei.APhaseVoltage &gt; 0 and bdei.APhaseVoltage &lt;= #{aPhaseVoltageDown}) OR
+			(bdei.BPhaseVoltage &gt; 0 and bdei.BPhaseVoltage &lt;= #{bPhaseVoltageDown}) OR
+		    (bdei.CPhaseVoltage &gt; 0 and bdei.CPhaseVoltage &lt;= #{cPhaseVoltageDown}))
+		</if>
+		<if test="alarmType == 1">
+			AND (bdei.APhaseVoltage &gt; #{aPhaseVoltageUp} OR bdei.BPhaseVoltage &gt; #{bPhaseVoltageUp} OR bdei.CPhaseVoltage &gt; #{cPhaseVoltageUp})
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId in
+			<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="waterAreaIdList != null and waterAreaIdList.size()>0">
+	        AND bd.WaterAreaId in 
+	        <foreach collection="waterAreaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+		<if test="deviceName != null">
+			AND bd.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="startTime != null">
+			AND bdei.CollectTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND bdei.CollectTime &lt;= #{endTime}
+		</if>
+		ORDER BY bdei.CollectTime DESC
+	</select>
+	
+</mapper>

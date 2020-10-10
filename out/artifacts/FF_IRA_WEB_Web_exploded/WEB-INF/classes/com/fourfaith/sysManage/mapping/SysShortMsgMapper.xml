@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysShortMsgMapper">
+	
+	<!-- 返回结果对象 -->
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysShortMsg">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="MsgCode" property="MsgCode" jdbcType="VARCHAR" />
+		<result column="MsgContent" property="MsgContent" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="CreateTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="EditTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 基础字段 -->
+	<sql id="Base_Column_List">
+		Id, MsgCode, MsgContent, CreateTime, EditTime
+	</sql>
+	
+	<!-- 短信模板列表 -->
+	<select id="getMsgList" resultMap="BaseResultMap">
+		select * from SysShortMsg
+		order by EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 查询信息总条数 -->
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(*) from SysShortMsg
+	</select>
+	
+	<!-- 新增短信 模板 -->
+	<insert id="addMsg" parameterType="com.fourfaith.sysManage.model.SysShortMsg">
+		insert into SysShortMsg
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="Id != null">
+				Id,
+			</if>
+			<if test="MsgCode != null">
+				MsgCode,
+			</if>
+			<if test="MsgContent != null">
+				MsgContent,
+			</if>
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="Id != null">
+				#{Id,jdbcType=VARCHAR},
+			</if>
+			<if test="MsgCode != null">
+				#{MsgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="MsgContent != null">
+				#{MsgContent,jdbcType=VARCHAR},
+			</if>
+			now(),
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 修改短信模板 -->
+	<update id="updateMsg" parameterType="com.fourfaith.sysManage.model.SysShortMsg">
+		update SysShortMsg
+		<set>
+			<if test="MsgCode != null">
+				MsgCode = #{MsgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="MsgContent != null">
+				MsgContent = #{MsgContent,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{Id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除短息模板 -->
+	<delete id="delMsg" parameterType="java.lang.String">
+		delete from SysShortMsg where Id = #{Id}
+	</delete>
+	
+	<!-- 根据ID查询短信 -->
+	<select id="getMsgById" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysShortMsg">
+		select * from SysShortMsg where Id = #{Id}
+	</select>
+	
+	<!-- 根据短信编码查询短信 -->
+	<select id="getMsgByCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysShortMsg">
+		select * from SysShortMsg where MsgCode = #{MsgCode}
+	</select>
+	
+	<!-- 短信编码  唯一检查 -->
+	<select id="uniqueMsgCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysShortMsg">
+		select * from SysShortMsg where MsgCode = #{MsgCode}
+	</select>
+	
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysPermissionMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysPermission">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="RoleId" property="roleId" jdbcType="CHAR" />
+		<result column="MenuId" property="menuId" jdbcType="CHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, RoleId, MenuId
+	</sql>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysPermission
+		where 1=1
+		<if test="id != null">
+			AND id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="roleId != null">
+			AND RoleId = #{roleId,jdbcType=VARCHAR}
+		</if>
+		<if test="menuId != null">
+			AND MenuId = #{menuId,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<delete id="deleteByRoleId" parameterType="java.lang.String">
+		delete from SysPermission
+		where RoleId = #{roleId,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.SysPermission">
+		insert into SysPermission
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="roleId != null">
+				RoleId,
+			</if>
+			<if test="menuId != null">
+				MenuId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="menuId != null">
+				#{menuId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper>

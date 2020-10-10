@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.basicInformation.dao.SysServiceManMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.basicInformation.model.SysServiceManInfo">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="ServiceMan" property="serviceMan" jdbcType="VARCHAR" />
+		<result column="Duty" property="duty" jdbcType="VARCHAR" />
+		<result column="Phone" property="phone" jdbcType="TIMESTAMP" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 基础信息列 -->
+	<sql id="Base_Column_List">
+		Id,WaterAreaId, ServiceMan, Phone,Duty, CreateTime
+	</sql>
+	
+	<!-- 根据相关参数查询相关数据 -->
+	<select id="findPersonList" resultMap="BaseResultMap" parameterType="map">
+		select <include refid="Base_Column_List"/> from SysServiceManInfo where 1=1
+		<if test="waterIdList != null and waterIdList.size()>0">
+	        AND WaterAreaId in 
+	        <foreach collection="waterIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+	</select>
+	<!-- 根据关联人员查询相关数据 -->
+	<select id="findMiddlePersonList" resultType="com.fourfaith.basicInformation.model.SysServiceManInfo" parameterType="java.lang.String">
+		SELECT si.* FROM warnmiddleperson wm LEFT JOIN sysservicemaninfo si ON wm.AbnormalPerson = si.id where 1=1
+		<if test="code!=null and code!=''">
+			and wm.AbnormalCode = #{code}
+		</if>
+	</select>
+	
+	<!-- 根据关联人员查询相关数据Map类型 -->
+	<select id="findMiddlePersonListMap" resultType="com.fourfaith.basicInformation.model.SysServiceManInfo" parameterType="map">
+		SELECT si.* FROM warnmiddleperson wm LEFT JOIN sysservicemaninfo si ON wm.AbnormalPerson = si.id where 1=1
+		<if test="code!=null and code!=''">
+			and wm.AbnormalCode = #{code}
+		</if>
+		<if test="waterIdList != null and waterIdList.size()>0">
+	        AND si.WaterAreaId in 
+	        <foreach collection="waterIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+	</select>
+	
+	<!-- 信息统计 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysServiceManInfo
+		where 1=1
+	</select>
+
+	<!-- 技术员信息列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT sys.*,sa.WaterAreaName as waterAreaName FROM SysServiceManInfo sys left join SysWaterArea sa on sys.WaterAreaId = sa.Id
+		order by CreateTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 获取技术员指定信息 -->
+	<select id="getAssignInfo" resultMap="BaseResultMap">
+		select 
+			<include refid="Base_Column_List"/>
+		from SysServiceManInfo
+	</select>
+	
+	<!-- 新增信息 -->
+	<insert id="insertSelective" parameterType="com.fourfaith.basicInformation.model.SysServiceManInfo">
+		insert into SysServiceManInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="waterAreaId != null">
+				WaterAreaId,
+			</if>
+			<if test="serviceMan != null">
+				ServiceMan,
+			</if>
+			<if test="phone != null">
+				Phone,
+			</if>
+			<if test="duty != null">
+				Duty,
+			</if>
+			<if test="createTime != null">
+				CreateTime
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="waterAreaId != null">
+				#{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceMan != null">
+				#{serviceMan,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="duty != null">
+				#{duty,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 根据主键查询 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select sys.*,sa.WaterAreaName as waterAreaName from SysServiceManInfo sys left join SysWaterArea sa on sys.WaterAreaId = sa.Id
+		where sys.Id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 根据主键删除 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysServiceManInfo
+		where Id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<!-- 根据主键更新非空信息 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.basicInformation.model.SysServiceManInfo">
+		update SysServiceManInfo
+		<set>
+			<if test="waterAreaId != null">
+				WaterAreaId = #{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceMan != null">
+				ServiceMan = #{serviceMan,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				Phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="duty != null">
+				Duty = #{duty,jdbcType=VARCHAR},
+			</if>
+			CreateTime = now(),
+		</set>
+		where Id = #{id,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

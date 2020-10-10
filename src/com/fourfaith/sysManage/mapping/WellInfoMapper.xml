@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.WellInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.WellInfo">
+		<id column="WellId" property="wellId" jdbcType="CHAR" />
+		<result column="WellName" property="wellName" jdbcType="CHAR" />
+		<result column="Lat" property="lat" jdbcType="DECIMAL" />
+		<result column="Lnt" property="lnt" jdbcType="DECIMAL" />
+		<result column="BuildYear" property="buildYear" jdbcType="TIMESTAMP" />
+		<result column="Qsxkzh" property="qsxkzh" jdbcType="CHAR" />
+		<result column="WellDeep" property="wellDeep" jdbcType="DECIMAL" />
+		<result column="WaterDeep" property="waterDeep" jdbcType="DECIMAL" />
+		<result column="WaterQuality" property="waterQuality" jdbcType="CHAR" />
+		<result column="PumpPower" property="pumpPower" jdbcType="DECIMAL" />
+		<result column="PerWtOut" property="perWtOut" jdbcType="DECIMAL" />
+		<result column="PerEleOut" property="perEleOut" jdbcType="DECIMAL" />
+		<result column="Yc" property="yc" jdbcType="DECIMAL" />
+		<result column="Circle" property="circle" jdbcType="DECIMAL" />
+		<result column="YearNumber" property="yearNumber" jdbcType="INTEGER" />
+		<result column="ManagerName" property="managerName" jdbcType="CHAR" />
+		<result column="mManagerTel" property="managerTel" jdbcType="CHAR" />
+		<result column="DevID" property="devID" jdbcType="INTEGER" />
+		<result column="NetType" property="netType" jdbcType="CHAR" />
+		<result column="CezhanID" property="cezhanID" jdbcType="CHAR" />
+		<result column="SimID" property="simID" jdbcType="CHAR" />
+		<result column="Remark" property="remark" jdbcType="CHAR" />
+	</resultMap>
+	
+	<insert id="insertWellInfo" parameterType="com.fourfaith.sysManage.model.WellInfo">
+		insert into WellInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			WellId,
+			WellName,
+			DevID,
+			CezhanID,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{wellId,jdbcType=CHAR},
+			#{wellName,jdbcType=CHAR},
+			#{devID,jdbcType=INTEGER},
+			#{cezhanID,jdbcType=CHAR},
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.WellInfo">
+		update WellInfo
+		<set>
+			<if test="wellName != null">
+			WellName = #{wellName,jdbcType=CHAR},
+			</if>
+			<if test="devID != null">
+			DevID = #{devID,jdbcType=INTEGER},
+			</if>
+			<if test="cezhanID != null">
+			CezhanID = #{cezhanID,jdbcType=CHAR},
+			</if>
+		</set>
+		where WellId = #{wellId,jdbcType=CHAR}
+	</update>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from WellInfo
+		where WellId = #{wellId,jdbcType=CHAR}
+	</delete>
+	
+</mapper>

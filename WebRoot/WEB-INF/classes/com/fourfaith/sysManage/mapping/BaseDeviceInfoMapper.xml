@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.BaseDeviceInfoMapper">
+	<!-- 基础列映射 -->
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="AreaId" property="areaId" jdbcType="VARCHAR" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="DeviceAreaCode" property="deviceAreaCode" jdbcType="VARCHAR" />
+		<result column="DeviceWaterAreaCode" property="deviceWaterAreaCode" jdbcType="VARCHAR" />
+		<result column="DeviceNo" property="deviceNo" jdbcType="VARCHAR" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+		<result column="DeviceModel" property="deviceModel" jdbcType="VARCHAR" />
+		<result column="SimCard" property="simCard" jdbcType="VARCHAR" />
+		<result column="SimOperator" property="simOperator" jdbcType="VARCHAR" />
+		<result column="InstallAddress" property="installAddress" jdbcType="VARCHAR" />
+		<result column="InstallTime" property="installTime" jdbcType="TIMESTAMP" />
+		<result column="MonitorArea" property="monitorArea" jdbcType="VARCHAR" />
+		<result column="Longitude" property="longitude" jdbcType="VARCHAR" />
+		<result column="Latitude" property="latitude" jdbcType="VARCHAR" />
+		<result column="IpPort" property="ipPort" jdbcType="VARCHAR" />
+		<result column="Imei" property="imei" jdbcType="VARCHAR" />
+		<result column="ChargeCard" property="chargeCard" jdbcType="VARCHAR" />
+		<result column="AllowWater" property="allowWater" jdbcType="DECIMAL" />
+		<result column="OwnerName" property="ownerName" jdbcType="VARCHAR" />
+		<result column="OwnerTelphone" property="ownerTelphone" jdbcType="VARCHAR" />
+		<result column="DTUNo" property="dtuNo" jdbcType="VARCHAR" />
+		<result column="CezhanID" property="cezhanID" jdbcType="VARCHAR" />
+		<result column="UseWater" property="useWater" jdbcType="DECIMAL" />
+		<result column="RemainWater" property="remainWater" jdbcType="DECIMAL" />
+		<result column="UseWt" property="useWt" jdbcType="DECIMAL" />
+		<result column="LeftWt" property="leftWt" jdbcType="DECIMAL" />
+		<result column="OpenState" property="openState" jdbcType="INTEGER" />
+		<result column="NetState" property="netState" jdbcType="INTEGER" />
+		<result column="NetStatek" property="netStatek" jdbcType="INTEGER" />
+		<result column="NetStateq" property="netStateq" jdbcType="INTEGER" />
+		<result column="DeviceVersion" property="deviceVersion" jdbcType="VARCHAR" />
+		<result column="DoorState" property="doorState" jdbcType="INTEGER" />
+		<result column="PumpState" property="pumpState" jdbcType="INTEGER" />
+		<result column="AlarmStatek" property="alarmStatek" jdbcType="INTEGER" />
+		<result column="AlarmStateq" property="alarmStateq" jdbcType="INTEGER" />
+		<result column="DeviceType" property="deviceType" jdbcType="INTEGER" />
+		<result column="CollectTimeq" property="collectTimeq" jdbcType="TIMESTAMP" />
+		<result column="CollectTimek" property="collectTimek" jdbcType="TIMESTAMP" />
+		<result column="UpgradeType" property="upgradeType" jdbcType="INTEGER" />
+		<result column="AutoParamType" property="autoParamType" jdbcType="INTEGER" />
+		<result column="SiteType" property="siteType" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<!-- 实时数据  分页列表查询 -->
+	<select id="getListOfBase" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select DISTINCT a.*,e.WellUse as wellUse,e.SJArea as sJArea,e.SJSupplyWaterPeople as sJSupplyWaterPeople,e.IndustryApprovedWater as industryApprovedWater,d.CollectTime as collectTimek,d.CommTime as commTime, d.UseWater as useWater, d.LeaveWater as remainWater,
+			   d.PumpState as pumpState, d.NetState as netStatek, d.InstantSpeed, d.DoorState, 
+			   d.APhaseVoltage as aPhaseVoltage, d.BPhaseVoltage as bPhaseVoltage, d.CPhaseVoltage as cPhaseVoltage, 
+			   d.APhaseCurrent as aPhaseCurrent, d.BPhaseCurrent as bPhaseCurrent, d.CPhaseCurrent as cPhaseCurrent, 
+			   d.TotalWater as totalWater, d.TotalFlow as totalFlow,d.InstantSpeed,d.instantFlow
+		from BaseDeviceInfo a
+		left join BaseDeviceExpandInfo e on a.DeviceCode = e.DeviceCode
+		left join BaseDeviceDynamicInfo d on a.Id = d.DeviceId
+		where 1=1 
+		<if test="areaId != null and areaId!=''">
+			and a.AreaId = #{areaId,jdbcType=VARCHAR}
+		</if>
+		<if test="waterAreaId != null and waterAreaId!=''">
+			and a.WaterAreaId = #{waterAreaId,jdbcType=VARCHAR}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="siteType != null and siteType!=''">
+			and a.SiteType = #{siteType,jdbcType=INTEGER}
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and e.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceCode != null and deviceCode!=''">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null and deviceName!=''">
+			and a.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="netState != null and netState!=''">
+			and d.NetState = #{netState,jdbcType=INTEGER}
+		</if>
+		order by d.NetState desc, d.PumpState desc, d.CollectTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 实时数据  分页列表数量获取 -->
+	<select id="getCountOfBase" resultType="java.lang.Integer" parameterType="map">
+		select count(*)
+		from BaseDeviceInfo a
+		left join BaseDeviceExpandInfo e on a.Id = e.DeviceId
+		left join BaseDeviceDynamicInfo d on a.Id = d.DeviceId
+		where 1=1
+		<if test="areaId != null and areaId!=''">
+			and a.AreaId = #{areaId,jdbcType=VARCHAR}
+		</if>
+		<if test="waterAreaId != null and waterAreaId!=''">
+			and a.WaterAreaId = #{waterAreaId,jdbcType=VARCHAR}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="siteType != null and siteType!=''">
+			and a.SiteType = #{siteType,jdbcType=INTEGER}
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and e.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceCode != null and deviceCode!=''">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null and deviceName!=''">
+			and a.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="netState != null and netState!=''">
+			and d.NetState = #{netState,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 电子地图  弹窗机井信息显示 -->
+	<select id="getDeviceInfoOnMap" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		SELECT DISTINCT a.deviceCode, a.deviceName, a.longitude, a.latitude, a.deviceType, d.CollectTime as collectTimek,
+			   a.deviceVersion, a.photoBefore, a.photoAfter, d.UseWater as useWater, d.LeaveWater as remainWater,d.CardState as cardState,
+			   d.PumpState as pumpState, d.NetState as netStatek,d.TotalWater as totalWater,d.YearUseWater as yearUseWater
+		FROM BaseDeviceInfo a
+		LEFT JOIN BaseDeviceDynamicInfo d ON a.Id = d.DeviceId
+		WHERE 1=1
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId IN
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId IN
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+	</select>
+	
+	<!-- 查询水管区机井信息 -->
+	<select id="selectPageWaterArea" resultMap="BaseResultMap" parameterType="map" >
+		select * from BaseDeviceInfo where WaterAreaId in
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+        	#{codeList}
+        </foreach>
+	</select>
+	
+	<!-- 查询行政区机井信息 -->
+	<select id="selectPageArea" resultMap="BaseResultMap" parameterType="map" >
+		select * from  BaseDeviceInfo where AreaId in
+		<foreach collection="codeList" item="item" index="index" open="(" separator="," close=")">
+        	#{codeList}
+        </foreach>
+        limit #{pageStart},#{pageEnd}
+	</select>
+
+	<!-- 机井信息管理列表(系统管理-机井管理) -->
+
+	<!-- 模糊查询机井信息 -->
+	<select id="selectDNLike" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from BaseDeviceInfo where DeviceName like '%#{deviceName}%'
+	</select>
+	
+	<!-- 机井信息管理列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select DISTINCT a.*, d.InstantSpeed, d.PumpState as pumpState, d.NetState as netStatek
+		from BaseDeviceInfo a
+		left join BaseDeviceDynamicInfo d on a.Id = d.DeviceId
+		left join basedeviceexpandinfo ed on a.Id = ed.DeviceId
+		where 1=1
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and a.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		order by a.EditTime desc, a.DeviceCode asc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 机井信息管理列表 -->
+	<select id="selectPageList" resultMap="BaseResultMap" parameterType="map">
+		select * from BaseDeviceInfo where 1=1
+		<if test="areaIdList != null and areaIdList.size()>0">
+	      AND AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="netState != null">
+			and NetState = #{netState,jdbcType=INTEGER}
+		</if>
+		order by InstallTime desc
+	</select>
+	
+	<!-- 机井信息分页统计 行政(水管)不同区域 -->
+	<select id="selectPageCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*)
+		from BaseDeviceInfo where 1=1
+		<if test="areaIdList != null and areaIdList.size()>0">
+	      AND AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+		<if test="netState != null">
+			and NetState = #{netState,jdbcType=INTEGER}
+		</if>
+		order by InstallTime desc
+	</select>
+	
+	<!-- 机井信息分页统计 行政(水管)不同区域 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from BaseDeviceInfo a
+		where 1=1
+		<if test="waterAreaId != null">
+			and a.WaterAreaId = #{waterAreaId,jdbcType=VARCHAR}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and a.DeviceName like concat('%', concat(#{deviceName}), '%')
+		</if>
+	</select>
+	
+	<!-- 统计设备型号列表数量 -->
+	<select id="getBaseDeviceModelList" resultType="java.lang.Integer" parameterType="map">
+		select count(*)
+		from BaseDeviceInfo
+		where 1=1
+		<if test="areaId != null">
+			and AreaId = #{areaId,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceCode != null">
+			and DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 根据主键ID获取信息 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.*
+		from BaseDeviceInfo a
+		where a.Id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 机井设备信息表添加 -->
+	<insert id="insertBaseDeviceInfo" parameterType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		insert into BaseDeviceInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			AreaId,
+			WaterAreaId,
+			DeviceCode,
+			DeviceAreaCode,
+			DeviceWaterAreaCode,
+			DeviceNo,
+			DeviceName,
+			DeviceModel,
+			<if test="simCard != null">
+				SimCard,
+			</if>
+			<if test="simOperator != null">
+				SimOperator,
+			</if>
+			<if test="installAddress != null">
+				InstallAddress,
+			</if>
+			<if test="installTime != null">
+				InstallTime,
+			</if>
+			<if test="monitorArea != null">
+				MonitorArea,
+			</if>
+			Longitude,
+			Latitude,
+			<if test="ownerName != null">
+				OwnerName,
+			</if>
+			<if test="ownerTelphone != null">
+				OwnerTelphone,
+			</if>
+			<if test="dtuNo != null">
+				DTUNo,
+			</if>
+			<if test="siteType != null">
+				SiteType,
+			</if>
+			PhotoBefore,
+			PhotoAfter,
+			DeviceType,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{areaId,jdbcType=VARCHAR},
+			#{waterAreaId,jdbcType=VARCHAR},
+			#{deviceCode,jdbcType=VARCHAR},
+			#{deviceAreaCode,jdbcType=VARCHAR},
+			#{deviceWaterAreaCode,jdbcType=VARCHAR},
+			#{deviceNo,jdbcType=VARCHAR},
+			#{deviceName,jdbcType=VARCHAR},
+			#{deviceModel,jdbcType=VARCHAR},
+			<if test="simCard != null">
+				#{simCard,jdbcType=VARCHAR},
+			</if>
+			<if test="simOperator != null">
+				#{simOperator,jdbcType=VARCHAR},
+			</if>
+			<if test="installAddress != null">
+				#{installAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="installTime != null">
+				#{installTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="monitorArea != null">
+				#{monitorArea,jdbcType=VARCHAR},
+			</if>
+			#{longitude,jdbcType=DECIMAL},
+			#{latitude,jdbcType=DECIMAL},
+			<if test="ownerName != null">
+				#{ownerName,jdbcType=VARCHAR},
+			</if>
+			<if test="ownerTelphone != null">
+				#{ownerTelphone,jdbcType=VARCHAR},
+			</if>
+			<if test="dtuNo != null">
+				#{dtuNo,jdbcType=VARCHAR},
+			</if>
+			<if test="siteType != null">
+				#{siteType,jdbcType=INTEGER},
+			</if>
+			#{photoBefore,jdbcType=VARCHAR},
+			#{photoAfter,jdbcType=VARCHAR},
+			#{deviceType,jdbcType=INTEGER},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<!-- 机井设备信息表修改 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		update BaseDeviceInfo
+		<set>
+		<if test="areaId != null">
+				AreaId = #{areaId,jdbcType=VARCHAR},
+			</if>
+			<if test="waterAreaId != null">
+				WaterAreaId = #{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceWaterAreaCode != null">
+				DeviceWaterAreaCode = #{deviceWaterAreaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceAreaCode != null">
+				DeviceAreaCode = #{deviceAreaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceCode != null">
+				DeviceCode = #{deviceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceName != null">
+				DeviceName = #{deviceName,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceModel != null">
+				DeviceModel = #{deviceModel,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceNo != null">
+				DeviceNo = #{deviceNo,jdbcType=VARCHAR},
+			</if>
+			<if test="simCard != null">
+				SimCard = #{simCard,jdbcType=VARCHAR},
+			</if>
+			<if test="simOperator != null">
+				SimOperator = #{simOperator,jdbcType=VARCHAR},
+			</if>
+			<if test="installAddress != null">
+				InstallAddress = #{installAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="installTime != null">
+				InstallTime = #{installTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="monitorArea != null">
+				MonitorArea	= #{monitorArea,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				Longitude = #{longitude,jdbcType=DECIMAL},
+			</if>
+			<if test="latitude != null">
+				Latitude = #{latitude,jdbcType=DECIMAL},
+			</if>
+			<if test="ownerName != null">
+				OwnerName = #{ownerName,jdbcType=DECIMAL},
+			</if>
+			<if test="ownerTelphone != null">
+				OwnerTelphone = #{ownerTelphone,jdbcType=DECIMAL},
+			</if>
+			<if test="dtuNo != null">
+				DTUNo = #{dtuNo,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceType != null">
+				DeviceType = #{deviceType,jdbcType=VARCHAR},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 根据主键删除信息 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseDeviceInfo
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 删除遥测信息 刘赟 -->
+	<delete id="delete_8400" parameterType="map">
+		delete from rptusewaterdetailreal
+		where DeviceCode = #{deviceCode,jdbcType=VARCHAR} and OpenPumpTime &gt;= #{beginTime} and StopPumpTime &lt;= #{endTime}
+	</delete>
+	
+	<!-- 获得最大的水管区域 -->
+	<select id="getMaxWaterAreaCode" parameterType="com.fourfaith.sysManage.model.BaseDeviceInfo" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where DeviceWaterAreaCode like '%${deviceWaterAreaCode}%'
+	</select>
+	
+	<!-- 获得最大的行政区域 -->
+	<select id="getMaxAreaCode" parameterType="com.fourfaith.sysManage.model.BaseDeviceInfo" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where DeviceAreaCode like '%${deviceAreaCode}%'
+	</select>
+	
+	<!-- 根据最下一级的Id来获取机井基本表中机井信息 -->
+	<select id="getLastDeviceWaterAreaInfo" parameterType="com.fourfaith.sysManage.model.BaseDeviceInfo" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select bdi.* from BaseDeviceInfo bdi, BaseDeviceExpandInfo bdei 
+		where WaterAreaId = #{waterAreaId} and bdi.Id = bdei.DeviceId 
+		<if test="wellUse != null">
+			and bdei.WellUse = #{wellUse}
+		</if>
+		order by bdi.deviceName ASC
+	</select>
+	
+	<!-- 查询所有的机井设备信息 -->
+	<select id="getAllBaseDeviceInfo" parameterType="com.fourfaith.waterRightManage.model.BaseDistWaterPlan" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select distinct bdi.* from BaseDeviceInfo bdi,BaseDeviceExpandInfo bdei where bdi.Id = bdei.DeviceId and bdei.WellUse = #{wellUse}
+	</select>
+	
+	<!-- 远程监控信息查询分页总条数 -->
+	<select id="getBaseCount" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from BaseDeviceInfo a
+		left join BaseDeviceExpandInfo e on a.Id = e.DeviceId
+		left join BaseDeviceDynamicInfo d on a.Id = d.DeviceId
+		left join SysArea b on a.AreaId = b.Id
+		left join SysWaterArea c on a.WaterAreaId = c.Id
+		where 1=1
+		<if test="areaId != null">
+			and a.AreaId = #{areaId,jdbcType=VARCHAR}
+		</if>
+		<if test="waterAreaId != null">
+			and a.WaterAreaId = #{waterAreaId,jdbcType=VARCHAR}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and a.DeviceName like concat(concat('%', #{deviceName}), '%')
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and e.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceVersion != null">
+			and a.DeviceVersion = #{deviceVersion,jdbcType=VARCHAR}
+		</if>
+		<if test="netState != null">
+			and d.NetState = #{netState,jdbcType=VARCHAR}
+		</if>
+		<if test="pumpState != null">
+			and d.PumpState = #{pumpState,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 远程监控列表信息 -->
+	<select id="getBaseList" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="map">
+		select distinct a.*, b.AreaName as areaName, c.WaterAreaName as waterAreaName, d.NetState as netStatek, d.PumpState as pumpState
+		from BaseDeviceInfo a
+		left join BaseDeviceExpandInfo e on a.Id = e.DeviceId
+		left join BaseDeviceDynamicInfo d on a.Id = d.DeviceId
+		left join SysArea b on a.AreaId = b.Id
+		left join SysWaterArea c on a.WaterAreaId = c.Id
+		where 1=1
+		<if test="areaId != null">
+			and a.AreaId = #{areaId,jdbcType=VARCHAR}
+		</if>
+		<if test="waterAreaId != null">
+			and a.WaterAreaId = #{waterAreaId,jdbcType=VARCHAR}
+		</if>
+		<if test="areaIdList != null and areaIdList.size()>0">
+	        AND a.AreaId in 
+	        <foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+        <if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND a.WaterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+		<if test="deviceCode != null">
+			and a.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName != null">
+			and a.DeviceName like concat(concat('%', #{deviceName}), '%')
+		</if>
+		<if test="deviceWellUse != null and deviceWellUse!=''">
+			and e.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceVersion != null">
+			and a.DeviceVersion = #{deviceVersion,jdbcType=VARCHAR}
+		</if>
+		<if test="netState != null">
+			and d.NetState = #{netState,jdbcType=VARCHAR}
+		</if>
+		<if test="pumpState != null">
+			and d.PumpState = #{pumpState,jdbcType=VARCHAR}
+		</if>
+		order by d.NetState desc, d.PumpState desc, a.DeviceVersion desc
+		<if test="pageStart != null and pageEnd != null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 根据水管ID获取信息 -->
+	<select id="findByWaterAreaId" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where 
+		waterAreaId in
+		 <foreach collection="waterAreaIds" item="item" index="index" open="(" separator="," close=")">
+    		#{item}
+        </foreach>
+	</select>
+	
+	<!-- 实时数据  历史数据查询 -->
+	<select id="getHistoryList" parameterType="map" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select bdi.DeviceCode, bdi.DeviceName,ruwd.cardCode as relCardCode,bci.ownerName as relOwnerName, ruwd.UseWater as useWt, ruwd.RemainWater as leftWt, ruwd.UpTime as upTime,ruwd.TotalWater as totalWater
+		from BaseDeviceInfo bdi
+		left join RptUseWaterDetail ruwd on bdi.DeviceCode = ruwd.DeviceCode
+		left join BaseCardInfo bci on ruwd.cardCode = bci.cardCode
+		where bdi.Id = #{id,jdbcType=VARCHAR}
+		<if test="beginTime != null and endTime != null">
+			and ruwd.UpTime &gt;= #{beginTime} and ruwd.UpTime &lt;= #{endTime}
+		</if>
+		<if test="cardCode != null">
+			and ruwd.cardCode = #{cardCode}
+		</if>
+		order by ruwd.UpTime desc
+	</select>
+	
+	<!-- 实时数据  历史数据查询8400主动查询 -->
+	<select id="getHistoryList_8400"  resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="map">
+		select bdi.DeviceCode, bdi.DeviceName, ruwd.UsePower as usePw, ruwd.UseWater as useWt, ruwd.UseMoney as useMn ,ruwd.RemainWater as leftWt, ruwd.RemainMoney as leftMn, ruwd.OpenPumpTime as openPumpTime, ruwd.StopPumpTime as stopPumpTime
+		from BaseDeviceInfo bdi, rptusewaterdetailreal ruwd
+		where bdi.DeviceCode = ruwd.DeviceCode
+		and ruwd.DeviceCode = #{deviceCode,jdbcType=VARCHAR}
+		<if test="beginTime != null and endTime != null">
+			and ruwd.OpenPumpTime &gt;= #{beginTime} and ruwd.StopPumpTime &lt;= #{endTime}
+		</if>
+		order by ruwd.StopPumpTime desc
+	</select>
+	
+	<!-- 实时数据  历史数据统计 -->
+	<select id="getHistoryCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from BaseDeviceInfo bdi, RptUseWaterDetail ruwd
+		where bdi.DeviceCode = ruwd.DeviceCode and bdi.Id = #{id,jdbcType=VARCHAR}
+		<if test="beginTime != null and endTime != null">
+			and ruwd.OpenPumpTime &gt;= #{beginTime} and ruwd.StopPumpTime &lt;= #{endTime}
+		</if>
+	</select>
+	
+	<!-- 根据行政编码查询信息 -->
+	<select id="selectByAreaCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo
+		where DeviceAreaCode = #{deviceAreaCode,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 设备编码 唯一检查 -->
+	<select id="uniqueDevCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where DeviceCode = #{DeviceCode}
+	</select>
+	
+	<!-- 设备号 唯一检查 -->
+	<select id="uniqueDevno" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where DeviceNo = #{DeviceNo}
+	</select>
+	
+	<!-- DTU号 唯一检查 -->
+	<select id="uniqueDTUNo" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		select * from BaseDeviceInfo where DTUNo = #{DTUNo}
+	</select>
+	
+	<!-- 查询需要升级的机井信息 -->
+	<select id="getHpgradeList" resultType="java.lang.String" parameterType="map">
+		SELECT DISTINCT bd.DeviceCode FROM BaseDeviceInfo bd
+		INNER JOIN BaseDeviceDynamicInfo bdci ON bd.DeviceCode = bdci.DeviceCode
+		WHERE 1=1 
+		<!-- 水管区域遍历 -->
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND bd.WaterAreaId in
+			<foreach collection="waterAreaList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}  
+	    	</foreach>
+	    </if>
+	    <!-- 行政区域遍历 -->
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId in
+			<foreach collection="areaIdList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}  
+	    	</foreach>
+	    </if>
+	    <!-- 版本遍历 -->
+	    <if test="verUpgradeList != null and verUpgradeList.size()>0">
+	    	AND bd.DeviceVersion in
+			<foreach collection="verUpgradeList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}  
+	    	</foreach>
+	    </if>
+		AND bdci.NetState = 1
+		AND bd.UpgradeType = 0
+		<!-- 水泵状态 -->
+		<if test="pumpState != null">
+			AND bdci.PumpState = #{pumpState}
+		</if>
+		<!-- 上卡状态 -->
+		<if test="cardState != null">
+			AND bdci.CardState = #{cardState}
+		</if>
+	</select>
+	
+	<!-- 升级版本号后修改升级状态 -->
+	<update id="updateByUpgradeType" parameterType="java.lang.String">
+		update BaseDeviceInfo                                                                            
+		<set>
+			UpgradeType = 1
+		</set>
+		where DeviceCode = #{DeviceCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 查询需要自动设参的机井信息 -->
+	<select id="getAutoSetParamList" resultType="java.lang.String" parameterType="map">
+		SELECT DISTINCT bd.DeviceCode FROM BaseDeviceInfo bd
+		INNER JOIN BaseDeviceDynamicInfo bdci ON bd.DeviceCode = bdci.DeviceCode
+		where 1=1
+		<!-- 水管区域遍历 -->
+		<if test="waterAreaList != null and waterAreaList.size()>0">
+			AND bd.WaterAreaId in
+			<foreach collection="waterAreaList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}  
+	    	</foreach>
+	    </if>
+	    <!-- 行政区域遍历 -->
+		<if test="areaIdList != null and areaIdList.size()>0">
+			AND bd.AreaId in
+			<foreach collection="areaIdList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}
+	    	</foreach>
+	    </if>
+	    <!-- 版本遍历 -->
+	    <if test="verAutoParamsList != null and verAutoParamsList.size()>0">
+	    	AND bd.DeviceVersion in
+			<foreach collection="verAutoParamsList" index="index" item="item" open="(" separator="," close=")">  
+	        	#{item}
+	    	</foreach>
+	    </if>
+		AND bdci.NetState = 1
+		AND bd.AutoParamType = 0
+		<!-- 水泵状态 -->
+		<if test="pumpState != null">
+			AND bdci.PumpState = #{pumpState}
+		</if>
+		<!-- 上卡状态 -->
+		<if test="cardState != null">
+			AND bdci.CardState = #{cardState}
+		</if>
+	</select>
+	
+	<!-- 自动设参后修改设参状态 防止重复设参 -->
+	<update id="updateByAutoParamType" parameterType="java.lang.String">
+		update BaseDeviceInfo                                                                            
+		<set>
+			AutoParamType = 1
+		</set>
+		where DeviceCode = #{DeviceCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 获取全部控制器程序版本 -->
+	<select id="getDeviceVersion" resultType="java.lang.String">
+		SELECT DISTINCT bd.DeviceVersion as deviceVersion FROM BaseDeviceInfo bd
+		ORDER BY bd.DeviceVersion DESC
+	</select>
+	
+	<!-- 根据水管区id查询机井编码 -->
+	<select id="selectWCode" resultMap="BaseResultMap" parameterType="java.util.List">
+		select DeviceCode from BaseDeviceInfo where WaterAreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	    </foreach>
+	</select>
+	
+	<!-- 查询行政区机井信息 -->
+	<select id="selectPageAreaList" resultMap="BaseResultMap" parameterType="java.util.List" >
+		select DeviceCode from  BaseDeviceInfo where AreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        </foreach>
+	</select>
+	
+	<!--根据设备编码查询设备信息  -->
+	<select id="findBaseDeviceInfoByDeviceCode" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="java.lang.String" >
+		select * from BaseDeviceInfo where DeviceCode = #{DeviceCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findSelectWaterIdBase" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="map">
+		select b.* from basedeviceinfo b LEFT JOIN basedeviceexpandinfo ex ON b.Id = ex.DeviceId WHERE b.WaterAreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        </foreach>
+        <if test="welluse!=null and welluse!=''">
+        	AND ex.WellUse = #{welluse}
+        </if>
+        <if test="baseDeviceId!=null and baseDeviceId!=''">
+        	AND b.Id = #{baseDeviceId}
+        </if>
+	</select>
+	
+	<!-- 应大数据页面 -->
+	<select id="findSelectWaterString" resultType="java.lang.String" parameterType="map">
+		select b.DeviceCode from basedeviceinfo b LEFT JOIN basedeviceexpandinfo ex ON b.Id = ex.DeviceId WHERE 1=1
+		<if test="list!=null and list.size()>0">
+			and b.WaterAreaId in
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+        <if test="welluse!=null and welluse!=''">
+        	AND ex.WellUse = #{welluse}
+        </if>
+        <if test="baseDeviceId!=null and baseDeviceId!=''">
+        	AND b.Id = #{baseDeviceId}
+        </if>
+	</select>
+	
+	<select id="findBaseDeviceInfoByWaterAreaId" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="java.lang.String" >
+		select * from BaseDeviceInfo where WaterAreaId = #{WaterAreaId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="remoteTimeUpdate" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo">
+		SELECT b.Id,b.DeviceName,b.DeviceCode,b.DeviceVersion FROM basedeviceinfo b LEFT JOIN basedevicedynamicinfo d ON b.Id = d.DeviceId where b.DeviceVersion = 'KR1101-V17.1.3' AND d.NetState = '1' AND d.PumpState = '0'
+	</select>
+	<!-- 查询设备动态数据（大数据页面） -->
+	<select id="findDevicBigData" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="java.util.List">
+		SELECT b.DeviceName,b.Longitude,b.Latitude,b.Lo,b.Lt,d.NetState as netStatek,d.PumpState as pumpState,d.TotalWater as totalWater,DATE_FORMAT(d.CommTime,'%Y/%m/%d %H:%i') as commTimee FROM basedeviceinfo b LEFT JOIN basedevicedynamicinfo d ON b.Id = d.DeviceId
+		where d.CommTime is not null and b.WaterAreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<!--查询所选行政区域所对应的所有devicecode-->
+	<select id="selectAreaAllCode" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="java.util.List">
+		SELECT DeviceCode FROM basedeviceinfo WHERE AreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!--查询所选行政区域所对应的所有devicecode-->
+	<select id="selectwaterAreaAllCode" resultType="com.fourfaith.sysManage.model.BaseDeviceInfo" parameterType="java.util.List">
+		SELECT DeviceCode FROM basedeviceinfo WHERE AreaId in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+</mapper>

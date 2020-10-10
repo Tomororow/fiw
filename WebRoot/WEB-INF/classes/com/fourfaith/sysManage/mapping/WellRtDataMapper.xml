@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.WellRtDataMapper">
+	<!-- 基础数据列映射 -->
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.WellRtData">
+		<id column="WellID" property="wellId" jdbcType="CHAR" />
+		<result column="CollectTime" property="collectTime" jdbcType="TIMESTAMP" />
+		<result column="PumpCloseTime" property="pumpCloseTime" jdbcType="TIMESTAMP" />
+		<result column="UserNo" property="userNo" jdbcType="INTEGER" />
+		<result column="UseWt" property="useWt" jdbcType="DECIMAL" />
+		<result column="LeftWt" property="leftWt" jdbcType="DECIMAL" />
+		<result column="CurWtBase" property="curWtBase" jdbcType="DECIMAL" />
+		<result column="OpenState" property="openState" jdbcType="INTEGER" />
+		<result column="DoolState" property="doolState" jdbcType="INTEGER" />
+		<result column="NetState" property="netState" jdbcType="INTEGER" />
+		<result column="Ai0" property="ai0" jdbcType="INTEGER" />
+		<result column="Ai1" property="ai1" jdbcType="INTEGER" />
+		<result column="Ai2" property="ai2" jdbcType="INTEGER" />
+		<result column="Ai3" property="ai3" jdbcType="INTEGER" />
+		<result column="Ai4" property="ai4" jdbcType="INTEGER" />
+		<result column="UsePower" property="usePower" jdbcType="DECIMAL" />
+		<result column="Av" property="av" jdbcType="DECIMAL" />
+		<result column="Bv" property="bv" jdbcType="DECIMAL" />
+		<result column="Cv" property="cv" jdbcType="DECIMAL" />
+		<result column="Aa" property="aa" jdbcType="DECIMAL" />
+		<result column="Ba" property="ba" jdbcType="DECIMAL" />
+		<result column="Ca" property="ca" jdbcType="DECIMAL" />
+		<result column="AState" property="aState" jdbcType="INTEGER" />
+		<result column="BState" property="bState" jdbcType="INTEGER" />
+		<result column="CState" property="cState" jdbcType="INTEGER" />
+		<result column="AlarmTime" property="alarmTime" jdbcType="TIMESTAMP" />
+		<result column="AlarmState" property="alarmState" jdbcType="INTEGER" />
+		<result column="UseWaterTime" property="useWaterTime" jdbcType="DECIMAL" />
+		<result column="TotalDistri" property="totalDistri" jdbcType="DECIMAL" />
+		<result column="TotalPower" property="totalPower" jdbcType="DECIMAL" />
+		<result column="WaterMeterState" property="waterMeterState" jdbcType="INTEGER" />
+		<result column="Exception" property="exception" jdbcType="INTEGER" />
+		<result column="ExceptionState" property="exceptionState" jdbcType="CHAR" />
+	</resultMap>
+	
+	<!-- 机井管理中  新增恒泽设备  只添加WellID数据自动上报 -->
+	<insert id="insertWellRtData" parameterType="com.fourfaith.sysManage.model.WellRtData">
+		insert into WellRtData
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			WellID,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{wellId,jdbcType=CHAR},
+		</trim>
+	</insert>
+	
+	<!-- 机井管理中  删除恒泽设备 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from WellRtData
+		where WellID = #{wellId,jdbcType=CHAR}
+	</delete>
+	
+	<!-- 获取所有恒泽有数据机井 -->
+	<select id="selectRtInfo" resultType="com.fourfaith.sysManage.model.WellRtData">
+		select * from WellRtData where CollectTime is not null and UseWt != 0
+	</select>
+	
+	<!-- 定时修改恒泽设备关泵时间 -->
+	<update id="updateWellPumpCloseTime" parameterType="com.fourfaith.sysManage.model.WellRtData">
+		update WellRtData
+		<set>
+			<if test="pumpCloseTime != null">
+				PumpCloseTime = #{pumpCloseTime, jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		where WellID = #{wellId,jdbcType=CHAR}
+	</update>
+	
+</mapper>

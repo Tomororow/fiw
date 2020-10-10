@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.waterRightManage.dao.BaseDistWaterPlanDeviceMapper">
+	<select id="showDistWaterDeviceInfo" parameterType="com.fourfaith.waterRightManage.model.BaseDistWaterPlan" resultType="com.fourfaith.waterRightManage.model.BaseDistWaterPlanDevice">
+		select bdwdi.*, bdi.DeviceName as deviceName, bdwp.DistYear as distYear, bdwp.DistRound as distRound, bdwp.DistWater as distWater, bdei.IndustryApprovedWater as industryApprovedWater, bdei.SJArea as sjArea
+			from BaseDistWaterPlanDevice bdwdi, BaseDeviceInfo bdi, BaseDistWaterPlan bdwp, BaseDeviceExpandInfo bdei
+			where bdwdi.BaseDistWaterId = #{id} and bdwdi.BaseDeviceId = bdi.Id 
+			and bdwdi.BaseDistWaterId = bdwp.Id and bdi.Id = bdei.DeviceId
+			<if test="deviceName != null">
+				and bdi.DeviceName like concat(concat('%',#{deviceName}),'%')
+			</if>
+			<if test="distType != null">
+				and bdwp.distType = #{distType}
+			</if>
+	</select>
+	
+	<select id="selectBaseDistWaterPlanDeviceList" parameterType="map" resultType="com.fourfaith.waterRightManage.model.BaseDistWaterPlanDevice">
+		select * from BaseDistWaterPlanDevice where 1=1
+		<if test="deviceIds != null and deviceIds.size()>0">
+	        AND BaseDeviceId in 
+	        <foreach collection="deviceIds" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+        </if>
+	</select>
+	<!-- 根据机井id查询配水计划 -->
+	<select id="selectBaseDistList" parameterType="map" resultType="com.fourfaith.waterRightManage.model.BaseDistWaterPlanDevice">
+		select * from BaseDistWaterPlanDevice
+		where UserId = #{userId} AND BaseDeviceId = #{baseDeviceId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamPowerMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamPower">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="PowerPercentUp" property="powerPercentUp" jdbcType="DECIMAL" />
+		<result column="PowerPercentDown" property="powerPercentDown" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select * from ParamPower where 1=1
+		order by EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from ParamPower
+	</select>
+	
+	<insert id="add" parameterType="com.fourfaith.paramterManage.model.ParamPower">
+		insert into ParamPower 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			PowerPercentUp,
+			PowerPercentDown,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{powerPercentUp,jdbcType=DECIMAL},
+			#{powerPercentDown,jdbcType=DECIMAL},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<select id="findPowerById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamPower">
+		select * from ParamPower where Id = #{id}
+	</select>
+	
+	<update id="edit" parameterType="com.fourfaith.paramterManage.model.ParamPower">
+		update ParamPower
+		<set>
+			<if test="powerPercentUp != null">
+			PowerPercentUp = #{powerPercentUp,jdbcType=DECIMAL},
+			</if>
+			<if test="powerPercentDown != null">
+			PowerPercentDown = #{powerPercentDown,jdbcType=DECIMAL},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id, jdbcType=CHAR}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from ParamPower where Id = #{id}
+	</delete>
+	
+</mapper>

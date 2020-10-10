@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.chargeManage.dao.ShuoguanRptchargedetailMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="serialNumber" property="serialnumber" jdbcType="VARCHAR" />
+    <result column="himura" property="himura" jdbcType="VARCHAR" />
+    <result column="family" property="family" jdbcType="VARCHAR" />
+    <result column="createZzChargeTimes" property="createzzchargetimes" jdbcType="VARCHAR" />
+    <result column="credit" property="credit" jdbcType="DOUBLE" />
+    <result column="totalMoneyE8" property="totalmoneye8" jdbcType="DOUBLE" />
+    <result column="voltameterE8" property="voltametere8" jdbcType="DOUBLE" />
+    <result column="waterYieldE8" property="wateryielde8" jdbcType="DOUBLE" />
+    <result column="dateTimeE8" property="datetimee8" jdbcType="TIMESTAMP" />
+    <result column="dateTime" property="datetime" jdbcType="TIMESTAMP" />
+    <result column="isWin" property="iswin" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, address, serialNumber, himura, family, createZzChargeTimes, credit, totalMoneyE8, 
+    voltameterE8, waterYieldE8, dateTimeE8, dateTime, isWin
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shuoguan_rptchargedetail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shuoguan_rptchargedetail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail" >
+    insert into shuoguan_rptchargedetail (id, address, serialNumber, 
+      himura, family, createZzChargeTimes, 
+      credit, totalMoneyE8, voltameterE8, 
+      waterYieldE8, dateTimeE8, dateTime, 
+      isWin)
+    values (#{id,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{serialnumber,jdbcType=VARCHAR}, 
+      #{himura,jdbcType=VARCHAR}, #{family,jdbcType=VARCHAR}, #{createzzchargetimes,jdbcType=VARCHAR}, 
+      #{credit,jdbcType=DOUBLE}, #{totalmoneye8,jdbcType=DOUBLE}, #{voltametere8,jdbcType=DOUBLE}, 
+      #{wateryielde8,jdbcType=DOUBLE}, #{datetimee8,jdbcType=TIMESTAMP}, #{datetime,jdbcType=TIMESTAMP}, 
+      #{iswin,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail" >
+    insert into shuoguan_rptchargedetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="serialnumber != null" >
+        serialNumber,
+      </if>
+      <if test="himura != null" >
+        himura,
+      </if>
+      <if test="family != null" >
+        family,
+      </if>
+      <if test="createzzchargetimes != null" >
+        createZzChargeTimes,
+      </if>
+      <if test="credit != null" >
+        credit,
+      </if>
+      <if test="totalmoneye8 != null" >
+        totalMoneyE8,
+      </if>
+      <if test="voltametere8 != null" >
+        voltameterE8,
+      </if>
+      <if test="wateryielde8 != null" >
+        waterYieldE8,
+      </if>
+      <if test="datetimee8 != null" >
+        dateTimeE8,
+      </if>
+      <if test="datetime != null" >
+        dateTime,
+      </if>
+      <if test="iswin != null" >
+        isWin,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="serialnumber != null" >
+        #{serialnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="himura != null" >
+        #{himura,jdbcType=VARCHAR},
+      </if>
+      <if test="family != null" >
+        #{family,jdbcType=VARCHAR},
+      </if>
+      <if test="createzzchargetimes != null" >
+        #{createzzchargetimes,jdbcType=VARCHAR},
+      </if>
+      <if test="credit != null" >
+        #{credit,jdbcType=DOUBLE},
+      </if>
+      <if test="totalmoneye8 != null" >
+        #{totalmoneye8,jdbcType=DOUBLE},
+      </if>
+      <if test="voltametere8 != null" >
+        #{voltametere8,jdbcType=DOUBLE},
+      </if>
+      <if test="wateryielde8 != null" >
+        #{wateryielde8,jdbcType=DOUBLE},
+      </if>
+      <if test="datetimee8 != null" >
+        #{datetimee8,jdbcType=TIMESTAMP},
+      </if>
+      <if test="datetime != null" >
+        #{datetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="iswin != null" >
+        #{iswin,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail" >
+    update shuoguan_rptchargedetail
+    <set >
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="serialnumber != null" >
+        serialNumber = #{serialnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="himura != null" >
+        himura = #{himura,jdbcType=VARCHAR},
+      </if>
+      <if test="family != null" >
+        family = #{family,jdbcType=VARCHAR},
+      </if>
+      <if test="createzzchargetimes != null" >
+        createZzChargeTimes = #{createzzchargetimes,jdbcType=VARCHAR},
+      </if>
+      <if test="credit != null" >
+        credit = #{credit,jdbcType=DOUBLE},
+      </if>
+      <if test="totalmoneye8 != null" >
+        totalMoneyE8 = #{totalmoneye8,jdbcType=DOUBLE},
+      </if>
+      <if test="voltametere8 != null" >
+        voltameterE8 = #{voltametere8,jdbcType=DOUBLE},
+      </if>
+      <if test="wateryielde8 != null" >
+        waterYieldE8 = #{wateryielde8,jdbcType=DOUBLE},
+      </if>
+      <if test="datetimee8 != null" >
+        dateTimeE8 = #{datetimee8,jdbcType=TIMESTAMP},
+      </if>
+      <if test="datetime != null" >
+        dateTime = #{datetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="iswin != null" >
+        isWin = #{iswin,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail" >
+    update shuoguan_rptchargedetail
+    set address = #{address,jdbcType=VARCHAR},
+      serialNumber = #{serialnumber,jdbcType=VARCHAR},
+      himura = #{himura,jdbcType=VARCHAR},
+      family = #{family,jdbcType=VARCHAR},
+      createZzChargeTimes = #{createzzchargetimes,jdbcType=VARCHAR},
+      credit = #{credit,jdbcType=DOUBLE},
+      totalMoneyE8 = #{totalmoneye8,jdbcType=DOUBLE},
+      voltameterE8 = #{voltametere8,jdbcType=DOUBLE},
+      waterYieldE8 = #{wateryielde8,jdbcType=DOUBLE},
+      dateTimeE8 = #{datetimee8,jdbcType=TIMESTAMP},
+      dateTime = #{datetime,jdbcType=TIMESTAMP},
+      isWin = #{iswin,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--根据机井编码查询充值返回信息  -->
+  <select id="getByDeviceCodeOnDetil" parameterType="java.lang.String" resultType="com.fourfaith.chargeManage.model.ShuoguanRptchargedetail">
+  		SELECT 
+		  srp.address,
+		  srp.himura,
+		  srp.family,
+		  srp.createZzChargeTimes,
+		  srp.credit,
+		  srp.totalMoneyE8,
+		  srp.dateTimeE8,
+		  srp.isWin,
+		  bj.Xname,
+		  are.AreaName,
+		  bd.DeviceName ,bd.InstallAddress
+		FROM
+		  shuoguan_rptchargedetail srp 
+		  LEFT JOIN bjextendinfo bj 
+		    ON srp.address = bj.DeviceCode 
+		  LEFT JOIN basedeviceinfo bd 
+		    ON srp.address = bd.DeviceCode
+		  LEFT JOIN sysarea are 
+		    ON are.Id = bj.AreaId 
+		WHERE srp.address =  #{code}
+		ORDER BY srp.id DESC 
+		LIMIT 1 
+  </select>
+  
+</mapper>

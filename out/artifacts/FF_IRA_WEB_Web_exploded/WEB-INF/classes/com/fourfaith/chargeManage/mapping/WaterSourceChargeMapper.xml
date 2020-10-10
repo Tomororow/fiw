@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.chargeManage.dao.WaterSourceChargeMapper">
+	
+	<!-- 连接查询充值记录表 统计数量 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		SELECT count(*)
+		FROM basedeviceinfo bd
+		RIGHT JOIN rptchargedetail rg ON bd.DeviceCode = rg.DeviceCode
+		LEFT JOIN basedeviceexpandinfo bdei ON bdei.DeviceId = bd.Id
+		WHERE 1=1
+		<if test="areaIdList!=null and areaIdList.size()>0">
+			AND bd.areaId IN
+	 		<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND bd.waterAreaId IN
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bd.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bd.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+        <if test="deviceWellUse != null and deviceWellUse!=''">
+			and bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="inYear != null">
+			AND rg.CreateTime like concat(concat(#{inYear}),'%')
+		</if>
+		<if test="startTime != null">
+			AND rg.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rg.CreateTime &lt;= #{endTime}
+		</if>
+	</select>
+	
+	<!-- 连接查询充值记录表 计算获取水资源费 计量水费统计信息 -->
+	<select id="getWaterSourceList" parameterType="map" resultType="com.fourfaith.chargeManage.model.WaterSourceCharge">
+		SELECT bd.AreaId, bd.WaterAreaId, bd.DeviceCode, bd.DeviceName, rg.WaterAmount, rg.UnitPrice, rg.ChargeAmount, rg.CreateTime
+		FROM basedeviceinfo bd
+		LEFT JOIN basedeviceexpandinfo bdei ON bdei.DeviceId = bd.Id
+		right JOIN rptchargedetail rg ON bd.DeviceCode = rg.DeviceCode
+		WHERE 1=1
+		<if test="areaIdList!=null and areaIdList.size()>0">
+			AND bd.areaId in 
+	 		<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND bd.waterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bd.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bd.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+        <if test="deviceWellUse != null and deviceWellUse!=''">
+			and bdei.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="inYear != null">
+			AND rg.CreateTime like concat(concat(#{inYear}),'%')
+		</if>
+		<if test="startTime != null">
+			AND rg.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rg.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY rg.CreateTime DESC
+		<if test="pageStart != null and pageEnd != null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 获取所有水费总金额 -->
+	<select id="getPriceAmount" parameterType="map" resultType="com.fourfaith.chargeManage.model.WaterSourceCharge">
+		SELECT bd.AreaId, bd.WaterAreaId, bd.DeviceCode, bd.DeviceName, rg.WaterAmount, rg.ChargeAmount
+		FROM basedeviceinfo bd left join BaseDeviceExpandInfo e on bd.Id = e.DeviceId
+		right JOIN rptchargedetail rg ON bd.DeviceCode = rg.DeviceCode
+		WHERE 1=1
+		<if test="areaIdList!=null and areaIdList.size()>0">
+			AND bd.areaId in 
+	 		<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND bd.waterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bd.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bd.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+        <if test="deviceWellUse != null and deviceWellUse!=''">
+			AND e.WellUse = #{deviceWellUse,jdbcType=VARCHAR}
+		</if>
+		<if test="inYear != null">
+			AND rg.CreateTime like concat(concat(#{inYear}),'%')
+		</if>
+		<if test="startTime != null">
+			AND rg.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rg.CreateTime &lt;= #{endTime}
+		</if>
+	</select>
+	
+	<!-- 获取其他费用导出报表 -->
+	<select id="getWaterAmountExcelList" parameterType="map" resultType="com.fourfaith.chargeManage.model.WaterPriceAmountVO">
+		SELECT bd.DeviceCode, bd.DeviceName, rg.WaterAmount, rg.UnitPrice, rg.ChargeAmount, rg.CreateTime
+		FROM basedeviceinfo bd
+		right JOIN rptchargedetail rg ON bd.DeviceCode = rg.DeviceCode
+		WHERE 1=1
+		<if test="areaIdList!=null and areaIdList.size()>0">
+			AND bd.areaId in 
+	 		<foreach collection="areaIdList" item="item" index="index" open="(" separator="," close=")">
+	  			#{item}
+	   		</foreach>
+		</if>
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+        	AND bd.waterAreaId in
+        	<foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+        		#{item}
+        	</foreach>
+        </if>
+        <if test="deviceCode != null">
+			AND bd.deviceCode = #{deviceCode, jdbcType=VARCHAR}
+		</if>
+        <if test="deviceName != null">
+        	AND bd.deviceName like concat('%', concat(#{deviceName}), '%')
+        </if>
+		<if test="inYear != null">
+			AND rg.CreateTime like concat(concat(#{inYear}),'%')
+		</if>
+		<if test="startTime != null">
+			AND rg.CreateTime &gt;= #{startTime}
+		</if>
+		<if test="endTime != null">
+			AND rg.CreateTime &lt;= #{endTime}
+		</if>
+		ORDER BY rg.CreateTime DESC
+	</select>
+	
+</mapper>

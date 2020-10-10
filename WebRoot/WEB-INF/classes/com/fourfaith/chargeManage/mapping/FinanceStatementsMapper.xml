@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.chargeManage.dao.FinanceStatementsMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.chargeManage.model.FinanceStatements" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="waterAreaCode" property="waterareacode" jdbcType="VARCHAR" />
+    <result column="userId" property="userid" jdbcType="VARCHAR" />
+    <result column="cardCode" property="cardcode" jdbcType="VARCHAR" />
+    <result column="orderCode" property="ordercode" jdbcType="VARCHAR" />
+    <result column="deviceCode" property="devicecode" jdbcType="VARCHAR" />
+    <result column="deviceName" property="devicename" jdbcType="VARCHAR" />
+    <result column="distYear" property="distyear" jdbcType="INTEGER" />
+    <result column="distRound" property="distround" jdbcType="INTEGER" />
+    <result column="distPrice" property="distprice" jdbcType="DECIMAL" />
+    <result column="distWater" property="distwater" jdbcType="DECIMAL" />
+    <result column="totalPrice" property="totalprice" jdbcType="DECIMAL" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="standbyOne" property="standbyone" jdbcType="VARCHAR" />
+    <result column="standbyTwo" property="standbytwo" jdbcType="VARCHAR" />
+    <result column="standbyThree" property="standbythree" jdbcType="VARCHAR" />
+    <result column="standbyFour" property="standbyfour" jdbcType="VARCHAR" />
+    <result column="standbyFive" property="standbyfive" jdbcType="VARCHAR" />
+      <result column="userName" property="userName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, waterAreaCode, userId, cardCode, orderCode, deviceCode, deviceName, distYear, 
+    distRound, distPrice, distWater, totalPrice,createTime , standbyOne, standbyTwo, 
+    standbyThree, standbyFour, standbyFive,userName
+  </sql>
+  <!-- Excel导出字段 -->
+  <sql id="Base_Column_Excel" >
+    cardCode, orderCode,deviceName, distYear, 
+    distRound, distPrice, distWater, totalPrice,createTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from finance_statements
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from finance_statements
+  </select>
+  <!-- 根据机井编码查询总金额及其他信息 -->
+  <select id="selectotelMoney" resultMap="BaseResultMap" parameterType="java.lang.String">
+   select SUM(distWater) as sumWater,SUM(totalPrice) as sumPrice,id, waterAreaCode, userId, cardCode, orderCode, deviceCode, deviceName, distYear, 
+    distRound, distPrice, distWater, totalPrice,createTime , standbyOne, standbyTwo, standbyThree, standbyFour, standbyFive,userName
+    from finance_statements where deviceCode = #{deviceCode}
+   	and userId = #{userid} GROUP BY distYear,distRound,cardCode order by createTime desc
+  </select>
+
+<!--模糊查询 -->
+<select id="deviceNameLike" resultMap="BaseResultMap" parameterType="map">
+	 select SUM(distWater) as sumWater,SUM(totalPrice) as sumPrice,id, waterAreaCode, userId, cardCode, orderCode, deviceCode, deviceName, distYear, 
+    distRound, distPrice, distWater, totalPrice,createTime , standbyOne, standbyTwo, standbyThree, standbyFour, standbyFive,userName
+    from finance_statements
+    <where>
+    	 <if test="deviceName != null and deviceName!=''" >
+        	 deviceName like concat('%', concat(#{devicename}), '%')
+      	 </if>
+      	  <if test="userId != null and userId !=''" >
+        	AND userId = #{userId}
+      	 </if>
+      	 <if test="distYear != null and distYear!=''" >
+        	AND distYear = #{distYear}
+      	 </if>
+      	 <if test="distRound != null and distRound!=''" >
+        	AND distRound = #{distRound}
+      	 </if>
+    </where>
+</select>
+  <!-- 条件查询 -->
+  <select id="findByCondition" resultType="com.fourfaith.chargeManage.model.FinanceStatements" parameterType="java.lang.String">
+  		SELECT 
+		  SUM(distWater) AS sumWater,
+		  SUM(totalPrice) AS sumPrice,
+		  id,
+		  waterAreaCode,
+		  (SELECT WaterAreaName FROM syswaterarea sywa WHERE sywa.WaterAreaCode=fs.waterAreaCode) AS WaterAreaName,
+		  userId,
+		  cardCode,
+		  orderCode,
+		  deviceCode,
+		  deviceName,
+		  distYear,
+		  distRound,
+		  distPrice,
+		  distWater,
+		  totalPrice,
+		  createTime,
+		  standbyOne,
+		  standbyTwo,
+		  standbyThree,
+		  standbyFour,
+		  standbyFive,
+		  userName 
+		FROM
+		  finance_statements  fs
+	<where>
+    	 <if test="deviceName != null and deviceName!=''" >
+        	 deviceName like concat('%', concat(#{deviceName}), '%')
+      	 </if>
+      	  <if test="userId != null and userId !=''" >
+        	AND userId = #{userId}
+      	 </if>
+      	 <if test="distYear != null and distYear!=''" >
+        	AND distYear = #{distYear}
+      	 </if>
+      	 <if test="distRound != null and distRound!=''" >
+        	AND distRound = #{distRound}
+      	 </if>
+		<if test="startTime !=null and startTime !='' ">
+        	 <![CDATA[ and createTime  >=  #{startTime}  ]]>
+   		 </if>
+   		 <if test="endTime !=null and endTime!='' "  >
+         	<![CDATA[ and createTime <=  #{endTime}  ]]>
+   		</if>
+      	 GROUP BY deviceCode
+    </where>
+  </select>
+  
+  
+		<!--模糊查询年份和月份 -->
+		<select id="monthYearLike" resultMap="BaseResultMap" parameterType="java.lang.String">
+			select 
+		    <include refid="Base_Column_List" />
+		    from finance_statements
+		    where createTime like concat('%', concat(#{cretime}), '%') and userId = #{userid} order by createTime asc
+		</select>
+
+	<!-- 按照季度查询 -->
+	 <select id="getRegistMsgByCondition" resultMap="BaseResultMap"  parameterType="java.lang.String">
+        select  <include refid="Base_Column_List" /> from  finance_statements
+        <where>
+        <if test="beginTime!=null and beginTime!=''">
+    		<![CDATA[   and DATE_FORMAT(createTime, '%Y-%m-%d')>=  DATE_FORMAT(#{beginTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endTime!=null and endTime!=''">
+    		<![CDATA[  and DATE_FORMAT(createTime, '%Y-%m-%d') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d')    ]]>
+		</if>
+       </where>
+       order by createTime asc  
+    </select>
+	<!-- 遍历查询信息  -->
+	   <select id="inforList" resultMap="BaseResultMap" parameterType="map" >
+		select 
+		 <include refid="Base_Column_List" />
+		  from finance_statements where deviceCode in
+		   	 <foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+	        #{item} 
+	 		</foreach>
+	 		and userId = #{userid}
+	   	  order by createTime asc
+		</select>
+	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from finance_statements
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.chargeManage.model.FinanceStatements" >
+    insert into finance_statements (id, waterAreaCode, userId, userName,
+      cardCode, orderCode, deviceCode, 
+      deviceName, distYear, distRound, 
+      distPrice, distWater, totalPrice, 
+      createTime, standbyOne, standbyTwo, 
+      standbyThree, standbyFour, standbyFive
+      )
+    values (#{id,jdbcType=VARCHAR}, #{waterareacode,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+      #{cardcode,jdbcType=VARCHAR}, #{ordercode,jdbcType=VARCHAR}, #{devicecode,jdbcType=VARCHAR}, 
+      #{devicename,jdbcType=VARCHAR}, #{distyear,jdbcType=INTEGER}, #{distround,jdbcType=INTEGER}, 
+      #{distprice,jdbcType=DECIMAL}, #{distwater,jdbcType=DECIMAL}, #{totalprice,jdbcType=DECIMAL}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{standbyone,jdbcType=VARCHAR}, #{standbytwo,jdbcType=VARCHAR}, 
+      #{standbythree,jdbcType=VARCHAR}, #{standbyfour,jdbcType=VARCHAR}, #{standbyfive,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.chargeManage.model.FinanceStatements" >
+    insert into finance_statements
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="waterareacode != null" >
+        waterAreaCode,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+       <if test="userName != null" >
+        userName,
+      </if>
+      <if test="cardcode != null" >
+        cardCode,
+      </if>
+      <if test="ordercode != null" >
+        orderCode,
+      </if>
+      <if test="devicecode != null" >
+        deviceCode,
+      </if>
+      <if test="devicename != null" >
+        deviceName,
+      </if>
+      <if test="distyear != null" >
+        distYear,
+      </if>
+      <if test="distround != null" >
+        distRound,
+      </if>
+      <if test="distprice != null" >
+        distPrice,
+      </if>
+      <if test="distwater != null" >
+        distWater,
+      </if>
+      <if test="totalprice != null" >
+        totalPrice,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="standbyone != null" >
+        standbyOne,
+      </if>
+      <if test="standbytwo != null" >
+        standbyTwo,
+      </if>
+      <if test="standbythree != null" >
+        standbyThree,
+      </if>
+      <if test="standbyfour != null" >
+        standbyFour,
+      </if>
+      <if test="standbyfive != null" >
+        standbyFive,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="waterareacode != null" >
+        #{waterareacode,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+       <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcode != null" >
+        #{cardcode,jdbcType=VARCHAR},
+      </if>
+      <if test="ordercode != null" >
+        #{ordercode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null" >
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicename != null" >
+        #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="distyear != null" >
+        #{distyear,jdbcType=INTEGER},
+      </if>
+      <if test="distround != null" >
+        #{distround,jdbcType=INTEGER},
+      </if>
+      <if test="distprice != null" >
+        #{distprice,jdbcType=DECIMAL},
+      </if>
+      <if test="distwater != null" >
+        #{distwater,jdbcType=DECIMAL},
+      </if>
+      <if test="totalprice != null" >
+        #{totalprice,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="standbyone != null" >
+        #{standbyone,jdbcType=VARCHAR},
+      </if>
+      <if test="standbytwo != null" >
+        #{standbytwo,jdbcType=VARCHAR},
+      </if>
+      <if test="standbythree != null" >
+        #{standbythree,jdbcType=VARCHAR},
+      </if>
+      <if test="standbyfour != null" >
+        #{standbyfour,jdbcType=VARCHAR},
+      </if>
+      <if test="standbyfive != null" >
+        #{standbyfive,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.chargeManage.model.FinanceStatements" >
+    update finance_statements
+    <set >
+      <if test="waterareacode != null" >
+        waterAreaCode = #{waterareacode,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=VARCHAR},
+      </if>
+       <if test="userid != null" >
+        userName = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="cardcode != null" >
+        cardCode = #{cardcode,jdbcType=VARCHAR},
+      </if>
+      <if test="ordercode != null" >
+        orderCode = #{ordercode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null" >
+        deviceCode = #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="devicename != null" >
+        deviceName = #{devicename,jdbcType=VARCHAR},
+      </if>
+      <if test="distyear != null" >
+        distYear = #{distyear,jdbcType=INTEGER},
+      </if>
+      <if test="distround != null" >
+        distRound = #{distround,jdbcType=INTEGER},
+      </if>
+      <if test="distprice != null" >
+        distPrice = #{distprice,jdbcType=DECIMAL},
+      </if>
+      <if test="distwater != null" >
+        distWater = #{distwater,jdbcType=DECIMAL},
+      </if>
+      <if test="totalprice != null" >
+        totalPrice = #{totalprice,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="standbyone != null" >
+        standbyOne = #{standbyone,jdbcType=VARCHAR},
+      </if>
+      <if test="standbytwo != null" >
+        standbyTwo = #{standbytwo,jdbcType=VARCHAR},
+      </if>
+      <if test="standbythree != null" >
+        standbyThree = #{standbythree,jdbcType=VARCHAR},
+      </if>
+      <if test="standbyfour != null" >
+        standbyFour = #{standbyfour,jdbcType=VARCHAR},
+      </if>
+      <if test="standbyfive != null" >
+        standbyFive = #{standbyfive,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.chargeManage.model.FinanceStatements" >
+    update finance_statements
+    set waterAreaCode = #{waterareacode,jdbcType=VARCHAR},
+      userId = #{userid,jdbcType=VARCHAR},
+      userName = #{userName,jdbcType=VARCHAR},
+      cardCode = #{cardcode,jdbcType=VARCHAR},
+      orderCode = #{ordercode,jdbcType=VARCHAR},
+      deviceCode = #{devicecode,jdbcType=VARCHAR},
+      deviceName = #{devicename,jdbcType=VARCHAR},
+      distYear = #{distyear,jdbcType=INTEGER},
+      distRound = #{distround,jdbcType=INTEGER},
+      distPrice = #{distprice,jdbcType=DECIMAL},
+      distWater = #{distwater,jdbcType=DECIMAL},
+      totalPrice = #{totalprice,jdbcType=DECIMAL},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      standbyOne = #{standbyone,jdbcType=VARCHAR},
+      standbyTwo = #{standbytwo,jdbcType=VARCHAR},
+      standbyThree = #{standbythree,jdbcType=VARCHAR},
+      standbyFour = #{standbyfour,jdbcType=VARCHAR},
+      standbyFive = #{standbyfive,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

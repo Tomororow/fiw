@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.statisticAnalysis.dao.DistAppendWaterPlanInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.statisticAnalysis.model.RptBaseDistWaterDetail">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DistType" property="distType" jdbcType="INTEGER" />
+		<result column="DistMode" property="distMode" jdbcType="INTEGER" />
+		<result column="DistYear" property="distYear" jdbcType="INTEGER" />
+		<result column="DistRound" property="distRound" jdbcType="INTEGER" />
+		<result column="DistWater" property="distWater" jdbcType="DECIMAL" />
+		<result column="DistRatio" property="distRatio" jdbcType="INTEGER" />
+		<result column="DistPrice" property="distPrice" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="BaseDeviceId" property="baseDeviceId" jdbcType="VARCHAR" />
+		<result column="Operator" property="operator" jdbcType="VARCHAR" />
+		<result column="IsAppendWater" property="isAppendWater" jdbcType="INTEGER" />
+		<result column="WellUse" property="wellUse" jdbcType="VARCHAR" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="DeviceName" property="deviceName" jdbcType="VARCHAR" />
+		<result column="UserName" property="userName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 阶梯性水量追加列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select distinct dwp.*, bdi.DeviceName as deviceName, su.UserName as userName from BaseDistAppendWaterPlan dwp
+		left join BaseDeviceInfo bdi on bdi.Id = dwp.DeviceId
+		left join SysUser su on dwp.UseId = su.Id
+		where 1=1 and IsAppendWater = 1 
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			and dwp.WaterAreaId in
+			 <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="wellUse != null">
+			and wellUse = #{wellUse}
+		</if>
+		<if test="distYearStart != null">
+			and distYear &gt;= #{distYearStart}
+		</if>
+		<if test="distYearEnd">
+			and distYear &lt;= #{distYearEnd}
+		</if>
+		ORDER BY dwp.CreateTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 阶梯性水量追加信息条数 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		select count(distinct dwp.id) from BaseDistAppendWaterPlan dwp
+		left join BaseDeviceInfo bdi on bdi.Id = dwp.DeviceId
+		left join SysUser su on dwp.UseId = su.Id
+		where 1=1 and IsAppendWater = 1 
+		<if test="waterAreaIdsList != null and waterAreaIdsList.size()>0">
+			and dwp.WaterAreaId in
+			 <foreach collection="waterAreaIdsList" item="item" index="index" open="(" separator="," close=")">
+	    		#{item}
+	        </foreach>
+		</if>
+		<if test="wellUse != null">
+			and wellUse = #{wellUse}
+		</if>
+		<if test="distYearStart != null">
+			and distYear &gt;= #{distYearStart}
+		</if>
+		<if test="distYearEnd">
+			and distYear &lt;= #{distYearEnd}
+		</if>
+	</select>
+	
+</mapper>

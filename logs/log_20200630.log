@@ -1,0 +1,2 @@
+2020-06-30 20:15:13,309 INFO [com.fourfaith.task.controller.TaskWaterScheduler] - 远程设参-DI0存储间隔-请求信息:{"type":2001,"seq":1,"token":"P7PCZ0I54Q13LHKB7RL82V2UVCIHW5IO","payload":{"DeviceCode":"0124080802","OperType":"831001","OperContent":"llll"}}
+2020-06-30 20:15:15,330 INFO [com.fourfaith.task.controller.TaskWaterScheduler] - 远程设参-DI0存储间隔-执行结果:ok

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamMeasureTypePriceMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="DistType" property="distType" jdbcType="INTEGER" />
+		<result column="MeasureTypePrice" property="measureTypePrice" jdbcType="DECIMAL" />
+		<result column="InYear" property="inYear" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 计量水费信息列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select * from ParamMeasureTypePrice where 1=1
+		and DistType = #{distType}
+		order by EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 计量水费信息条数统计 -->
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from ParamMeasureTypePrice where 1=1
+		and DistType = #{distTYpe}
+	</select>
+	
+	<!-- 新增计量水费信息 -->
+	<insert id="add" parameterType="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		insert into ParamMeasureTypePrice 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			DistType,
+			MeasureTypePrice,
+			InYear,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{distType,jdbcType=INTEGER},
+			#{measureTypePrice,jdbcType=DECIMAL},
+			#{inYear,jdbcType=TIMESTAMP},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<!-- 根据id获取计量水费信息 -->
+	<select id="getMeasureTypePriceById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		select * from ParamMeasureTypePrice where Id = #{id}
+	</select>
+	
+	<!-- 修改计量水费信息 -->
+	<update id="editMeasureTypePrice" parameterType="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		update ParamMeasureTypePrice
+		<set>
+			<if test="measureTypePrice != null">
+				MeasureTypePrice = #{measureTypePrice,jdbcType=DECIMAL},
+			</if>
+			<if test="inYear != null">
+				InYear = #{inYear,jdbcType=INTEGER},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id, jdbcType=CHAR}
+	</update>
+	
+	<!-- 删除计量水费信息 -->
+	<delete id="delete" parameterType="java.lang.String">
+		delete from ParamMeasureTypePrice where Id = #{id}
+	</delete>
+	
+	<!-- 获取全部计量水费信息 -->
+	<select id="getAllList" parameterType="map" resultType="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		select * from ParamMeasureTypePrice where 1=1 
+		<if test="distType!=null">
+			and DistType = #{distType}
+		</if>
+		<if test="inYear!=null">
+			and InYear = #{inYear}
+		</if>
+	</select>
+	
+	<!-- 根据年份获取计量水费费率信息 -->
+	<select id="getMeasurePriceByYear" parameterType="java.lang.Integer" resultType="com.fourfaith.paramterManage.model.ParamMeasureTypePrice">
+		select * from ParamMeasureTypePrice where InYear = #{inYear}
+	</select>
+	
+</mapper>

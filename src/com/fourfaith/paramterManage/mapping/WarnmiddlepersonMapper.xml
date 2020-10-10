@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.WarnmiddlepersonMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.Warnmiddleperson" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="AbnormalCode" property="abnormalcode" jdbcType="INTEGER" />
+    <result column="AbnormalPerson" property="abnormalperson" jdbcType="INTEGER" />
+    <result column="Remark" property="remark" jdbcType="VARCHAR" />
+    <result column="BackOne" property="backone" jdbcType="VARCHAR" />
+    <result column="BackTwo" property="backtwo" jdbcType="VARCHAR" />
+    <result column="BackThree" property="backthree" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, AbnormalCode, AbnormalPerson, Remark, BackOne, BackTwo, BackThree
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from warnmiddleperson where 1=1
+    <if test="id!=null and id!=''">
+    	and Id = #{id,jdbcType=INTEGER}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from warnmiddleperson
+    where AbnormalCode = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fourfaith.paramterManage.model.Warnmiddleperson" >
+    insert into warnmiddleperson (Id, AbnormalCode, AbnormalPerson, 
+      Remark, BackOne, BackTwo, 
+      BackThree)
+    values (#{id,jdbcType=INTEGER}, #{abnormalcode,jdbcType=INTEGER}, #{abnormalperson,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR}, #{backone,jdbcType=VARCHAR}, #{backtwo,jdbcType=VARCHAR}, 
+      #{backthree,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.paramterManage.model.Warnmiddleperson" >
+    insert into warnmiddleperson
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="abnormalcode != null" >
+        AbnormalCode,
+      </if>
+      <if test="abnormalperson != null" >
+        AbnormalPerson,
+      </if>
+      <if test="remark != null" >
+        Remark,
+      </if>
+      <if test="backone != null" >
+        BackOne,
+      </if>
+      <if test="backtwo != null" >
+        BackTwo,
+      </if>
+      <if test="backthree != null" >
+        BackThree,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="abnormalcode != null" >
+        #{abnormalcode,jdbcType=INTEGER},
+      </if>
+      <if test="abnormalperson != null" >
+        #{abnormalperson,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        #{backthree,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.paramterManage.model.Warnmiddleperson" >
+    update warnmiddleperson
+    <set >
+      <if test="abnormalcode != null" >
+        AbnormalCode = #{abnormalcode,jdbcType=INTEGER},
+      </if>
+      <if test="abnormalperson != null" >
+        AbnormalPerson = #{abnormalperson,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        Remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="backone != null" >
+        BackOne = #{backone,jdbcType=VARCHAR},
+      </if>
+      <if test="backtwo != null" >
+        BackTwo = #{backtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="backthree != null" >
+        BackThree = #{backthree,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.paramterManage.model.Warnmiddleperson" >
+    update warnmiddleperson
+    set AbnormalCode = #{abnormalcode,jdbcType=INTEGER},
+      AbnormalPerson = #{abnormalperson,jdbcType=INTEGER},
+      Remark = #{remark,jdbcType=VARCHAR},
+      BackOne = #{backone,jdbcType=VARCHAR},
+      BackTwo = #{backtwo,jdbcType=VARCHAR},
+      BackThree = #{backthree,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

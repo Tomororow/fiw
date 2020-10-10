@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysMenuMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysMenu">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="MenuCode" property="menuCode" jdbcType="VARCHAR" />
+		<result column="MenuName" property="menuName" jdbcType="VARCHAR" />
+		<result column="MenuLevel" property="menuLevel" jdbcType="INTEGER" />
+		<result column="ParentMenuId" property="parentMenuId" jdbcType="VARCHAR" />
+		<result column="MenuUrl" property="menuUrl" jdbcType="VARCHAR" />
+		<result column="MenuImage" property="menuImage" jdbcType="VARCHAR" />
+		<result column="MenuOrder" property="menuOrder" jdbcType="INTEGER" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, MenuCode, MenuName, MenuLevel, ParentMenuId, MenuUrl, MenuImage,
+		MenuOrder, CreateTime,
+		EditTime, Remark
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysMenu
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysMenu
+		where Id = #{id,jdbcType=CHAR}
+	</delete>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysMenu
+		where 1=1
+		<if test="idList != null and idList.size()>0">
+			AND Id in
+			<foreach collection="idList" item="item" index="index" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="menuCode != null">
+			AND MenuCode = #{menuCode,jdbcType=VARCHAR}
+		</if>
+		<if test="menuName != null">
+			AND MenuName = #{menuName,jdbcType=VARCHAR}
+		</if>
+		<if test="menuLevel != null">
+			AND MenuLevel = #{menuLevel,jdbcType=INTEGER}
+		</if>
+		<if test="parentMenuId != null">
+			AND ParentMenuId = #{parentMenuId,jdbcType=CHAR}
+		</if>
+		order by MenuOrder asc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<select id="getByMenuCode" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM SysMenu
+		where MenuCode = #{MenuCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getMaxMenuOrder" resultType="java.lang.Integer"
+		parameterType="map">
+		select max(MenuOrder) from SysMenu
+	</select>
+	
+	<select id="getMenuCodeList" resultMap="BaseResultMap"
+		parameterType="map">
+		select * from SysMenu
+		where 1=1
+		<if test="menucode != null">
+			AND MenuCode in
+			<foreach collection="menucode" item="item" index="index"
+				open="(" separator="," close=")">#{item}</foreach>
+		</if>
+	</select>
+
+	<select id="getListByRoleId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select menu.*
+		from SysMenu as menu
+		where exists(
+		select 1
+		from SysPermission as sp
+		where sp.MenuId=menu.Id
+		and sp.RoleId=#{roleId,jdbcType=VARCHAR}
+		)
+		AND menu.MenuLevel = 1
+		order by MenuOrder
+	</select>
+	
+</mapper>

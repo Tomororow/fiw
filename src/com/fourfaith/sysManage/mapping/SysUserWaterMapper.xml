@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysUserWaterMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysUserWater">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="UserCode" property="userCode" jdbcType="VARCHAR" />
+		<result column="IsBuyWater" property="isBuyWater" jdbcType="INTEGER" />
+		<result column="BuyWaterRemark" property="buyWaterRemark" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 根据用户编码  获取用户售水对象 -->
+	<select id="getUserWaterByCode" parameterType="java.lang.String" resultType="com.fourfaith.sysManage.model.SysUserWater">
+		select * from SysUserWater where UserCode = #{UserCode}
+	</select>
+	
+	<!-- 增加用户 售水权限 -->
+	<insert id="addUserWater" parameterType="com.fourfaith.sysManage.model.SysUserWater">
+		insert into SysUserWater
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				Id,
+				UserCode,
+				IsBuyWater,
+			<if test="buyWaterRemark != null">
+				BuyWaterRemark,
+			</if>
+				CreateTime,
+				EditTime
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{id,jdbcType=VARCHAR},
+				#{userCode,jdbcType=VARCHAR},
+				#{isBuyWater,jdbcType=INTEGER},
+			<if test="buyWaterRemark != null">
+				#{buyWaterRemark,jdbcType=VARCHAR},
+			</if>
+				now(),
+				now()
+		</trim>
+	</insert>
+	
+	<!-- 修改用户 售水权限 -->
+	<update id="updateUserWater" parameterType="com.fourfaith.sysManage.model.SysUserWater"> 
+		update SysUserWater 
+		<set> 
+			<if test="isBuyWater != null" > 
+				IsBuyWater = #{isBuyWater,jdbcType=INTEGER},
+			</if>
+			<if test="buyWaterRemark != null">
+				BuyWaterRemark = #{buyWaterRemark,jdbcType=VARCHAR},
+			</if>
+			EditTime = now()
+		</set> 
+		where UserCode = #{userCode,jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

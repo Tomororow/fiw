@@ -1,0 +1,31 @@
+#distance #firstTop .el-dialog__header{background:#18B399 ;padding: 10px 30px;}
+#distance #firstTop #truBut{margin-top: 15px;}
+#distance #firstTop .el-dialog__title{left:30px;position: absolute;}
+#distance #elTabs .el-tabs__nav{width:100%}
+#distance #elTabs .el-tabs__item{width:51%;text-align: center;}
+#distance .leftTop{display:none;}
+#distance #refORM .el-form-item__content{width:400px;}
+#distance .el-button--success{background-color:#18B399;border-color: #18B399}
+#distance .el-button--success:hover{background-color:#25a28d;border-color: #25a28d}
+#distance .list-page{text-align: right;padding: 15px 15px 20px 0}
+#distance .el-dropdown-link {cursor: pointer;color: #409EFF;}
+#distance .el-icon-arrow-down {font-size: 12px;}
+#distance #dropdownMenu{background-color:#e6e6e6}
+#distance #dropdownMenu .el-dropdown-item{color:#4ba2be}
+#distance #secondTop .el-dialog__header{background:#18B399 ;padding: 20px 30px;}
+#distance #secondTop #truButCahrge{margin-top: 15px;}
+#distance #secondTop .el-dialog__title{left:30px;position: absolute;top:15px;}
+#distance #chargeTabTwo td{text-align:center; height:40px;}
+#distance #chargeTabOne td{text-align:center; height:25px;}
+#distance #morer{position: absolute;right: 40px;color:#18B399;}
+#distance #morer:HOVER{color:#27f396;cursor:pointer;}
+#distance #ThreeTop .el-dialog__header{background:#18B399 ;padding: 10px 30px;}
+#distance #ThreeTop .el-dialog__title{left:30px;position: absolute;}
+#distance #ThreeTop #truButMore{margin-top: 15px;}
+#distance #FourTop .el-dialog__header{background:#18B399 ;padding: 10px 30px;}
+#distance #FourTop .el-dialog__title{left:30px;position: absolute;}
+#distance #FourTop #truButMote{margin-top: 15px;}
+#distance #chargeTabThree td{text-align:center; height:25px;}
+#financial #finTop .el-dialog__header{background:#18B399 ;padding: 10px 30px;}
+#financial #finTop .el-dialog__title{left:30px;position: absolute;}
+#financial #reportBtu{background-color:#f3f3f3;height:25px;position:absolute;top:4px;margin-left:10px;border-radius:2px;>

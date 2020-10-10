@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.siteManage.dao.StAlarmInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.siteManage.model.StAlarmInfo">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="Stcd" property="stcd" jdbcType="CHAR" />
+		<result column="Type" property="type" jdbcType="INTEGER" />
+		<result column="FactorValue" property="factorvalue" jdbcType="VARCHAR" />
+		<result column="TM" property="tm" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, Stcd, Type,FactorValue, TM
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from ST_AlarmInfo
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from ST_AlarmInfo
+		where Id = #{id,jdbcType=CHAR}
+	</delete>
+	
+	<insert id="insert" parameterType="com.fourfaith.siteManage.model.StAlarmInfo">
+		insert into ST_AlarmInfo (Id, Stcd,
+		Type,FactorValue, TM)
+		values (#{id,jdbcType=CHAR}, #{stcd,jdbcType=CHAR},
+		#{type,jdbcType=INTEGER}, #{factorvalue,jdbcType=VARCHAR},
+		#{tm,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.siteManage.model.StAlarmInfo">
+		insert into ST_AlarmInfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="stcd != null">
+				Stcd,
+			</if>
+			<if test="type != null">
+				Type,
+			</if>
+			<if test="factorvalue != null">
+				FactorValue,
+			</if>
+			<if test="tm != null">
+				TM,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=CHAR},
+			</if>
+			<if test="stcd != null">
+				#{stcd,jdbcType=CHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="factorvalue != null">
+				#{factorvalue,jdbcType=VARCHAR},
+			</if>
+			<if test="tm != null">
+				#{tm,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.siteManage.model.StAlarmInfo">
+		update ST_AlarmInfo
+		<set>
+			<if test="stcd != null">
+				Stcd = #{stcd,jdbcType=CHAR},
+			</if>
+			<if test="type != null">
+				Type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="factorvalue != null">
+				FactorValue = #{factorvalue,jdbcType=VARCHAR},
+			</if>
+			<if test="tm != null">
+				TM = #{tm,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.fourfaith.siteManage.model.StAlarmInfo">
+		update ST_AlarmInfo
+		set Stcd = #{stcd,jdbcType=CHAR},
+		Type = #{type,jdbcType=INTEGER},
+		FactorValue = #{factorvalue,jdbcType=VARCHAR},
+		TM = #{tm,jdbcType=TIMESTAMP}
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+		sb.stnm,
+		ar.*,
+		ad.addvnm
+		FROM ST_AlarmInfo ar,ST_STBPRP_B sb,ST_ADDVCD_D ad
+		where
+		ar.stcd=sb.stcd
+		and sb.addvcd = ad.id
+		<if test="stcd != null">
+			AND ar.STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="stcd_query != null">
+			AND ar.stcd like '%${stcd_query}%'
+		</if>
+		<if test="stcdList != null and stcdList">
+			AND ar.STCD in
+			<foreach collection="stcdList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="type != null">
+			and Type = #{type,jdbcType=INTEGER}
+		</if>
+		<if test="beginTime != null">
+			and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		order by Tm Desc
+		<if test="start!= null and limit!= null">
+			limit ${start},${limit}
+		</if>
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT count(*)
+		FROM ST_AlarmInfo
+		where 1=1
+		<if test="stcd != null">
+			AND STCD = #{stcd,jdbcType=CHAR}
+		</if>
+		<if test="stcd_query != null">
+			AND stcd like '%${stcd_query}%'
+		</if>
+		<if test="stcdList != null and stcdList">
+			AND STCD in
+			<foreach collection="stcdList" item="item" index="index"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="type != null">
+			and Type = #{type,jdbcType=INTEGER}
+		</if>
+		<if test="beginTime != null">
+			and TM &gt;=#{beginTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null">
+			and TM &lt;= #{endTime,jdbcType=TIMESTAMP}
+		</if>
+	</select>
+
+</mapper>

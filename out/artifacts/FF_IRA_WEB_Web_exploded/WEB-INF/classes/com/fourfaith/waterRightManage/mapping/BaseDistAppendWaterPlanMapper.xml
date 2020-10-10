@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.waterRightManage.dao.BaseDistAppendWaterPlanMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.waterRightManage.model.BaseDistAppendWaterPlan">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="WaterAreaId" property="waterAreaId" jdbcType="VARCHAR" />
+		<result column="DistType" property="distType" jdbcType="INTEGER" />
+		<result column="DistMode" property="DistMode" jdbcType="INTEGER" />
+		<result column="DistYear" property="distYear" jdbcType="INTEGER" />
+		<result column="DistRound" property="distRound" jdbcType="INTEGER" />
+		<result column="DistWater" property="distWater" jdbcType="DECIMAL" />
+		<result column="DistRatio" property="distRatio" jdbcType="INTEGER" />
+		<result column="DistPrice" property="distPrice" jdbcType="DECIMAL" />
+		<result column="IsAppendWater" property="isAppendWater" jdbcType="INTEGER" />
+		<result column="WellUse" property="wellUse" jdbcType="VARCHAR" />
+		<result column="DeviceId" property="deviceId" jdbcType="VARCHAR" />
+		<result column="UseId" property="useId" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.waterRightManage.model.BaseDistAppendWaterPlan">
+		insert into BaseDistAppendWaterPlan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="waterAreaId != null">
+				WaterAreaId,
+			</if>
+			<if test="distType != null">
+				DistType,
+			</if>
+			<if test="distMode != null">
+				DistMode,
+			</if>
+			<if test="distYear != null">
+				DistYear,
+			</if>
+			<if test="distRound != null">
+				DistRound,
+			</if>
+			<if test="distWater != null">
+				DistWater,
+			</if>
+			<if test="distRatio != null">
+				DistRatio,
+			</if>
+			<if test="distPrice != null">
+				DistPrice,
+			</if>
+			<if test="isAppendWater != null">
+				IsAppendWater,
+			</if>
+			<if test="wellUse != null">
+				WellUse,
+			</if>
+			<if test="deviceId != null">
+				DeviceId,
+			</if>
+			<if test="useId != null">
+				UseId,
+			</if>
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="waterAreaId != null">
+				#{waterAreaId,jdbcType=VARCHAR},
+			</if>
+			<if test="distType != null">
+				#{distType,jdbcType=INTEGER},
+			</if>
+			<if test="distMode != null">
+				#{distMode,jdbcType=INTEGER},
+			</if>
+			<if test="distYear != null">
+				#{distYear,jdbcType=INTEGER},
+			</if>
+			<if test="distRound != null">
+				#{distRound,jdbcType=INTEGER},
+			</if>
+			<if test="distWater != null">
+				#{distWater,jdbcType=DECIMAL},
+			</if>
+			<if test="distRatio != null">
+				#{distRatio,jdbcType=INTEGER},
+			</if>
+			<if test="distPrice != null">
+				#{distPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="isAppendWater != null">
+				#{isAppendWater,jdbcType=INTEGER},
+			</if>
+			<if test="wellUse != null">
+				#{wellUse,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="useId != null">
+				#{useId,jdbcType=VARCHAR},
+			</if>
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from BaseDistAppendWaterPlan
+			where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

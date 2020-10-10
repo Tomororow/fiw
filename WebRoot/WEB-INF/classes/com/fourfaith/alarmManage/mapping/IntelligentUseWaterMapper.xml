@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.alarmManage.dao.IntelligentUseWaterMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.alarmManage.model.IntelligentUseWater">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DeviceCode" property="deviceCode" jdbcType="VARCHAR" />
+		<result column="TotalWater" property="totalWater" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 添加信息 -->
+	<insert id="add" parameterType="com.fourfaith.alarmManage.model.IntelligentUseWater">
+		insert into IntelligentUseWater
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			DeviceCode,
+			TotalWater,
+			CreateTime
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{deviceCode,jdbcType=VARCHAR},
+			#{totalWater,jdbcType=DECIMAL},
+			now()
+		</trim>
+	</insert>
+	
+	<!-- 根据编码获取信息 -->
+	<select id="selectIntelligentUseWaterByDeviceCode" parameterType="map" resultType="com.fourfaith.alarmManage.model.IntelligentUseWater">
+		select * from IntelligentUseWater where DeviceCode = #{deviceCode} order by CreateTime
+	</select>
+	
+	<!-- 删除信息 -->
+	<delete id="delete" parameterType="java.lang.String">
+		delete from IntelligentUseWater where DeviceCode = #{deviceCode}
+	</delete>
+	
+</mapper>

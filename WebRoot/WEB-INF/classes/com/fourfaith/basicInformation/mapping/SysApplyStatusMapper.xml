@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.basicInformation.dao.SysApplyStatusMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.basicInformation.model.SysApplyStatus">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="ApplyStatus" property="applyStatus" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<!-- 基础数据列 -->
+	<sql id="Base_Column_List">
+		Id, ApplyStatus, CreateTime, EditTime
+	</sql>
+	
+	<!-- 信息统计 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysApplyStatus
+		where 1=1
+	</select>
+
+	<!-- 应用状况信息列表 -->
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysApplyStatus
+		where 1=1
+		order by EditTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<!-- 非空信息增加 -->
+	<insert id="insertSelective" parameterType="com.fourfaith.basicInformation.model.SysApplyStatus">
+		insert into SysApplyStatus
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="applyStatus != null">
+				ApplyStatus,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="applyStatus != null">
+				#{applyStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 根据主键查询 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysApplyStatus
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<!-- 根据主键删除 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysApplyStatus
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据主键非空信息修改 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.basicInformation.model.SysApplyStatus">
+		update SysApplyStatus
+		<set>
+			ApplyStatus = #{applyStatus,jdbcType=VARCHAR},
+			<if test="editTime != null">
+			editTime = #{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<!-- 应用状况名新增唯一性校验 -->
+	<select id="uniqueAddSelectTive" parameterType="com.fourfaith.basicInformation.model.SysApplyStatus" resultType="com.fourfaith.basicInformation.model.SysApplyStatus">
+		select * from SysApplyStatus where ApplyStatus = #{applyStatus}
+	</select>
+	
+	<!-- 应用状况名修改唯一性校验 -->
+	<select id="uniqueUpdateSelectTive" parameterType="com.fourfaith.basicInformation.model.SysApplyStatus" resultType="com.fourfaith.basicInformation.model.SysApplyStatus">
+		select * from SysApplyStatus where ApplyStatus = #{applyStatus} and Id != #{id}
+	</select>
+	
+</mapper>

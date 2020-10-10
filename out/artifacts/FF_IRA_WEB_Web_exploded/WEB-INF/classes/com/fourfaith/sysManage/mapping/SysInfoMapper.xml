@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.SysInfoMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.SysInfo">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="InfoKey" property="infoKey" jdbcType="VARCHAR" />
+		<result column="InfoValue" property="infoValue" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, InfoKey, InfoValue
+	</sql>
+	
+	<select id="findByInfoKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysInfo
+		where InfoKey = #{infoKey,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateByInfoKey" parameterType="com.fourfaith.sysManage.model.SysInfo">
+		update SysInfo
+		<set>
+			<if test="infoValue != null">
+				InfoValue = #{infoValue,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where InfoKey = #{infoKey,jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.paramterManage.dao.ParamThreeVoltageMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.paramterManage.model.ParamThreeVoltage">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="APhaseVoltageUp" property="aPhaseVoltageUp" jdbcType="DECIMAL" />
+		<result column="APhaseVoltageDown" property="aPhaseVoltageDown" jdbcType="DECIMAL" />
+		<result column="BPhaseVoltageUp" property="bPhaseVoltageUp" jdbcType="DECIMAL" />
+		<result column="BPhaseVoltageDown" property="bPhaseVoltageDown" jdbcType="DECIMAL" />
+		<result column="CPhaseVoltageUp" property="cPhaseVoltageUp" jdbcType="DECIMAL" />
+		<result column="CPhaseVoltageDown" property="cPhaseVoltageDown" jdbcType="DECIMAL" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		select * from ParamThreeVoltage where 1=1
+		order by EditTime DESC
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from ParamThreeVoltage
+	</select>
+	
+	<insert id="add" parameterType="com.fourfaith.paramterManage.model.ParamThreeVoltage">
+		insert into ParamThreeVoltage 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			Id,
+			APhaseVoltageUp,
+			APhaseVoltageDown,
+			BPhaseVoltageUp,
+			BPhaseVoltageDown,
+			CPhaseVoltageUp,
+			CPhaseVoltageDown,
+			CreateTime,
+			EditTime,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			#{aPhaseVoltageUp,jdbcType=DECIMAL},
+			#{aPhaseVoltageDown,jdbcType=DECIMAL},
+			#{bPhaseVoltageUp,jdbcType=DECIMAL},
+			#{bPhaseVoltageDown,jdbcType=DECIMAL},
+			#{cPhaseVoltageUp,jdbcType=DECIMAL},
+			#{cPhaseVoltageDown,jdbcType=DECIMAL},
+			now(),
+			now(),
+		</trim>
+	</insert>
+	
+	<select id="findThreeVoltageById" parameterType="java.lang.String" resultType="com.fourfaith.paramterManage.model.ParamThreeVoltage">
+		select * from ParamThreeVoltage where Id = #{id}
+	</select>
+	
+	<update id="edit" parameterType="com.fourfaith.paramterManage.model.ParamThreeVoltage">
+		update ParamThreeVoltage
+		<set>
+			<if test="aPhaseVoltageUp != null">
+			APhaseVoltageUp = #{aPhaseVoltageUp,jdbcType=DECIMAL},
+			</if>
+			<if test="aPhaseVoltageDown != null">
+			APhaseVoltageDown = #{aPhaseVoltageDown,jdbcType=DECIMAL},
+			</if>
+			<if test="bPhaseVoltageUp != null">
+			BPhaseVoltageUp = #{bPhaseVoltageUp,jdbcType=DECIMAL},
+			</if>
+			<if test="bPhaseVoltageDown != null">
+			BPhaseVoltageDown = #{bPhaseVoltageDown,jdbcType=DECIMAL},
+			</if>
+			<if test="cPhaseVoltageUp != null">
+			CPhaseVoltageUp = #{cPhaseVoltageUp,jdbcType=DECIMAL},
+			</if>
+			<if test="cPhaseVoltageDown != null">
+			CPhaseVoltageDown = #{cPhaseVoltageDown,jdbcType=DECIMAL},
+			</if>
+			EditTime = now(),
+		</set>
+		where Id = #{id, jdbcType=CHAR}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from ParamThreeVoltage where Id = #{id}
+	</delete>
+	
+	<!-- 获取所有告警上下限电压 -->
+	<select id="getVoltageList" resultMap="BaseResultMap">
+		select * from ParamThreeVoltage order by EditTime DESC
+	</select>
+	
+</mapper>

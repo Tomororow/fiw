@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.basicInformation.dao.SysLandformTypeMapper">
+	<resultMap id="BaseResultMap" type="com.fourfaith.basicInformation.model.SysLandformType">
+		<id column="Id" property="id" jdbcType="CHAR" />
+		<result column="LandformType" property="landformType" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="EditTime" property="editTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		Id, LandformType, CreateTime, EditTime
+	</sql>
+	
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map">
+		SELECT count(*) FROM SysLandformType
+		where 1=1
+	</select>
+
+	<select id="getList" resultMap="BaseResultMap" parameterType="map">
+		SELECT * FROM SysLandformType
+		where 1=1
+		order by EditTime desc
+		<if test="pageStart!= null and pageEnd!= null">
+			limit ${pageStart},${pageEnd}
+		</if>
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.fourfaith.basicInformation.model.SysLandformType">
+		insert into SysLandformType
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				Id,
+			</if>
+			<if test="landformType != null">
+				LandformType,
+			</if>
+			<if test="createTime != null">
+				CreateTime,
+			</if>
+			<if test="editTime != null">
+				EditTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="landformType != null">
+				#{landformType,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="editTime != null">
+				#{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from SysLandformType
+		where Id = #{id,jdbcType=CHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from SysLandformType
+		where Id = #{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.basicInformation.model.SysLandformType">
+		update SysLandformType
+		<set>
+			LandformType = #{landformType,jdbcType=VARCHAR},
+			<if test="editTime != null">
+			editTime = #{editTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where Id = #{id,jdbcType=CHAR}
+	</update>
+	
+	<!-- 地貌类型名新增唯一性校验 -->
+	<select id="uniqueAddSelectTive" parameterType="com.fourfaith.basicInformation.model.SysLandformType" resultType="com.fourfaith.basicInformation.model.SysLandformType">
+		select * from SysLandformType where LandformType = #{landformType}
+	</select>
+	
+	<!-- 地貌类型名修改唯一性校验 -->
+	<select id="uniqueUpdateSelectTive" parameterType="com.fourfaith.basicInformation.model.SysLandformType" resultType="com.fourfaith.basicInformation.model.SysLandformType">
+		select * from SysLandformType where LandformType = #{landformType} and Id != #{id}
+	</select>
+	
+</mapper>

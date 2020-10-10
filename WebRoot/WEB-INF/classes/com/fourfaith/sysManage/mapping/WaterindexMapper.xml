@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fourfaith.sysManage.dao.WaterindexMapper" >
+  <resultMap id="BaseResultMap" type="com.fourfaith.sysManage.model.Waterindex" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="WaterAreaId" property="waterareaid" jdbcType="VARCHAR" />
+    <result column="sumWater" property="sumwater" jdbcType="DECIMAL" />
+    <result column="waterFarming" property="waterfarming" jdbcType="DECIMAL" />
+    <result column="waterVirest" property="watervirest" jdbcType="DECIMAL" />
+    <result column="waterLife" property="waterlife" jdbcType="DECIMAL" />
+    <result column="waterIndustry" property="waterindustry" jdbcType="DECIMAL" />
+    <result column="spare1" property="spare1" jdbcType="VARCHAR" />
+    <result column="spare2" property="spare2" jdbcType="VARCHAR" />
+    <result column="spare3" property="spare3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, WaterAreaId, sumWater, waterFarming, waterVirest, waterLife, waterIndustry, spare1, 
+    spare2, spare3
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from waterindicators
+    where WaterAreaId = #{id,jdbcType=INTEGER}
+  </select>
+ <!-- 查询相关数据-->
+  <select id="selectWaterAll" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT sa.WaterAreaName as waterAreaName,sa.Id as waterareaid,wd.sumWater, wd.waterFarming, wd.waterVirest, wd.waterLife, wd.waterIndustry FROM syswaterarea sa ${type} JOIN waterindicators wd ON sa.Id = wd.WaterAreaId WHERE sa.WaterAreaLevel &lt;2
+     <if test="waterAreaId!=null and waterAreaId!=''">
+       and (sa.Id = #{waterAreaId} or sa.ParentWaterAreaId = #{waterAreaId})
+     </if>
+     order by sa.WaterAreaLevel ASC
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from waterindicators
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.fourfaith.sysManage.model.Waterindex" >
+    insert into waterindicators (id, WaterAreaId, sumWater,
+      waterFarming, waterVirest, waterLife, 
+      waterIndustry, spare1, spare2,
+      spare3)
+    values (#{id,jdbcType=INTEGER}, #{waterareaid,jdbcType=VARCHAR}, #{sumwater,jdbcType=VARCHAR}, 
+      #{waterfarming,jdbcType=VARCHAR}, #{watervirest,jdbcType=VARCHAR}, #{waterlife,jdbcType=VARCHAR}, 
+      #{waterindustry,jdbcType=VARCHAR}, #{spare1,jdbcType=VARCHAR}, #{spare2,jdbcType=VARCHAR}, 
+      #{spare3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fourfaith.sysManage.model.Waterindex" >
+    insert into waterindicators
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="waterareaid != null" >
+        WaterAreaId,
+      </if>
+      <if test="sumwater != null" >
+        sumWater,
+      </if>
+      <if test="waterfarming != null" >
+        waterFarming,
+      </if>
+      <if test="watervirest != null" >
+        waterVirest,
+      </if>
+      <if test="waterlife != null" >
+        waterLife,
+      </if>
+      <if test="waterindustry != null" >
+        waterIndustry,
+      </if>
+      <if test="spare1 != null" >
+        spare1,
+      </if>
+      <if test="spare2 != null" >
+        spare2,
+      </if>
+      <if test="spare3 != null" >
+        spare3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="waterareaid != null" >
+        #{waterareaid,jdbcType=VARCHAR},
+      </if>
+      <if test="sumwater != null" >
+        #{sumwater,jdbcType=DECIMAL},
+      </if>
+      <if test="waterfarming != null" >
+        #{waterfarming,jdbcType=DECIMAL},
+      </if>
+      <if test="watervirest != null" >
+        #{watervirest,jdbcType=DECIMAL},
+      </if>
+      <if test="waterlife != null" >
+        #{waterlife,jdbcType=DECIMAL},
+      </if>
+      <if test="waterindustry != null" >
+        #{waterindustry,jdbcType=DECIMAL},
+      </if>
+      <if test="spare1 != null" >
+        #{spare1,jdbcType=VARCHAR},
+      </if>
+      <if test="spare2 != null" >
+        #{spare2,jdbcType=VARCHAR},
+      </if>
+      <if test="spare3 != null" >
+        #{spare3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.fourfaith.sysManage.model.Waterindex" >
+    update waterindicators
+    <set >
+      <if test="waterareaid != null" >
+        WaterAreaId = #{waterareaid,jdbcType=VARCHAR},
+      </if>
+      <if test="sumwater != null" >
+        sumWater = #{sumwater,jdbcType=DECIMAL},
+      </if>
+      <if test="waterfarming != null" >
+        waterFarming = #{waterfarming,jdbcType=DECIMAL},
+      </if>
+      <if test="watervirest != null" >
+        waterVirest = #{watervirest,jdbcType=DECIMAL},
+      </if>
+      <if test="waterlife != null" >
+        waterLife = #{waterlife,jdbcType=DECIMAL},
+      </if>
+      <if test="waterindustry != null" >
+        waterIndustry = #{waterindustry,jdbcType=DECIMAL},
+      </if>
+      <if test="spare1 != null" >
+        spare1 = #{spare1,jdbcType=VARCHAR},
+      </if>
+      <if test="spare2 != null" >
+        spare2 = #{spare2,jdbcType=VARCHAR},
+      </if>
+      <if test="spare3 != null" >
+        spare3 = #{spare3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fourfaith.sysManage.model.Waterindex" >
+    update waterindicators
+    set WaterAreaId = #{waterareaid,jdbcType=VARCHAR},
+      sumWater = #{sumwater,jdbcType=VARCHAR},
+      waterFarming = #{waterfarming,jdbcType=VARCHAR},
+      waterVirest = #{watervirest,jdbcType=VARCHAR},
+      waterLife = #{waterlife,jdbcType=VARCHAR},
+      waterIndustry = #{waterindustry,jdbcType=VARCHAR},
+      spare1 = #{spare1,jdbcType=VARCHAR},
+      spare2 = #{spare2,jdbcType=VARCHAR},
+      spare3 = #{spare3,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
